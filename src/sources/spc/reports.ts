@@ -28,6 +28,11 @@ function hhmmToIso(hhmm: string, now: Date): string | null {
   return new Date(Date.UTC(year, month, day + dayOffset, hh, mm)).toISOString()
 }
 
+// Number('') is 0, so blank coordinates must be rejected before conversion.
+function parseCoord(s: string): number {
+  return s.trim() === '' ? NaN : Number(s)
+}
+
 export function parseReportsCsv(raw: string, now: Date = new Date()): StormReport[] {
   const reports: StormReport[] = []
   let kind: StormReportKind | null = null
@@ -46,7 +51,7 @@ export function parseReportsCsv(raw: string, now: Date = new Date()): StormRepor
     if (cols.length < 7) continue
     const [time, magnitude, , , , lat, lon] = cols
     const iso = hhmmToIso(time, now)
-    const location: [number, number] = [Number(lon), Number(lat)]
+    const location: [number, number] = [parseCoord(lon), parseCoord(lat)]
     if (!iso || !Number.isFinite(location[0]) || !Number.isFinite(location[1])) continue
 
     reports.push({
@@ -61,15 +66,21 @@ export function parseReportsCsv(raw: string, now: Date = new Date()): StormRepor
   return reports
 }
 
-export const stormReports: SourceAdapter<string, StormReport> = {
+export interface SpcReportsRaw {
+  csv: string
+  /** When the CSV was fetched; the SPC day anchor is derived from this, keeping normalize pure. */
+  fetchedAt: string
+}
+
+export const stormReports: SourceAdapter<SpcReportsRaw, StormReport> = {
   id: 'spc-reports',
   refreshMs: 300_000,
   async fetch(_aoi, signal) {
     const res = await fetch(SPC_REPORTS_URL, { signal })
     if (!res.ok) throw new Error(`SPC reports ${res.status}`)
-    return res.text()
+    return { csv: await res.text(), fetchedAt: new Date().toISOString() }
   },
   normalize(raw) {
-    return parseReportsCsv(raw)
+    return parseReportsCsv(raw.csv, new Date(raw.fetchedAt))
   },
 }

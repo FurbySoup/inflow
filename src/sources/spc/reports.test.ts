@@ -46,16 +46,28 @@ describe('parseReportsCsv', () => {
       '1200,EF0,Stray,,,30.0,-80.0,No section yet',
       'Time,F_Scale,Location,County,State,Lat,Lon,Comments',
       '1200,EF0,Bad,,,n/a,-80.0,Bad latitude',
+      '1210,EF0,Empty lat,,,,-80.0,Blank latitude',
+      '1220,EF0,Empty lon,,,30.0,,Blank longitude',
       '1300,EF0,Good,,,30.0,-80.0,Kept',
     ].join('\n')
     const reports = parseReportsCsv(csv, NOW)
     expect(reports).toHaveLength(1)
     expect(reports[0].comments).toBe('Kept')
   })
+
+  it('dates a report on the previous calendar day when the SPC day started the day before', () => {
+    const csv = ['Time,F_Scale,Location,County,State,Lat,Lon,Comments', '1833,UNK,Town,,,30.0,-80.0,Late'].join('\n')
+    const [r] = parseReportsCsv(csv, new Date('2026-10-11T05:00:00Z'))
+    expect(r.time).toBe('2026-10-10T18:33:00.000Z')
+  })
 })
 
 describe('stormReports.normalize', () => {
-  it('uses the adapter contract on the recorded fixture', () => {
-    expect(stormReports.normalize(todayCsv)).toHaveLength(1)
+  it('is pure: the same raw input gives the same output', () => {
+    const raw = { csv: todayCsv, fetchedAt: '2026-10-10T18:50:00.000Z' }
+    const a = stormReports.normalize(raw)
+    expect(a).toHaveLength(1)
+    expect(stormReports.normalize(raw)).toEqual(a)
+    expect(a[0].time).toBe('2026-10-10T18:33:00.000Z')
   })
 })
