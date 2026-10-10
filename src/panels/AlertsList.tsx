@@ -43,7 +43,7 @@ export function AlertsList() {
   }
 
   return (
-    <Panel code="WX-02" title="NWS Alerts" status={queryStatus(query)} meta={visible.length}>
+    <Panel collapsible code="WX-02" title="NWS Alerts" status={queryStatus(query)} meta={visible.length}>
       {query.isError && <p className="error">NWS alerts unavailable</p>}
       <ul className="alerts" ref={listRef}>
         {visible.map((a) => (

@@ -192,7 +192,7 @@ export function CamerasPanel() {
 
   if (covered.length === 0) {
     return (
-      <Panel code="CCTV-01" title="DOT Cameras" status="offline">
+      <Panel collapsible code="CCTV-01" title="DOT Cameras" status="offline">
         <p className="muted">{NO_COVERAGE}</p>
       </Panel>
     )
@@ -214,7 +214,7 @@ export function CamerasPanel() {
   const onOpen = (id: string) => setOpenId((cur) => (cur === id ? null : id))
 
   return (
-    <Panel code="CCTV-01" title="DOT Cameras" status={status} meta={tiles.length}>
+    <Panel collapsible code="CCTV-01" title="DOT Cameras" status={status} meta={tiles.length}>
       {status === 'error' && <p className="error">Camera feeds unavailable</p>}
       {expanded && <ExpandedCamera cam={expanded} tick={tick} onClose={() => setOpenId(null)} />}
       {tiles.length > 0 ? (

@@ -70,6 +70,7 @@ export function AudioPanel() {
 
   return (
     <Panel
+      collapsible
       code="AUD-01"
       title="Radio / Scanner"
       status={queryStatus(directory)}

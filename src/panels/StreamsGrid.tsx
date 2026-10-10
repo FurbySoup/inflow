@@ -74,7 +74,7 @@ export function StreamsGrid() {
   )
 
   return (
-    <Panel code="VID-01" title="Chaser Feeds" status="live" meta={sorted.length} className="streams">
+    <Panel collapsible code="VID-01" title="Chaser Feeds" status="live" meta={sorted.length} className="streams">
       {primary && <div>{renderFigure(primary, sorted.indexOf(primary), true)}</div>}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
         {thumbs.map((s) => renderFigure(s, sorted.indexOf(s), false))}

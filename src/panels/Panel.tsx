@@ -34,10 +34,11 @@ export function Panel({ title, code, status, meta, className, collapsible, child
 
   return (
     <section
-      className={`panel ${className ?? ''}`}
+      className={`panel ${collapsed ? 'panel-collapsed' : ''} ${className ?? ''}`}
       style={collapsed ? { flex: 'none' } : undefined}
     >
-      <header className="panel-head">
+      {/* Collapsed: only LED + code + toggle, so an auto-sized console track stays narrow. */}
+      <header className="panel-head" title={collapsed ? title : undefined}>
         <span className={`led led-${status}`} aria-label={status} />
         <span className="panel-code">{code}</span>
         <h2>{title}</h2>
