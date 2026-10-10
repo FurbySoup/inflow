@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useQueries } from '@tanstack/react-query'
 import type { CameraFeed } from '../types'
 import type { SourceAdapter } from '../sources/types'
@@ -69,25 +69,46 @@ function useRefreshTick(ms: number) {
   return tick
 }
 
+// Tracks whether an element is in the viewport (clipping by scroll containers is handled by the browser).
+// Without IntersectionObserver, everything counts as visible.
+function useInView<T extends Element>() {
+  const ref = useRef<T>(null)
+  const [inView, setInView] = useState(() => typeof IntersectionObserver === 'undefined')
+  useEffect(() => {
+    const el = ref.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const obs = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting))
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+  return { ref, inView }
+}
+
 // Returns an <img>-ready src. TxDOT snapshots are JSON with base64 inside, so they are fetched and decoded
-// first; the last decoded frame stays up while the next one loads. A failed frame is hidden, and the next
-// refresh tick produces a new URL and retries.
-function useSnapshot(cam: CameraFeed, tick: number) {
+// first, and only while visible; the last decoded frame stays up while the next one loads. A failed frame
+// is hidden, and the next refresh tick produces a new URL and retries. KS/NE feeds are plain <img> URLs.
+function useSnapshot(cam: CameraFeed, tick: number, visible: boolean) {
   const url = withCacheBuster(cam.snapshotUrl, tick)
   const decoded = isTxdotFeed(cam)
   const [loaded, setLoaded] = useState<string | null>(null)
   const [failedUrl, setFailedUrl] = useState<string | null>(null)
+  const loadedUrl = useRef<string | null>(null)
 
   useEffect(() => {
-    if (!decoded) return
+    if (!decoded || !visible || loadedUrl.current === url) return
     const ctrl = new AbortController()
-    fetchSnapshotDataUrl(url, ctrl.signal)
-      .then((src) => setLoaded(src))
+    fetchSnapshotDataUrl(url)
+      .then((src) => {
+        if (!ctrl.signal.aborted) {
+          loadedUrl.current = url
+          setLoaded(src)
+        }
+      })
       .catch(() => {
         if (!ctrl.signal.aborted) setFailedUrl(url)
       })
     return () => ctrl.abort()
-  }, [decoded, url])
+  }, [decoded, url, visible])
 
   return {
     src: decoded ? loaded : url,
@@ -105,10 +126,11 @@ function CameraTile({
   tick: number
   onOpen: (id: string) => void
 }) {
-  const { src, failed, fail } = useSnapshot(cam, tick)
+  const { ref, inView } = useInView<HTMLButtonElement>()
+  const { src, failed, fail } = useSnapshot(cam, tick, inView)
   if (failed) return null
   return (
-    <button type="button" style={tileStyle} title={cam.title} onClick={() => onOpen(cam.id)}>
+    <button ref={ref} type="button" style={tileStyle} title={cam.title} onClick={() => onOpen(cam.id)}>
       {src ? (
         <img src={src} alt={cam.title} loading="lazy" style={imgStyle} onError={fail} />
       ) : (
@@ -120,7 +142,8 @@ function CameraTile({
 }
 
 function ExpandedCamera({ cam, tick, onClose }: { cam: CameraFeed; tick: number; onClose: () => void }) {
-  const { src, failed, fail } = useSnapshot(cam, tick)
+  // The expanded view is on screen by definition, so it is always visible.
+  const { src, failed, fail } = useSnapshot(cam, tick, true)
   if (failed) return null
   return (
     <figure style={{ margin: '0 0 8px' }}>
