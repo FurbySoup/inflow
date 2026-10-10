@@ -74,7 +74,12 @@ export function MapPanel() {
       setAoi(bbox, statesInBbox(bbox))
     })
 
+    // MapLibre only tracks window resizes; splitters resize the container directly.
+    const resizeObserver = new ResizeObserver(() => m.resize())
+    resizeObserver.observe(container.current)
+
     return () => {
+      resizeObserver.disconnect()
       timers.forEach(clearInterval)
       m.remove()
     }

@@ -34,15 +34,35 @@ body {
 .layout {
   display: grid;
   height: 100vh;
-  gap: 4px;
   padding: 4px;
-  grid-template-columns: 1fr 400px;
-  grid-template-rows: 40px 1fr 230px;
+  /* Track sizes come from the layout store (ADR-0011) via --side-w / --bottom-h. */
+  grid-template-columns: minmax(0, 1fr) 6px var(--side-w, 400px);
+  grid-template-rows: 40px minmax(0, 1fr) 6px var(--bottom-h, 230px);
   grid-template-areas:
-    'top top'
-    'map side'
-    'bottom side';
+    'top top top'
+    'map vsplit side'
+    'hsplit vsplit side'
+    'bottom vsplit side';
+  row-gap: 0;
 }
+.topbar { margin-bottom: 4px; }
+
+/* Splitters */
+.splitter { position: relative; background: transparent; touch-action: none; outline: none; }
+.splitter::after {
+  content: '';
+  position: absolute;
+  background: var(--border);
+  transition: background 0.15s;
+}
+.splitter-v { cursor: col-resize; }
+.splitter-v::after { top: 0; bottom: 0; left: 2px; width: 2px; }
+.splitter-h { cursor: row-resize; }
+.splitter-h::after { left: 0; right: 0; top: 2px; height: 2px; }
+.splitter:hover::after, .splitter:focus-visible::after { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+body.resizing { user-select: none; }
+/* Iframes swallow pointer events mid-drag; disable them while resizing. */
+body.resizing iframe { pointer-events: none; }
 
 /* Top bar */
 .topbar {
@@ -69,7 +89,7 @@ body {
 .map { width: 100%; height: 100%; }
 
 .side { grid-area: side; min-height: 0; display: flex; flex-direction: column; }
-.bottom { grid-area: bottom; min-height: 0; display: grid; gap: 4px; grid-template-columns: repeat(3, 1fr); }
+.bottom { grid-area: bottom; min-height: 0; display: grid; gap: 4px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 /* Panel chrome */
 .panel {
@@ -143,6 +163,7 @@ body {
     grid-template-rows: auto 55vh auto auto;
     grid-template-areas: 'top' 'map' 'side' 'bottom';
   }
+  .splitter { display: none; }
   .topbar { flex-wrap: wrap; gap: 12px; padding: 8px 12px; }
   .bottom { grid-template-columns: 1fr; }
   .panel-body { max-height: 320px; }
