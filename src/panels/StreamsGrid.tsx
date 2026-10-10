@@ -41,6 +41,8 @@ export function StreamsGrid() {
       <iframe
         src={s.embedUrl}
         title={s.title}
+        // Off-screen feeds load only when scrolled into view; 10+ eager embeds starve the map.
+        loading="lazy"
         allow="autoplay; encrypted-media; picture-in-picture"
         allowFullScreen
       />
