@@ -5,6 +5,11 @@ How the remaining v1 features get built concurrently by Haiku sub-agents. Proces
 ## Already built (foundation, orchestrator)
 Basic resizing (feeds column + console row splitters, ADR-0011), shared types, adapter contract, AOI store, `useSource`, `<Panel>` chrome + tokens, map layer registry, NWS alerts (map + list), IEM radar, curated streams, dev proxy for NWS.
 
+## Status
+- Wave 1 (WP-01, 02, 03, 05, 06, 07): **merged** 2026-10-10. Verifier caught: impure SPC normalize, CARS preflight CORS (proxied).
+- Wave 2 (WP-04, 08, 09): **merged** 2026-10-10. Verifier caught: stale focus, eager off-screen TxDOT fetches.
+- Wave 3 (WP-10): ready.
+
 ## Waves
 
 ```
