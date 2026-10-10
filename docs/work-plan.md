@@ -8,7 +8,7 @@ Basic resizing (feeds column + console row splitters, ADR-0011), shared types, a
 ## Status
 - Wave 1 (WP-01, 02, 03, 05, 06, 07): **merged** 2026-10-10. Verifier caught: impure SPC normalize, CARS preflight CORS (proxied).
 - Wave 2 (WP-04, 08, 09): **merged** 2026-10-10. Verifier caught: stale focus, eager off-screen TxDOT fetches.
-- Wave 3 (WP-10): ready.
+- Wave 3 (WP-10): **merged** 2026-10-10. Orchestrator follow-up: collapsible wired on all panels; collapsed headers compacted.
 
 ## Waves
 
