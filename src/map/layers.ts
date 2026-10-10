@@ -1,6 +1,8 @@
 import type maplibregl from 'maplibre-gl'
 import { radarLayer } from './radar'
 import { satelliteLayer } from './satellite'
+import { spcOutlookLayer } from './spcOutlook'
+import { stormReportsLayer } from './stormReports'
 
 /**
  * A map overlay. Each work package that draws on the map adds one MapLayer module and one
@@ -17,4 +19,4 @@ export interface MapLayer {
 }
 
 // Order = draw order (first is bottom-most).
-export const mapLayers: MapLayer[] = [satelliteLayer, radarLayer]
+export const mapLayers: MapLayer[] = [satelliteLayer, spcOutlookLayer, radarLayer, stormReportsLayer]
