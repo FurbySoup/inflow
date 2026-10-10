@@ -12,7 +12,8 @@ const NWS_ALERTS: Toggleable = { id: 'alerts', label: 'NWS Alerts' }
 
 /** True when a MapLibre style layer belongs to an overlay: its id starts with the overlay id. */
 export function layerMatches(styleLayerId: string, overlayId: string): boolean {
-  return styleLayerId.startsWith(overlayId)
+  // Exact id or `${id}-…` (ADR-0008 naming), so 'radar' never matches a future 'radarx'.
+  return styleLayerId === overlayId || styleLayerId.startsWith(`${overlayId}-`)
 }
 
 function readVisibility(): Record<string, boolean> {

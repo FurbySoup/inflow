@@ -13,5 +13,7 @@ describe('layerMatches', () => {
     expect(layerMatches('satellite', 'radar')).toBe(false)
     expect(layerMatches('radar', 'radar-m50')).toBe(false)
     expect(layerMatches('storm-reports', 'alerts')).toBe(false)
+    expect(layerMatches('radarx-m00', 'radar')).toBe(false)
+    expect(layerMatches('satellite', 'satellite')).toBe(true)
   })
 })
