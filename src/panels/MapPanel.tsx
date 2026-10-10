@@ -43,6 +43,8 @@ export function MapPanel() {
       bounds: [DEFAULT_AOI.west, DEFAULT_AOI.south, DEFAULT_AOI.east, DEFAULT_AOI.north],
     })
     map.current = m
+    // Dev-only handle for inspecting the live map from the console / browser tooling.
+    if (import.meta.env.DEV) Object.assign(window, { __map: m })
     const timers: ReturnType<typeof setInterval>[] = []
 
     m.on('load', () => {

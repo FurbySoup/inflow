@@ -16,6 +16,17 @@ export default defineConfig({
         rewrite: (p) => p.replace(/^\/api\/nws/, ''),
         headers: { 'User-Agent': USER_AGENT },
       },
+      // CARS GraphQL (KS/NE DOT cameras): POST preflight is rejected cross-origin.
+      '/api/kandrive': {
+        target: 'https://www.kandrive.gov',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/kandrive/, '/api'),
+      },
+      '/api/ne511': {
+        target: 'https://511.nebraska.gov',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/ne511/, '/api'),
+      },
       '/api/kiwisdr': {
         target: 'http://rx.linkfanel.net',
         changeOrigin: true,
