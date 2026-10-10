@@ -1,0 +1,126 @@
+{
+  "data": {
+    "mapFeaturesQuery": {
+      "mapFeatures": [
+        {
+          "bbox": [-97.2296, 37.74075, -97.2296, 37.74075],
+          "title": "K-96 at Webb Rd, Wichita MP 295",
+          "tooltip": "K-96 at Webb Rd, Wichita MP 295",
+          "uri": "camera/2",
+          "features": [
+            {
+              "id": "camera/2-1736470619",
+              "geometry": { "type": "Point", "coordinates": [-97.2296, 37.74075] },
+              "properties": {
+                "icon": { "url": "/images/icon-rwis-camera-fill-solid.svg", "scaledSize": { "width": 26, "height": 26 } },
+                "active": true
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [{ "uri": "camera/2/3487772987", "url": null, "category": "IMAGE" }]
+        },
+        {
+          "bbox": [-97.27031, 37.54424, -97.27031, 37.54424],
+          "title": "K-15 & MARKET ST.",
+          "tooltip": "K-15 & MARKET ST.",
+          "uri": "camera/2394",
+          "features": [
+            {
+              "id": "camera/2394-1598987814",
+              "geometry": { "type": "Point", "coordinates": [-97.27031, 37.54424] },
+              "properties": {
+                "icon": { "url": "/images/icon-camera-fill-solid.svg", "scaledSize": { "width": 26, "height": 26 } },
+                "active": true
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [
+            {
+              "uri": "camera/2394/4012852140",
+              "url": "https://kscam.carsprogram.org/snapshots/GEN_5-015-0677-2-K-15atMarket.jpeg",
+              "category": "VIDEO"
+            }
+          ]
+        },
+        {
+          "bbox": [-97.11279, 37.71971, -97.11279, 37.71971],
+          "title": "Andover MP 57",
+          "tooltip": "Andover MP 57",
+          "uri": "camera/513",
+          "features": [
+            {
+              "id": "camera/513-2795467532",
+              "geometry": { "type": "Point", "coordinates": [-97.11279, 37.71971] },
+              "properties": {
+                "icon": { "url": "/images/icon-camera-fill-solid.svg", "scaledSize": { "width": 26, "height": 26 } },
+                "active": true
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [
+            {
+              "uri": "camera/513/3487878495",
+              "url": "https://kscam.carsprogram.org/plaza057.jpg?1791658260000",
+              "category": "IMAGE"
+            }
+          ]
+        },
+        {
+          "bbox": [-97.32033, 37.7471, -97.32033, 37.7471],
+          "title": "I-135 NO K-96 S",
+          "tooltip": "I-135 NO K-96 S",
+          "uri": "camera/2634",
+          "features": [
+            {
+              "id": "camera/2634-2659604320",
+              "geometry": { "type": "Point", "coordinates": [-97.32033, 37.7471] },
+              "properties": {
+                "icon": { "url": "/images/icon-camera-fill-solid.svg", "scaledSize": { "width": 26, "height": 26 } },
+                "active": true
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [
+            {
+              "uri": "camera/2634/3619297229",
+              "url": "https://kscam.carsprogram.org/snapshots/GEN_5-135-0109-2-I-135NOK-96S.jpeg",
+              "category": "VIDEO"
+            }
+          ]
+        },
+        {
+          "bbox": [-97.4601, 37.54424, -97.09399, 37.79673],
+          "title": "Show 102 cameras",
+          "tooltip": "Show 102 cameras",
+          "uri": "cluster/-97277053767048",
+          "features": [
+            {
+              "id": "undefined-2075113967",
+              "geometry": { "type": "Point", "coordinates": [-97.27705, 37.67048] },
+              "properties": {
+                "icon": { "url": "/images/clusters/icon-cluster-camera-99plus-solid.svg", "scaledSize": { "width": 30, "height": 30 } },
+                "zIndex": 101,
+                "clustered": []
+              },
+              "type": "Feature"
+            }
+          ],
+          "maxZoom": null,
+          "__typename": "Cluster"
+        }
+      ]
+    }
+  }
+}

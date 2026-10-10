@@ -3,7 +3,7 @@ import { MapPanel } from './panels/MapPanel'
 import { AlertsList } from './panels/AlertsList'
 import { StreamsGrid } from './panels/StreamsGrid'
 import { AudioPanel } from './panels/AudioPanel'
-import { Placeholder } from './panels/Placeholder'
+import { CamerasPanel } from './panels/CamerasPanel'
 import { Splitter } from './panels/Splitter'
 import { Topbar } from './panels/Topbar'
 import { useLayout } from './state/layout'
@@ -27,7 +27,7 @@ export default function App() {
       <footer className="bottom">
         <AlertsList />
         <AudioPanel />
-        <Placeholder code="CCTV-01" title="DOT Cameras" pkg="WP-07" />
+        <CamerasPanel />
       </footer>
     </div>
   )
