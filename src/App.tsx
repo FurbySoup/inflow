@@ -2,6 +2,7 @@ import { MapPanel } from './panels/MapPanel'
 import { AlertsList } from './panels/AlertsList'
 import { StreamsGrid } from './panels/StreamsGrid'
 import { Placeholder } from './panels/Placeholder'
+import { CamerasPanel } from './panels/CamerasPanel'
 import { Topbar } from './panels/Topbar'
 
 export default function App() {
@@ -17,7 +18,7 @@ export default function App() {
       <footer className="bottom">
         <AlertsList />
         <Placeholder code="AUD-01" title="Radio / Scanner" pkg="WP-06" />
-        <Placeholder code="CCTV-01" title="DOT Cameras" pkg="WP-07" />
+        <CamerasPanel />
       </footer>
     </div>
   )
