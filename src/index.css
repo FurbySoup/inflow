@@ -1,0 +1,149 @@
+/* Mission-control theme. All colors are tokens here; panels never hardcode colors (ADR-0007). */
+:root {
+  --bg: #05080d;
+  --panel: #0b1118;
+  --panel-head: #0f1822;
+  --border: #1c2a38;
+  --grid: rgba(80, 160, 220, 0.04);
+  --text: #cfe3f2;
+  --muted: #5f7a90;
+  --accent: #36c5f0;
+  --live: #3ddc84;
+  --stale: #ffb020;
+  --error: #ff3b3b;
+  --offline: #3a4a5a;
+  --extreme: #ff3b3b;
+  --severe: #ff8c1a;
+  --moderate: #ffd23f;
+  --font-ui: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-data: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
+  font-family: var(--font-ui);
+  color: var(--text);
+  background: var(--bg);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background:
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 24px 24px,
+    var(--bg);
+}
+
+.layout {
+  display: grid;
+  height: 100vh;
+  gap: 4px;
+  padding: 4px;
+  grid-template-columns: 1fr 400px;
+  grid-template-rows: 40px 1fr 230px;
+  grid-template-areas:
+    'top top'
+    'map side'
+    'bottom side';
+}
+
+/* Top bar */
+.topbar {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 14px;
+  background: var(--panel-head);
+  border: 1px solid var(--border);
+  font-family: var(--font-data);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.brand { color: var(--text); font-weight: 700; letter-spacing: 0.2em; }
+.accent { color: var(--accent); }
+.topbar strong { color: var(--text); font-weight: 600; }
+.clock { font-variant-numeric: tabular-nums; color: var(--accent) !important; }
+.spacer { flex: 1; }
+
+/* Map */
+.map-area { grid-area: map; position: relative; min-height: 0; border: 1px solid var(--border); }
+.map { width: 100%; height: 100%; }
+
+.side { grid-area: side; min-height: 0; display: flex; flex-direction: column; }
+.bottom { grid-area: bottom; min-height: 0; display: grid; gap: 4px; grid-template-columns: repeat(3, 1fr); }
+
+/* Panel chrome */
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--panel-head);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-data);
+}
+.panel-head h2 {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.panel-code { white-space: nowrap; font-family: var(--font-data); font-size: 0.68rem; color: var(--accent); letter-spacing: 0.08em; }
+.panel-meta { margin-left: auto; font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.panel-body { flex: 1; min-height: 0; overflow-y: auto; padding: 10px; }
+
+.led { width: 8px; height: 8px; border-radius: 50%; background: var(--offline); flex: none; }
+.led-live { background: var(--live); box-shadow: 0 0 6px var(--live); animation: pulse 2s ease-in-out infinite; }
+.led-loading { background: var(--accent); animation: pulse 0.8s ease-in-out infinite; }
+.led-stale { background: var(--stale); box-shadow: 0 0 6px var(--stale); }
+.led-error { background: var(--error); box-shadow: 0 0 6px var(--error); }
+@keyframes pulse { 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) { .led { animation: none !important; } }
+
+.muted { color: var(--muted); font-family: var(--font-data); font-size: 0.75rem; }
+.error { color: var(--error); font-family: var(--font-data); font-size: 0.75rem; }
+
+/* Streams */
+.streams figure { margin: 0 0 10px; }
+.streams iframe { width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--border); background: #000; display: block; }
+.streams figcaption { font-size: 0.75rem; color: var(--muted); padding-top: 4px; }
+
+/* Alerts */
+.alerts { list-style: none; margin: 0; padding: 0; font-family: var(--font-data); font-size: 0.75rem; }
+.alerts li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 8px;
+  margin-bottom: 4px;
+  border-left: 3px solid var(--offline);
+  background: rgba(255, 255, 255, 0.02);
+}
+.alerts .sev-extreme { border-color: var(--extreme); background: rgba(255, 59, 59, 0.08); }
+.alerts .sev-severe { border-color: var(--severe); }
+.alerts .sev-moderate { border-color: var(--moderate); }
+
+/* MapLibre controls on the dark theme */
+.maplibregl-ctrl-attrib { background: rgba(5, 8, 13, 0.7) !important; color: var(--muted); }
+.maplibregl-ctrl-attrib a { color: var(--muted) !important; }
+
+@media (max-width: 900px) {
+  .layout {
+    height: auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 55vh auto auto;
+    grid-template-areas: 'top' 'map' 'side' 'bottom';
+  }
+  .topbar { flex-wrap: wrap; gap: 12px; padding: 8px 12px; }
+  .bottom { grid-template-columns: 1fr; }
+  .panel-body { max-height: 320px; }
+}
