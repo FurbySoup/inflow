@@ -1,0 +1,8 @@
+{
+  "scannerSystems": {
+    "OK": ["normanok"],
+    "KS": ["litchfield", "ksicssal", "greatbend", "edcoks", "staffordco"],
+    "TX": ["arcs", "ncpstx", "scpstx", "dal_l1", "bexar"],
+    "NE": []
+  }
+}
