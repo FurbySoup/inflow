@@ -16,6 +16,11 @@ export default defineConfig({
         rewrite: (p) => p.replace(/^\/api\/nws/, ''),
         headers: { 'User-Agent': USER_AGENT },
       },
+      '/api/kiwisdr': {
+        target: 'http://rx.linkfanel.net',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/kiwisdr/, ''),
+      },
     },
   },
   test: {
