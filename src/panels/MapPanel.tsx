@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { nwsAlerts } from '../sources/nws/alerts'
@@ -8,6 +8,7 @@ import { useSource } from '../lib/useSource'
 import { statesInBbox } from '../lib/states'
 import { DEFAULT_AOI, useAoi } from '../state/aoi'
 import type { Alert } from '../types'
+import { geometryBbox, remainingMs } from './alertGeometry'
 
 const BASEMAP = 'https://tiles.openfreemap.org/styles/dark'
 
@@ -17,6 +18,8 @@ const ALERT_COLORS: Record<string, string> = {
   'Flash Flood Warning': '#3ddc84',
 }
 
+const EMPTY_FC: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] }
+
 function alertsToGeoJson(alerts: Alert[]): GeoJSON.FeatureCollection {
   return {
     type: 'FeatureCollection',
@@ -25,7 +28,7 @@ function alertsToGeoJson(alerts: Alert[]): GeoJSON.FeatureCollection {
       .map((a) => ({
         type: 'Feature',
         geometry: a.geometry!,
-        properties: { event: a.event, color: ALERT_COLORS[a.event] ?? '#36c5f0' },
+        properties: { id: a.id, event: a.event, color: ALERT_COLORS[a.event] ?? '#36c5f0' },
       })),
   }
 }
@@ -33,8 +36,25 @@ function alertsToGeoJson(alerts: Alert[]): GeoJSON.FeatureCollection {
 export function MapPanel() {
   const container = useRef<HTMLDivElement>(null)
   const map = useRef<maplibregl.Map | null>(null)
+  const alertsRef = useRef<Alert[]>([])
+  const [ready, setReady] = useState(false)
   const setAoi = useAoi((s) => s.setAoi)
+  const focus = useAoi((s) => s.focus)
+  const setFocus = useAoi((s) => s.setFocus)
   const { data: alerts } = useSource(nwsAlerts)
+  const focusGeometry = (focus && alerts?.find((a) => a.id === focus.id)?.geometry) || null
+
+  useEffect(() => {
+    alertsRef.current = alerts ?? []
+  }, [alerts])
+
+  // Drop focus when its alert has gone (cancelled or expired). Skip while alerts are still loading.
+  useEffect(() => {
+    if (!focus || !alerts) return
+    const live = alerts.find((a) => a.id === focus.id)
+    const left = live ? remainingMs(live.expires, Date.now()) : null
+    if (!live || (left !== null && left <= 0)) setFocus(null)
+  }, [focus, alerts, setFocus])
 
   useEffect(() => {
     if (!container.current) return
@@ -69,6 +89,27 @@ export function MapPanel() {
         source: 'alerts',
         paint: { 'line-color': ['get', 'color'], 'line-width': 2 },
       })
+      m.addSource('alerts-focus', { type: 'geojson', data: EMPTY_FC })
+      m.addLayer({
+        id: 'alerts-focus',
+        type: 'line',
+        source: 'alerts-focus',
+        paint: { 'line-color': '#36c5f0', 'line-width': 4 },
+      })
+      m.on('click', 'alerts-fill', (e) => {
+        const id = e.features?.[0]?.properties.id
+        // Use the full alert geometry, not the tile-clipped rendered feature.
+        const alert = typeof id === 'string' ? alertsRef.current.find((a) => a.id === id) : undefined
+        const bbox = alert ? geometryBbox(alert.geometry) : null
+        if (alert && bbox) setFocus({ id: alert.id, bbox })
+      })
+      m.on('mouseenter', 'alerts-fill', () => {
+        m.getCanvas().style.cursor = 'pointer'
+      })
+      m.on('mouseleave', 'alerts-fill', () => {
+        m.getCanvas().style.cursor = ''
+      })
+      setReady(true)
       m.addControl(new LayerControl(mapLayers), 'top-left')
     })
 
@@ -87,12 +128,33 @@ export function MapPanel() {
       timers.forEach(clearInterval)
       m.remove()
     }
-  }, [setAoi])
+  }, [setAoi, setFocus])
 
   useEffect(() => {
     const src = map.current?.getSource('alerts') as maplibregl.GeoJSONSource | undefined
     if (src && alerts) src.setData(alertsToGeoJson(alerts))
-  }, [alerts])
+  }, [alerts, ready])
+
+  useEffect(() => {
+    const m = map.current
+    if (!m || !ready || !focus) return
+    const { west, south, east, north } = focus.bbox
+    m.fitBounds(
+      [
+        [west, south],
+        [east, north],
+      ],
+      { padding: 80, maxZoom: 11 },
+    )
+  }, [focus, ready])
+
+  useEffect(() => {
+    const src = map.current?.getSource('alerts-focus') as maplibregl.GeoJSONSource | undefined
+    if (!src) return
+    src.setData(
+      focusGeometry ? { type: 'Feature', properties: {}, geometry: focusGeometry } : EMPTY_FC,
+    )
+  }, [focusGeometry, ready])
 
   return <div ref={container} className="map" />
 }
