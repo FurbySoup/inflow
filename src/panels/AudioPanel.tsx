@@ -42,6 +42,11 @@ const row: CSSProperties = {
 
 const MAX_CALLS_LISTED = 20
 
+// Quiet systems can have hours-old newest calls; show age so the HH:MM:SSZ isn't misread as current.
+function callAge(iso: string): string {
+  const mins = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60_000))
+  if (mins < 60) return   if (mins < 48 * 60) return   return }
+
 export function AudioPanel() {
   const bbox = useAoi((s) => s.bbox)
   const states = useAoi((s) => s.states)
@@ -185,7 +190,7 @@ function ScannerPlayer({ shortName }: { shortName: string }) {
                 >
                   {new Date(c.time).toISOString().slice(11, 19)}Z
                 </button>
-                <span className="muted">{c.talkgroup !== null ? `TG ${c.talkgroup}` : 'TG —'}</span>
+                <span className="muted">{c.talkgroup !== null ? `TG ${c.talkgroup}` : 'TG —'} · {callAge(c.time)}</span>
               </li>
             ))}
           </ol>

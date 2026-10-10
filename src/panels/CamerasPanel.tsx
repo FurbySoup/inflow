@@ -73,16 +73,18 @@ function CameraTile({
   tick: number
   onOpen: (id: string) => void
 }) {
-  const [broken, setBroken] = useState(false)
-  if (broken) return null
+  const src = withCacheBuster(cam.snapshotUrl, tick)
+  // Hide only the failed frame; the next refresh tick produces a new src and retries.
+  const [brokenSrc, setBrokenSrc] = useState<string | null>(null)
+  if (brokenSrc === src) return null
   return (
     <button type="button" style={tileStyle} title={cam.title} onClick={() => onOpen(cam.id)}>
       <img
-        src={withCacheBuster(cam.snapshotUrl, tick)}
+        src={src}
         alt={cam.title}
         loading="lazy"
         style={imgStyle}
-        onError={() => setBroken(true)}
+        onError={() => setBrokenSrc(src)}
       />
       <span style={captionStyle}>{cam.title}</span>
     </button>
