@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAoi } from '../state/aoi'
+import { LayoutMenu } from './LayoutMenu'
 
 const fmt = (d: Date, timeZone?: string) =>
   d.toLocaleTimeString('en-US', { hour12: false, timeZone })
@@ -22,6 +23,7 @@ export function Topbar() {
         AOI <strong>{states.length ? states.join(' · ') : '—'}</strong>
       </span>
       <span className="spacer" />
+      <LayoutMenu />
       <span className="topbar-item">
         UTC <strong className="clock">{fmt(now, 'UTC')}Z</strong>
       </span>
