@@ -1,14 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useQueries } from '@tanstack/react-query'
 import type { CameraFeed } from '../types'
+import type { SourceAdapter } from '../sources/types'
 import { kansasCameras, nebraskaCameras } from '../sources/cars/adapter'
+import { isTxdotFeed, txdotCameras } from '../sources/txdot/adapter'
+import { fetchSnapshotDataUrl } from '../sources/txdot/snapshot'
 import { useAoi } from '../state/aoi'
 import { queryStatus, type FeedStatus } from '../lib/feedStatus'
 import { Panel } from './Panel'
 
-// Append a new DOT camera adapter here (WP-08 adds Texas).
-// eslint-disable-next-line react-refresh/only-export-components -- WP-08 appends to this list
-export const CAMERA_ADAPTERS = [kansasCameras, nebraskaCameras]
+type CameraAdapter = SourceAdapter<unknown, CameraFeed> & { state: string }
+
+// Append a new DOT camera adapter here.
+// eslint-disable-next-line react-refresh/only-export-components -- adapters are appended to this list
+export const CAMERA_ADAPTERS: CameraAdapter[] = [kansasCameras, nebraskaCameras, txdotCameras]
 
 const MAX_TILES = 12
 const REFRESH_MS = 60_000
@@ -64,6 +69,54 @@ function useRefreshTick(ms: number) {
   return tick
 }
 
+// Tracks whether an element is in the viewport (clipping by scroll containers is handled by the browser).
+// Without IntersectionObserver, everything counts as visible.
+function useInView<T extends Element>() {
+  const ref = useRef<T>(null)
+  const [inView, setInView] = useState(() => typeof IntersectionObserver === 'undefined')
+  useEffect(() => {
+    const el = ref.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const obs = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting))
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+  return { ref, inView }
+}
+
+// Returns an <img>-ready src. TxDOT snapshots are JSON with base64 inside, so they are fetched and decoded
+// first, and only while visible; the last decoded frame stays up while the next one loads. A failed frame
+// is hidden, and the next refresh tick produces a new URL and retries. KS/NE feeds are plain <img> URLs.
+function useSnapshot(cam: CameraFeed, tick: number, visible: boolean) {
+  const url = withCacheBuster(cam.snapshotUrl, tick)
+  const decoded = isTxdotFeed(cam)
+  const [loaded, setLoaded] = useState<string | null>(null)
+  const [failedUrl, setFailedUrl] = useState<string | null>(null)
+  const loadedUrl = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!decoded || !visible || loadedUrl.current === url) return
+    const ctrl = new AbortController()
+    fetchSnapshotDataUrl(url)
+      .then((src) => {
+        if (!ctrl.signal.aborted) {
+          loadedUrl.current = url
+          setLoaded(src)
+        }
+      })
+      .catch(() => {
+        if (!ctrl.signal.aborted) setFailedUrl(url)
+      })
+    return () => ctrl.abort()
+  }, [decoded, url, visible])
+
+  return {
+    src: decoded ? loaded : url,
+    failed: failedUrl === url,
+    fail: () => setFailedUrl(url),
+  }
+}
+
 function CameraTile({
   cam,
   tick,
@@ -73,21 +126,45 @@ function CameraTile({
   tick: number
   onOpen: (id: string) => void
 }) {
-  const src = withCacheBuster(cam.snapshotUrl, tick)
-  // Hide only the failed frame; the next refresh tick produces a new src and retries.
-  const [brokenSrc, setBrokenSrc] = useState<string | null>(null)
-  if (brokenSrc === src) return null
+  const { ref, inView } = useInView<HTMLButtonElement>()
+  const { src, failed, fail } = useSnapshot(cam, tick, inView)
+  if (failed) return null
   return (
-    <button type="button" style={tileStyle} title={cam.title} onClick={() => onOpen(cam.id)}>
-      <img
-        src={src}
-        alt={cam.title}
-        loading="lazy"
-        style={imgStyle}
-        onError={() => setBrokenSrc(src)}
-      />
+    <button ref={ref} type="button" style={tileStyle} title={cam.title} onClick={() => onOpen(cam.id)}>
+      {src ? (
+        <img src={src} alt={cam.title} loading="lazy" style={imgStyle} onError={fail} />
+      ) : (
+        <div style={imgStyle} aria-label={cam.title} />
+      )}
       <span style={captionStyle}>{cam.title}</span>
     </button>
+  )
+}
+
+function ExpandedCamera({ cam, tick, onClose }: { cam: CameraFeed; tick: number; onClose: () => void }) {
+  // The expanded view is on screen by definition, so it is always visible.
+  const { src, failed, fail } = useSnapshot(cam, tick, true)
+  if (failed) return null
+  return (
+    <figure style={{ margin: '0 0 8px' }}>
+      {src ? (
+        <img
+          src={src}
+          alt={cam.title}
+          style={{ ...imgStyle, aspectRatio: '16 / 9', objectFit: 'contain', border: '1px solid var(--border)' }}
+          onClick={onClose}
+          onError={fail}
+        />
+      ) : (
+        <div style={{ ...imgStyle, aspectRatio: '16 / 9', border: '1px solid var(--border)' }} />
+      )}
+      <figcaption style={{ ...captionStyle, display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+        <span>{cam.title}</span>
+        <button type="button" className="muted" onClick={onClose}>
+          CLOSE
+        </button>
+      </figcaption>
+    </figure>
   )
 }
 
@@ -139,23 +216,7 @@ export function CamerasPanel() {
   return (
     <Panel code="CCTV-01" title="DOT Cameras" status={status} meta={tiles.length}>
       {status === 'error' && <p className="error">Camera feeds unavailable</p>}
-      {expanded && (
-        <figure style={{ margin: '0 0 8px' }}>
-          <img
-            src={withCacheBuster(expanded.snapshotUrl, tick)}
-            alt={expanded.title}
-            style={{ ...imgStyle, aspectRatio: '16 / 9', objectFit: 'contain', border: '1px solid var(--border)' }}
-            onClick={() => setOpenId(null)}
-            onError={() => setOpenId(null)}
-          />
-          <figcaption style={{ ...captionStyle, display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-            <span>{expanded.title}</span>
-            <button type="button" className="muted" onClick={() => setOpenId(null)}>
-              CLOSE
-            </button>
-          </figcaption>
-        </figure>
-      )}
+      {expanded && <ExpandedCamera cam={expanded} tick={tick} onClose={() => setOpenId(null)} />}
       {tiles.length > 0 ? (
         <div style={gridStyle}>
           {tiles.map((c) => (
@@ -166,7 +227,7 @@ export function CamerasPanel() {
         status === 'live' && <p className="muted">NO CAMERAS IN VIEW</p>
       )}
       <p className="muted" style={{ marginTop: 8 }}>
-        Snapshots: KanDrive (KS) · Nebraska 511 (NE)
+        Snapshots: KanDrive (KS) · Nebraska 511 (NE) · TxDOT (TX)
       </p>
     </Panel>
   )

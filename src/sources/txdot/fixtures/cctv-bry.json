@@ -1,0 +1,120 @@
+{
+  "cctvStatusRoadways": [
+    {
+      "name": "IH45",
+      "direction": 1,
+      "directionDescription": "North",
+      "ctts": []
+    },
+    {
+      "name": "US-290 Northwest",
+      "direction": 7,
+      "directionDescription": "West",
+      "ctts": []
+    },
+    {
+      "name": "US290",
+      "direction": 7,
+      "directionDescription": "West",
+      "ctts": []
+    },
+    {
+      "name": "US290",
+      "direction": 3,
+      "directionDescription": "East",
+      "ctts": []
+    }
+  ],
+  "roadwayCctvStatuses": {
+    "US-290 Northwest": [
+      {
+        "dirDescription": "West",
+        "displayOrder": 0,
+        "distance": 0,
+        "equipLoc": {
+          "direction": "West",
+          "locationDescription": null,
+          "roadway": "US-290 Northwest",
+          "roadwayWithoutHyphensOrSpaces": "US290Northwest"
+        },
+        "hasSnapshot": true,
+        "icd_Id": "BRY-US290@FM1155 Chappell Hill",
+        "latitude": 30.14079,
+        "latString": "30.14079",
+        "longitude": -96.25699,
+        "lonString": "-96.25699",
+        "name": "US290@FM1155 Chappell Hill",
+        "netId": "HOUSTON",
+        "roadwayOrder": 0,
+        "statusDescription": "Device Online"
+      }
+    ],
+    "US290": [
+      {
+        "dirDescription": "West",
+        "displayOrder": 0,
+        "distance": 0,
+        "equipLoc": {
+          "direction": "West",
+          "locationDescription": null,
+          "roadway": "US290",
+          "roadwayWithoutHyphensOrSpaces": "US290"
+        },
+        "hasSnapshot": true,
+        "icd_Id": "BRY-US290@FM1155 Chappell Hill",
+        "latitude": 30.14079,
+        "latString": "30.14079",
+        "longitude": -96.25699,
+        "lonString": "-96.25699",
+        "name": "US290@FM1155 Chappell Hill",
+        "netId": "HOU2",
+        "roadwayOrder": 0,
+        "statusDescription": "Device Online"
+      },
+      {
+        "dirDescription": "East",
+        "displayOrder": 1,
+        "distance": 0,
+        "equipLoc": {
+          "direction": "East",
+          "locationDescription": null,
+          "roadway": "US290",
+          "roadwayWithoutHyphensOrSpaces": "US290"
+        },
+        "hasSnapshot": true,
+        "icd_Id": "BRY-US290@SH36 Cloverleaf Brenham",
+        "latitude": 30.16623,
+        "latString": "30.16623",
+        "longitude": -96.42354,
+        "lonString": "-96.42354",
+        "name": "US290@SH36 Cloverleaf Brenham",
+        "netId": "HOU2",
+        "roadwayOrder": 1,
+        "statusDescription": "Device Online"
+      }
+    ],
+    "IH45": [
+      {
+        "dirDescription": "North",
+        "displayOrder": 0,
+        "distance": 0,
+        "equipLoc": {
+          "direction": "North",
+          "locationDescription": null,
+          "roadway": "IH45",
+          "roadwayWithoutHyphensOrSpaces": "IH45"
+        },
+        "hasSnapshot": true,
+        "icd_Id": "BRY-IH45@FM977",
+        "latitude": 31.147980999999998,
+        "latString": "31.147980999999998",
+        "longitude": -95.982444,
+        "lonString": "-95.982444",
+        "name": "IH45@FM977",
+        "netId": "HOU2",
+        "roadwayOrder": 1,
+        "statusDescription": "Device Online"
+      }
+    ]
+  }
+}
