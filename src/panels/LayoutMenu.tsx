@@ -1,16 +1,5 @@
-import type { CSSProperties } from 'react'
 import { PRESETS, useLayout, type PresetName } from '../state/layout'
-
-const button: CSSProperties = {
-  fontFamily: 'var(--font-data)',
-  fontSize: '0.72rem',
-  letterSpacing: '0.08em',
-  color: 'var(--accent)',
-  background: 'transparent',
-  border: '1px solid var(--accent)',
-  padding: '2px 8px',
-  cursor: 'pointer',
-}
+import { ConsoleButton } from '../ui'
 
 const PRESET_NAMES = Object.keys(PRESETS) as PresetName[]
 
@@ -21,24 +10,13 @@ export function LayoutMenu() {
   return (
     <div role="group" aria-label="Layout presets" style={{ display: 'flex', gap: 6 }}>
       {PRESET_NAMES.map((name) => (
-        <button
-          key={name}
-          type="button"
-          style={button}
-          aria-label={`Apply ${name} layout`}
-          onClick={() => applyPreset(name)}
-        >
+        <ConsoleButton key={name} aria-label={`Apply ${name} layout`} onClick={() => applyPreset(name)}>
           {name}
-        </button>
+        </ConsoleButton>
       ))}
-      <button
-        type="button"
-        style={button}
-        aria-label="Reset layout to default"
-        onClick={() => applyPreset('DEFAULT')}
-      >
+      <ConsoleButton variant="quiet" aria-label="Reset layout to default" onClick={() => applyPreset('DEFAULT')}>
         RESET
-      </button>
+      </ConsoleButton>
     </div>
   )
 }

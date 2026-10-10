@@ -8,6 +8,7 @@ import { fetchSnapshotDataUrl } from '../sources/txdot/snapshot'
 import { useAoi } from '../state/aoi'
 import { queryStatus, type FeedStatus } from '../lib/feedStatus'
 import { Panel } from './Panel'
+import { CameraTile as UiCameraTile, ConsoleButton } from '../ui'
 
 type CameraAdapter = SourceAdapter<unknown, CameraFeed> & { state: string }
 
@@ -18,42 +19,6 @@ export const CAMERA_ADAPTERS: CameraAdapter[] = [kansasCameras, nebraskaCameras,
 const MAX_TILES = 12
 const REFRESH_MS = 60_000
 const NO_COVERAGE = 'NO DOT CAMERA COVERAGE IN AOI — KS · NE · TX'
-
-const gridStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
-  gap: 6,
-} as const
-
-const tileStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  minWidth: 0,
-  padding: 0,
-  cursor: 'pointer',
-  textAlign: 'left',
-  color: 'var(--text)',
-  background: 'var(--panel-head)',
-  border: '1px solid var(--border)',
-} as const
-
-const imgStyle = {
-  display: 'block',
-  width: '100%',
-  aspectRatio: '4 / 3',
-  objectFit: 'cover',
-  background: 'var(--bg)',
-} as const
-
-const captionStyle = {
-  padding: '3px 5px',
-  overflow: 'hidden',
-  whiteSpace: 'nowrap',
-  textOverflow: 'ellipsis',
-  fontFamily: 'var(--font-data)',
-  fontSize: '0.68rem',
-  color: 'var(--muted)',
-} as const
 
 // Snapshot URLs may already carry a query string (e.g. ?1791658260000).
 function withCacheBuster(url: string, tick: number) {
@@ -129,16 +94,7 @@ function CameraTile({
   const { ref, inView } = useInView<HTMLButtonElement>()
   const { src, failed, fail } = useSnapshot(cam, tick, inView)
   if (failed) return null
-  return (
-    <button ref={ref} type="button" style={tileStyle} title={cam.title} onClick={() => onOpen(cam.id)}>
-      {src ? (
-        <img src={src} alt={cam.title} loading="lazy" style={imgStyle} onError={fail} />
-      ) : (
-        <div style={imgStyle} aria-label={cam.title} />
-      )}
-      <span style={captionStyle}>{cam.title}</span>
-    </button>
-  )
+  return <UiCameraTile ref={ref} title={cam.title} src={src} onOpen={() => onOpen(cam.id)} onError={fail} />
 }
 
 function ExpandedCamera({ cam, tick, onClose }: { cam: CameraFeed; tick: number; onClose: () => void }) {
@@ -151,18 +107,19 @@ function ExpandedCamera({ cam, tick, onClose }: { cam: CameraFeed; tick: number;
         <img
           src={src}
           alt={cam.title}
-          style={{ ...imgStyle, aspectRatio: '16 / 9', objectFit: 'contain', border: '1px solid var(--border)' }}
+          className="cam-tile-img"
+          style={{ aspectRatio: '16 / 9', objectFit: 'contain', border: '1px solid var(--border)' }}
           onClick={onClose}
           onError={fail}
         />
       ) : (
-        <div style={{ ...imgStyle, aspectRatio: '16 / 9', border: '1px solid var(--border)' }} />
+        <div className="cam-tile-img" style={{ aspectRatio: '16 / 9', border: '1px solid var(--border)' }} />
       )}
-      <figcaption style={{ ...captionStyle, display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+      <figcaption className="cam-tile-caption" style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
         <span>{cam.title}</span>
-        <button type="button" className="muted" onClick={onClose}>
+        <ConsoleButton variant="quiet" onClick={onClose}>
           CLOSE
-        </button>
+        </ConsoleButton>
       </figcaption>
     </figure>
   )
@@ -218,7 +175,7 @@ export function CamerasPanel() {
       {status === 'error' && <p className="error">Camera feeds unavailable</p>}
       {expanded && <ExpandedCamera cam={expanded} tick={tick} onClose={() => setOpenId(null)} />}
       {tiles.length > 0 ? (
-        <div style={gridStyle}>
+        <div className="cam-grid">
           {tiles.map((c) => (
             <CameraTile key={c.id} cam={c} tick={tick} onOpen={onOpen} />
           ))}

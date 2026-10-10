@@ -1,0 +1,211 @@
+/*
+ * Storm Chasers UI kit — tokens + component classes (ADR-0007).
+ * Shared by the app (imported from src/index.css) and the Claude Design system.
+ * All colors are tokens on :root; components never hardcode colors.
+ */
+:root {
+  --bg: #05080d;
+  --panel: #0b1118;
+  --panel-head: #0f1822;
+  --border: #1c2a38;
+  --grid: rgba(80, 160, 220, 0.04);
+  --text: #cfe3f2;
+  --muted: #5f7a90;
+  --accent: #36c5f0;
+  --live: #3ddc84;
+  --stale: #ffb020;
+  --error: #ff3b3b;
+  --offline: #3a4a5a;
+  --extreme: #ff3b3b;
+  --severe: #ff8c1a;
+  --moderate: #ffd23f;
+  --font-ui: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-data: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
+  font-family: var(--font-ui);
+  color: var(--text);
+  background: var(--bg);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background:
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 24px 24px,
+    var(--bg);
+}
+
+/* Text helpers */
+.muted { color: var(--muted); font-family: var(--font-data); font-size: 0.75rem; }
+.error { color: var(--error); font-family: var(--font-data); font-size: 0.75rem; }
+.accent { color: var(--accent); }
+
+/* Panel */
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+.panel-collapsed { flex: none; }
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--panel-head);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-data);
+}
+.panel-head h2 {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.panel-code { white-space: nowrap; font-family: var(--font-data); font-size: 0.68rem; color: var(--accent); letter-spacing: 0.08em; }
+.panel-meta { margin-left: auto; font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.panel-toggle {
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  line-height: 1;
+  color: var(--accent);
+  background: transparent;
+  border: none;
+  padding: 2px 4px;
+  cursor: pointer;
+}
+.panel-toggle:hover { background: rgba(54, 197, 240, 0.12); }
+.panel-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* Without meta, the toggle pushes itself to the right edge. */
+.panel-toggle-push { margin-left: auto; }
+.panel-collapsed .panel-head h2,
+.panel-collapsed .panel-meta { display: none; }
+.panel-body { flex: 1; min-height: 0; overflow-y: auto; padding: 10px; }
+
+/* Status LED */
+.led { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--offline); flex: none; }
+.led-live { background: var(--live); box-shadow: 0 0 6px var(--live); animation: sc-pulse 2s ease-in-out infinite; }
+.led-loading { background: var(--accent); animation: sc-pulse 0.8s ease-in-out infinite; }
+.led-stale { background: var(--stale); box-shadow: 0 0 6px var(--stale); }
+.led-error { background: var(--error); box-shadow: 0 0 6px var(--error); }
+@keyframes sc-pulse { 50% { opacity: 0.35; } }
+
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 0 4px;
+  border: 1px solid currentColor;
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.badge-aoi { color: var(--accent); }
+.badge-ctx { color: var(--muted); }
+.badge-zone { color: var(--muted); }
+.badge-pds { color: var(--extreme); }
+
+/* Console button */
+.btn-console {
+  font-family: var(--font-data);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--accent);
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.btn-console:hover,
+.btn-console[aria-pressed='true'] { background: rgba(54, 197, 240, 0.12); }
+.btn-console:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn-console:disabled { color: var(--offline); border-color: var(--offline); cursor: default; background: transparent; }
+.btn-console-quiet { border-color: transparent; color: var(--muted); }
+
+/* Alerts */
+.alerts { list-style: none; margin: 0; padding: 0; font-family: var(--font-data); font-size: 0.75rem; }
+.alerts li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 8px;
+  margin-bottom: 4px;
+  border-left: 3px solid var(--offline);
+  background: rgba(255, 255, 255, 0.02);
+}
+.alerts .sev-extreme { border-color: var(--extreme); background: rgba(255, 59, 59, 0.08); }
+.alerts .sev-severe { border-color: var(--severe); }
+.alerts .sev-moderate { border-color: var(--moderate); }
+/* Signifiers (ADR-0012): actionable rows carry a persistent ⌖ "focus on map" glyph and react to hover/focus;
+   zone rows (not actionable) carry neither, so the difference is visible without hovering. */
+.alerts li[role='button'] { cursor: pointer; position: relative; padding-right: 24px; }
+.alerts li[role='button']::after {
+  content: '⌖';
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1;
+}
+.alerts li[role='button']:hover { background: rgba(54, 197, 240, 0.08); }
+.alerts li[role='button']:hover::after,
+.alerts li[role='button']:focus-visible::after,
+.alerts li.alert-selected::after { color: var(--accent); }
+.alerts li[role='button']:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.alerts li.alert-selected { background: var(--panel-head); box-shadow: inset 3px 0 0 var(--accent); }
+.alerts li.alert-emergency { outline: 2px solid var(--error); outline-offset: -2px; animation: sc-flash 0.8s ease-in-out infinite alternate; }
+.alert-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.alert-countdown { font-variant-numeric: tabular-nums; }
+.alert-countdown-low { color: var(--error); }
+@keyframes sc-flash { from { outline-color: transparent; } to { outline-color: var(--error); } }
+
+/* Stream tile */
+.stream-tile { margin: 0 0 10px; }
+.stream-tile iframe { width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--border); background: #000; display: block; }
+.stream-tile figcaption { font-size: 0.75rem; color: var(--muted); padding-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.stream-select { background: none; border: none; padding: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+/* Signifier: the caption is a control (make primary), so it underlines/brightens like one; feedback: the primary feed's caption stays accent. */
+.stream-select:hover { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
+.stream-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.stream-select[aria-current='true'] { color: var(--accent); }
+.stream-link { color: var(--accent); text-decoration: none; }
+.stream-link:hover, .stream-link:focus-visible { text-decoration: underline; }
+.stream-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+
+/* Camera tile */
+.cam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.cam-tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text);
+  background: var(--panel-head);
+  border: 1px solid var(--border);
+}
+.cam-tile:hover { border-color: var(--accent); }
+.cam-tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cam-tile-img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--bg); }
+.cam-tile-caption {
+  padding: 3px 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .led, .alerts li.alert-emergency { animation: none !important; }
+}

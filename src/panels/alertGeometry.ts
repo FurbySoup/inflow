@@ -26,12 +26,7 @@ export function remainingMs(expires: string | null, now: number): number | null 
 }
 
 /** Formats a remaining duration as `T-mm:ss`. Minutes are not wrapped at 60. */
-export function formatRemaining(ms: number): string {
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000))
-  const mm = Math.floor(totalSeconds / 60)
-  const ss = totalSeconds % 60
-  return `T-${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`
-}
+export { formatRemaining } from '../ui/format'
 
 /** Tornado warnings flagged as particularly dangerous (PDS) or emergencies get a flashing border. */
 export function isEmergencyWarning(event: string, headline: string): boolean {

@@ -87,7 +87,18 @@ The app is already built and working with a provisional dark theme. Your job is 
    - System fonts, or one or two Google Fonts at most (name them, with fallbacks).
    - No icon fonts. Inline SVG icons are fine (specify a small, consistent set).
    - Data values, codes, clocks and counts use tabular monospace.
-7. **Branding legal care:** "Storm Chasers" is also the name of a well-known TV series. Do not imitate any network, TV show, NWS/NOAA or government branding. NOAA/NWS logos must not appear. Explore whether the working name should stay; offer 3–5 alternative names, each with a one-line rationale, and recommend one.
+7. **Affordances, signifiers and feedback (Don Norman).** Treat the UI as a cognitive system that has to close the gulf of execution (how do I do this?) and the gulf of evaluation (did it work, what state am I in?) for someone under time pressure.
+   - Every interactive element gets a **persistent signifier**, visible without hovering. Wall displays and touch screens have no hover.
+   - Every interactive element also gets a hover state, a keyboard `:focus-visible` state and clear **feedback** for its resulting state.
+   - Read-only elements (badges, LEDs, counts) must never look clickable (**constraints**).
+   - Controls sit on or beside what they affect (**mapping**).
+   - Keep one **conceptual model** throughout: "one area of interest drives every panel".
+   - The current conventions are in ADR-0012:
+     - alert rows that focus the map carry a ⌖ glyph; zone alerts carry none;
+     - splitters have a dotted grip;
+     - the primary stream caption stays accent.
+   - Improve on these; don't drop them. For each component in your spec, state its affordance, signifier and feedback.
+8. **Branding legal care:** "Storm Chasers" is also the name of a well-known TV series. Do not imitate any network, TV show, NWS/NOAA or government branding. NOAA/NWS logos must not appear. Explore whether the working name should stay; offer 3–5 alternative names, each with a one-line rationale, and recommend one.
 
 ## Deliverables
 

@@ -1,4 +1,6 @@
-export type FeedStatus = 'live' | 'stale' | 'error' | 'offline' | 'loading'
+import type { FeedStatus } from '../ui'
+
+export type { FeedStatus }
 
 /** Maps TanStack Query state to a panel status light. */
 export function queryStatus(q: { isPending: boolean; isError: boolean }): FeedStatus {
