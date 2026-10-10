@@ -1,0 +1,177 @@
+{
+  "cctvStatusRoadways": [
+    {
+      "name": "FM-734",
+      "direction": 1,
+      "directionDescription": "North",
+      "ctts": []
+    },
+    {
+      "name": "I-10 Katy",
+      "direction": 3,
+      "directionDescription": "East",
+      "ctts": []
+    },
+    {
+      "name": "IH-35",
+      "direction": 1,
+      "directionDescription": "North",
+      "ctts": []
+    }
+  ],
+  "roadwayCctvStatuses": {
+    "FM-734": [
+      {
+        "dirDescription": "North",
+        "displayOrder": 0,
+        "distance": 0,
+        "equipLoc": {
+          "direction": "North",
+          "locationDescription": null,
+          "roadway": "FM-734",
+          "roadwayWithoutHyphensOrSpaces": "FM734"
+        },
+        "hasSnapshot": true,
+        "icd_Id": "FM-734 @ US-290 EB",
+        "latitude": 30.34396,
+        "latString": "30.34396",
+        "longitude": -97.57987999999999,
+        "lonString": "-97.57987999999999",
+        "name": "FM-734 @ US-290 EB",
+        "netId": "AUS",
+        "roadwayOrder": 1,
+        "statusDescription": "Device Online"
+      },
+      {
+        "dirDescription": "North",
+        "displayOrder": 1,
+        "distance": 0,
+        "equipLoc": {
+          "direction": "North",
+          "locationDescription": null,
+          "roadway": "FM-734",
+          "roadwayWithoutHyphensOrSpaces": "FM734"
+        },
+        "hasSnapshot": true,
+        "icd_Id": "FM-734 @ US-290 WB",
+        "latitude": 30.345139999999997,
+        "latString": "30.345139999999997",
+        "longitude": -97.58068,
+        "lonString": "-97.58068",
+        "name": "FM-734 @ US-290 WB",
+        "netId": "AUS",
+        "roadwayOrder": 2,
+        "statusDescription": "Device Online"
+      },
+      {
+        "dirDescription": "North",
+        "displayOrder": 2,
+        "distance": 0,
+        "equipLoc": {
+          "direction": "North",
+          "locationDescription": null,
+          "roadway": "FM-734",
+          "roadwayWithoutHyphensOrSpaces": "FM734"
+        },
+        "hasSnapshot": true,
+        "icd_Id": "FM-734 @ SH-130 NB",
+        "latitude": 30.35223,
+        "latString": "30.35223",
+        "longitude": -97.59128,
+        "lonString": "-97.59128",
+        "name": "FM-734 @ SH-130 NB",
+        "netId": "AUS",
+        "roadwayOrder": 4,
+        "statusDescription": "Device Online"
+      }
+    ],
+    "IH-35": [
+      {
+        "dirDescription": "North",
+        "displayOrder": 0,
+        "distance": 0,
+        "equipLoc": {
+          "direction": "North",
+          "locationDescription": null,
+          "roadway": "IH-35",
+          "roadwayWithoutHyphensOrSpaces": "IH35"
+        },
+        "hasSnapshot": true,
+        "icd_Id": "AUS-TRF-CCTV-915-4569",
+        "latitude": 30.47515,
+        "latString": "30.47515",
+        "longitude": -97.67249,
+        "lonString": "-97.67249",
+        "name": "AUS-TRF-CCTV-915-4569",
+        "netId": "AUS",
+        "roadwayOrder": 0,
+        "statusDescription": "Device Error"
+      },
+      {
+        "dirDescription": "North",
+        "displayOrder": 1,
+        "distance": 0,
+        "equipLoc": {
+          "direction": "North",
+          "locationDescription": null,
+          "roadway": "IH-35",
+          "roadwayWithoutHyphensOrSpaces": "IH35"
+        },
+        "hasSnapshot": true,
+        "icd_Id": "IH-35 @ Hays Co Line",
+        "latitude": 29.806030999999997,
+        "latString": "29.806030999999997",
+        "longitude": -98.009969,
+        "lonString": "-98.009969",
+        "name": "IH-35 @ Hays Co Line",
+        "netId": "AUS",
+        "roadwayOrder": 1,
+        "statusDescription": "Device Online"
+      },
+      {
+        "dirDescription": "North",
+        "displayOrder": 2,
+        "distance": 0,
+        "equipLoc": {
+          "direction": "North",
+          "locationDescription": null,
+          "roadway": "IH-35",
+          "roadwayWithoutHyphensOrSpaces": "IH35"
+        },
+        "hasSnapshot": true,
+        "icd_Id": "IH-35 @ Posey Blvd 449",
+        "latitude": 29.817218999999998,
+        "latString": "29.817219",
+        "longitude": -97.997828,
+        "lonString": "-97.997828",
+        "name": "IH-35 @ Posey Blvd",
+        "netId": "AUS",
+        "roadwayOrder": 2,
+        "statusDescription": "Device Online"
+      }
+    ],
+    "I-10 Katy": [
+      {
+        "dirDescription": "East",
+        "displayOrder": 0,
+        "distance": 0,
+        "equipLoc": {
+          "direction": "East",
+          "locationDescription": null,
+          "roadway": "I-10 Katy",
+          "roadwayWithoutHyphensOrSpaces": "I10Katy"
+        },
+        "hasSnapshot": true,
+        "icd_Id": "IH-10 @ Luling DMS",
+        "latitude": 29.654155,
+        "latString": "29.654155",
+        "longitude": -97.566071,
+        "lonString": "-97.566071",
+        "name": "IH-10 @ Luling DMS",
+        "netId": "HOUSTON",
+        "roadwayOrder": 1,
+        "statusDescription": "Device Online"
+      }
+    ]
+  }
+}

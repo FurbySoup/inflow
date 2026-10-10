@@ -27,6 +27,12 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/api\/ne511/, '/api'),
       },
+      // TxDOT ITS (TX cameras): no CORS on its JSON endpoints.
+      '/api/txdot': {
+        target: 'https://its.txdot.gov',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/txdot/, ''),
+      },
       '/api/kiwisdr': {
         target: 'http://rx.linkfanel.net',
         changeOrigin: true,
