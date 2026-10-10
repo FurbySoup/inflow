@@ -1,5 +1,7 @@
 # Next session: plan Wave 4
 
+> **Status 2026-10-10 (later session):** planned. Packages WP-11…17, ADR-0013 (Proposed) and the Wave 4 section of `docs/work-plan.md` are written. Upstream checks were blocked by the cloud sandbox's egress, so gates V1–V4 must run from an allowed network before the gated packages launch.
+
 Handoff from the 2026-10-10 session. Waves 1–3 (WP-01…10), the UI kit (`src/ui/`) and the Claude Design sync are done and pushed. This session's job is to **plan** Wave 4, not build it: research, write the work packages, update the work plan, then hand back for approval before launching builders.
 
 ## Paste this to start the session

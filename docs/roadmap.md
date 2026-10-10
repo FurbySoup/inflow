@@ -3,6 +3,8 @@
 v1 = local-only, keyless, client-only (ADR-0001). This plans the path to a hosted product. Each phase gets its own ADRs when started.
 
 ## v1.1 — Coverage polish (still local)
+Scheduled 2026-10-10 as Wave 4/5 (`docs/work-plan.md`, WP-11…17). Not yet packaged: FL511/ALGO cameras, Oklahoma cameras, multi-platform streams, a YouTube live-check proxy (deferred by ADR-0013).
+
 - GA/SC/FL/AL DOT camera adapters (511GA, SC511, FL511, ALGO) — the 2026-10-10 live-proofing storm exposed the Plains-only camera gap.
 - Oklahoma cameras once verifiable from a US network.
 - Watch outlines: resolve zone-based alerts' `affectedZones` to geometry (cache zone shapes in IndexedDB).

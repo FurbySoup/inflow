@@ -9,6 +9,7 @@ Basic resizing (feeds column + console row splitters, ADR-0011), shared types, a
 - Wave 1 (WP-01, 02, 03, 05, 06, 07): **merged** 2026-10-10. Verifier caught: impure SPC normalize, CARS preflight CORS (proxied).
 - Wave 2 (WP-04, 08, 09): **merged** 2026-10-10. Verifier caught: stale focus, eager off-screen TxDOT fetches.
 - Wave 3 (WP-10): **merged** 2026-10-10. Orchestrator follow-up: collapsible wired on all panels; collapsed headers compacted.
+- Wave 4 (WP-11…16): **planned** 2026-10-10, awaiting approval. See "Wave 4" below.
 
 ## Waves
 
@@ -44,6 +45,61 @@ Wave 3
 | [08](packages/WP-08-cameras-txdot.md) | TxDOT cameras | 2 | `src/sources/txdot/**` | `CamerasPanel.tsx` adapter list, `vite.config.ts` proxy entry |
 | [10](packages/WP-10-layout-customization.md) | Layout customization | 3 | `src/state/layout.ts`, `src/panels/Splitter.tsx`, `src/panels/LayoutMenu.tsx` | `App.tsx`, `Topbar.tsx`, `Panel.tsx` (optional prop), layout CSS |
 | [09](packages/WP-09-layer-control.md) | Layer toggle control | 2 | `src/map/LayerControl.ts` | `MapPanel.tsx` one line (`addControl`) |
+| [11](packages/WP-11-aoi-presets.md) | AOI presets | 4 | `src/panels/AoiPresets.tsx` (+test) | `Topbar.tsx` one line |
+| [12](packages/WP-12-watch-outlines.md) | Watch outlines | 4 (V1) | `src/sources/nwsZones/**`, `src/map/watchOutlines.ts` | `layers.ts`, `MapPanel.tsx` one line |
+| [13](packages/WP-13-stream-lifecycle.md) | Stream lifecycle | 4 | `src/sources/streams/**`, `src/panels/StreamsGrid.tsx` | `config/streams.json` (`until`) |
+| [14](packages/WP-14-cameras-sc.md) | SC cameras | 4 (V2) | `src/sources/sc511/**` | `CamerasPanel.tsx` adapter list + empty text, `vite.config.ts` proxy |
+| [15](packages/WP-15-cameras-ga.md) | GA cameras | 4 (V3) | `src/sources/ga511/**` | `CamerasPanel.tsx` adapter list + empty text, `vite.config.ts` proxy |
+| [16](packages/WP-16-spc-mds-watches.md) | SPC MDs + watch boxes | 4 (V4) | `src/sources/spcProducts/**`, `src/map/spcMds.ts`, `src/map/spcWatches.ts` | `layers.ts`, `vite.config.ts` proxy |
+| [17](packages/WP-17-wall-shortcuts.md) | Wall shortcuts | 5 | `src/panels/Shortcuts.tsx`, `src/panels/shortcuts.ts` | `App.tsx`, `StreamsGrid.tsx`, `LayerControl.ts` |
+
+## Wave 4 (planned 2026-10-10)
+
+Endpoint research ran from a sandbox whose egress blocked every upstream host, so no new source is curl-verified yet. Packages that need a new endpoint carry a **pre-wave gate** (V1–V4). The orchestrator runs each gate from an allowed network (the user's machine) and commits the trimmed fixtures before that package launches. A package whose gate fails slips to Wave 5.
+
+### Orchestrator prep (before launch; shared files)
+- **P1 `aoiRequest`** (for WP-11):
+  - `src/state/aoi.ts` gains `request: Bbox | null`, `requestAoi(bbox)` and `clearRequest()`.
+  - `MapPanel.tsx` gets an effect that `fitBounds` the request and then clears it; `moveend` writes the AOI as today.
+  - Test in a new `aoi.test.ts`.
+- **P2 `Alert.zones`** (for WP-12): `src/types/index.ts` adds `zones: string[]` (UGC codes); `src/sources/nws/alerts.ts` normalize fills it from `geocode.UGC`; update the test.
+- **P3 tech debt** (roadmap item I, small, so the orchestrator does it instead of a WP):
+  - `Splitter.tsx`: clear `body.resizing` on unmount mid-drag and on `lostpointercapture`.
+  - `src/state/layout.ts`: write `localStorage` on drag end, or throttled to ≤4/s, rather than on every move.
+  - `AudioPanel.tsx`: replace the inline-styled buttons with `ConsoleButton`.
+- **P4** accept ADR-0013 (set its status line to Accepted) once the user approves.
+- **Gates V1–V4**, from an allowed network:
+  - V1: NWS zone shapes (WP-12);
+  - V2: SC511 is CARS? (WP-14);
+  - V3: keyless 511GA list (WP-15);
+  - V4: SPC MD/watch polygons (WP-16).
+- Then green checks and **`git push origin main`**.
+
+```
+Prep P1–P4 + gates V1–V4
+        ▼
+Wave 4 (parallel, no owned-file overlap)
+  WP-11 AOI presets          ── Topbar one-liner
+  WP-12 Watch outlines       ── map layer + MapPanel one-liner          [V1]
+  WP-13 Stream lifecycle     ── streams source + StreamsGrid
+  WP-14 SC cameras           ── CAMERA_ADAPTERS + proxy entry           [V2]
+  WP-15 GA cameras           ── CAMERA_ADAPTERS + proxy entry           [V3 + key decision]
+  WP-16 SPC MDs + watches    ── map layers                               [V4]
+        ▼
+  Prep P5: command delivery for shortcuts (store vs CustomEvent)
+        ▼
+Wave 5
+  WP-17 Wall shortcuts       ── needs WP-11 + WP-13
+  + any gated Wave 4 package that slipped; FL511 / ALGO cameras (unpackaged)
+```
+
+**Expected conflicts (trivial, resolved by the orchestrator):**
+- `src/map/layers.ts`: WP-12, WP-16.
+- `CAMERA_ADAPTERS` / `NO_COVERAGE`: WP-14, WP-15.
+- `vite.config.ts` proxy entries: WP-14, WP-15, WP-16.
+- `MapPanel.tsx`: P1 prep, then WP-12's one line.
+
+**Agent count:** 3 builders if every gate fails (WP-11/12/13; WP-12 needs V1 at minimum, otherwise 2), up to 6 if all pass. Plus one `wp-verifier` per builder.
 
 ## Running a wave (orchestrator)
 

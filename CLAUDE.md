@@ -54,7 +54,7 @@ Features are specified as self-contained work packages in `docs/packages/`, sche
   - Builders must not start dev servers or use the browser pane.
   - Merge only after a verifier PASS.
   - Run checks with `set -o pipefail`.
-- **Next steps:** Wave 4 planning is in `docs/next-session-wave4.md`. The post-v1 hosting plan is in `docs/roadmap.md`.
+- **Next steps:** Wave 4 is planned (WP-11…17, gates V1–V4) in `docs/work-plan.md`; the brief it came from is `docs/next-session-wave4.md`. The post-v1 hosting plan is in `docs/roadmap.md`.
 
 ## Adding things
 - New source: folder in `src/sources/`, adapter + trimmed real-response fixture + `normalize` test. Add a proxy route only if CORS/headers require it. Verify CORS for the *actual* request (JSON POSTs preflight; CARS failed that).

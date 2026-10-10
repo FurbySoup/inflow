@@ -5,6 +5,7 @@
 - **Fonts: system stacks by decision (user, 2026-10-10).** `--font-ui` is Segoe UI/system-ui; `--font-data` is ui-monospace/Cascadia Mono/SF Mono/Consolas. No font files ship. `[FONT_MISSING] "Cascadia Mono"` is expected and accepted. If the Claude Design brand work picks brand fonts, add them via `cfg.extraFonts` and drop this note.
 - Guidelines are limited to the design ADRs (0007 mission-control UI, 0012 Norman signifiers) via `guidelinesGlob`. The default pulled in internal planning docs (roadmap, work plan).
 - Playwright for the render check: `.ds-sync` uses `playwright@1.61.1`, which pins the cached `chromium-1228` in `%LOCALAPPDATA%/ms-playwright`.
+- Cloud (claude.ai/code, Linux) sessions: the cached browser is `/opt/pw-browsers/chromium-1194` → `npm i playwright@1.56.1` in `.ds-sync/`. DesignSync has no design authorization there, so build + grade in the cloud and upload from an interactive session (or after `/design-login`). YouTube is unreachable from the cloud sandbox, so StreamTile video areas capture black. That's the environment, not a bug.
 - Windows/Git Bash: write files with the editor tools, not heredocs or `node -e` with template literals (backticks get mangled).
 
 - First sync 2026-10-10 → project `Storm Chasers UI` (c3cc7036-…). 8 components, all authored + graded good, 6 build/capture iterations.
