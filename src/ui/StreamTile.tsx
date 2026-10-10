@@ -15,22 +15,38 @@ export interface StreamTileProps {
   context?: boolean
   /** Marks this tile as the large primary feed (aria-current). */
   primary?: boolean
-  /** Called when the caption is clicked, to make this the primary feed. */
+  /** Makes this the primary feed. Wired to the caption and, on non-primary tiles, the "⇱ MAIN" swap button. */
   onSelect?: () => void
 }
 
-/** Live video feed: 16:9 embed with a console caption (CAM nn, title, badges, link-out). Lay several out in `.stream-grid`. */
+/**
+ * Live video feed: 16:9 embed with a console caption (CAM nn, title, badges, link-out). Lay several out in `.stream-grid`.
+ * Affordance: become the main feed. Signifier: a persistent "⇱ MAIN" button on the video corner of non-primary tiles
+ * (clicking the video itself only plays/pauses inside the player). Feedback: the primary tile shows a read-only MAIN tag
+ * and an accent caption.
+ */
 export function StreamTile({ title, embedUrl, watchUrl, index, inAoi, context, primary, onSelect }: StreamTileProps) {
   return (
     <figure className="stream-tile">
-      <iframe
-        src={embedUrl}
-        title={title}
-        // Off-screen feeds load only when scrolled into view; 10+ eager embeds starve the map.
-        loading="lazy"
-        allow="autoplay; encrypted-media; picture-in-picture"
-        allowFullScreen
-      />
+      <div className="stream-frame">
+        <iframe
+          src={embedUrl}
+          title={title}
+          // Off-screen feeds load only when scrolled into view; 10+ eager embeds starve the map.
+          loading="lazy"
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowFullScreen
+        />
+        {primary ? (
+          <span className="stream-main-tag">MAIN</span>
+        ) : (
+          onSelect && (
+            <button type="button" className="stream-swap" onClick={onSelect} aria-label={`Make ${title} the main feed`} title="Make this the main feed">
+              ⇱ MAIN
+            </button>
+          )
+        )}
+      </div>
       <figcaption>
         <button
           type="button"

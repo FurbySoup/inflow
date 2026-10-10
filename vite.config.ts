@@ -9,6 +9,8 @@ const USER_AGENT = 'storm-chasers (github.com/FurbySoup/storm-chasers)'
 export default defineConfig({
   plugins: [react()],
   server: {
+    // Listen on all interfaces so other devices on the LAN can open the dev server (proxy routes work for them too).
+    host: true,
     proxy: {
       '/api/nws': {
         target: 'https://api.weather.gov',

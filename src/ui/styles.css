@@ -172,6 +172,38 @@ body {
 /* Stream tile */
 .stream-tile { margin: 0 0 10px; }
 .stream-tile iframe { width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--border); background: #000; display: block; }
+.stream-frame { position: relative; }
+/* Swap affordance (ADR-0012): always visible — no hover dependency — and sits outside the player's own controls. */
+.stream-swap {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  padding: 1px 6px;
+  color: var(--accent);
+  background: rgba(5, 8, 13, 0.82);
+  border: 1px solid var(--accent);
+  cursor: pointer;
+}
+.stream-swap:hover { background: var(--accent); color: var(--bg); }
+.stream-swap:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Read-only state tag: filled, no border-button look, no pointer. */
+.stream-main-tag {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  padding: 1px 6px;
+  color: var(--bg);
+  background: var(--accent);
+  pointer-events: none;
+}
 .stream-tile figcaption { font-size: 0.75rem; color: var(--muted); padding-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .stream-select { background: none; border: none; padding: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; }
 /* Signifier: the caption is a control (make primary), so it underlines/brightens like one; feedback: the primary feed's caption stays accent. */
