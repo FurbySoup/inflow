@@ -45,7 +45,10 @@ const MAX_CALLS_LISTED = 20
 // Quiet systems can have hours-old newest calls; show age so the HH:MM:SSZ isn't misread as current.
 function callAge(iso: string): string {
   const mins = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60_000))
-  if (mins < 60) return   if (mins < 48 * 60) return   return }
+  if (mins < 60) return `${mins}m ago`
+  if (mins < 48 * 60) return `${Math.round(mins / 60)}h ago`
+  return `${Math.round(mins / 1440)}d ago`
+}
 
 export function AudioPanel() {
   const bbox = useAoi((s) => s.bbox)
