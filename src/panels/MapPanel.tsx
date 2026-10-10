@@ -3,6 +3,7 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { nwsAlerts } from '../sources/nws/alerts'
 import { mapLayers } from '../map/layers'
+import { LayerControl } from '../map/LayerControl'
 import { useSource } from '../lib/useSource'
 import { statesInBbox } from '../lib/states'
 import { DEFAULT_AOI, useAoi } from '../state/aoi'
@@ -66,6 +67,7 @@ export function MapPanel() {
         source: 'alerts',
         paint: { 'line-color': ['get', 'color'], 'line-width': 2 },
       })
+      m.addControl(new LayerControl(mapLayers), 'top-left')
     })
 
     m.on('moveend', () => {
