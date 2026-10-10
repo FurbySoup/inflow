@@ -14,6 +14,7 @@ Short, numbered, immutable. To change a decision, add a new ADR that supersedes 
 | [0008](0008-map-layer-registry.md) | Map layer registry | Accepted |
 | [0009](0009-curated-livestreams.md) | Curated livestreams, no YouTube API in v1 | Accepted |
 | [0010](0010-parallel-subagent-factory.md) | Parallel build via Haiku sub-agent factory | Accepted |
+| [0011](0011-layout-customization.md) | Layout customization | Accepted |
 
 Template:
 
