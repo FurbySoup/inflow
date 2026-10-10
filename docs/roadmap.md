@@ -8,6 +8,8 @@ v1 = local-only, keyless, client-only (ADR-0001). This plans the path to a hoste
 - Watch outlines: resolve zone-based alerts' `affectedZones` to geometry (cache zone shapes in IndexedDB).
 - Mesoscale discussions + watch boxes from SPC.
 - Multi-AOI presets (Plains, Dixie Alley, Southeast) in the top bar.
+- Streams: multi-platform entries (Twitch `player.twitch.tv/?channel=…&parent=<host>`, Kick `player.kick.com/<channel>`) — searched 2026-10-10, no strong outbreak coverage there yet; aggregators (TVN, Storm Chasing Video) block framing → link-out only.
+- Streams: auto-prune ended broadcasts (pinned `videoId`s go dark when a chase ends) and prefer `channelId` live embeds for regular chasers; only autoplay visible/primary iframes to cut CPU with 10+ feeds.
 - Keyboard shortcuts for a wall display (cycle primary stream, toggle layers, fullscreen).
 
 ## v2 — Hosted (public, read-only)

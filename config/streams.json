@@ -10,5 +10,71 @@
     "title": "Tornado Paigeyy: GA & SC tornado threat (2026-10-10)",
     "youtube": { "videoId": "4cS5_IGsNnY" },
     "states": ["GA", "SC"]
+  },
+  {
+    "id": "brandon-copic-ga-sc-2026-10-10",
+    "title": "Brandon Copic: tropical tornado threat, E GA & SC",
+    "youtube": { "videoId": "Syyvt9aidlQ" },
+    "states": ["GA", "SC"]
+  },
+  {
+    "id": "connor-croff-ga-sc-2026-10-10",
+    "title": "Connor Croff: Isaias tornado threat GA/SC",
+    "youtube": { "videoId": "MoyPGCuPjiM" },
+    "states": ["GA", "SC"]
+  },
+  {
+    "id": "corey-gerken-ga-sc-2026-10-10",
+    "title": "Corey Gerken: increasing tornado threat GA/SC",
+    "youtube": { "videoId": "hvn71J7v1-0" },
+    "states": ["GA", "SC"]
+  },
+  {
+    "id": "jaden-pappenheim-ga-2026-10-10",
+    "title": "Jaden Pappenheim: supercell tornado threat GA",
+    "youtube": { "videoId": "vfBsA5ZJH1w" },
+    "states": ["GA"]
+  },
+  {
+    "id": "stormrunner-ga-2026-10-10",
+    "title": "StormRunner Media: tornado threat across GA",
+    "youtube": { "videoId": "VRQFHJHWfak" },
+    "states": ["GA"]
+  },
+  {
+    "id": "jayjack-ga-2026-10-10",
+    "title": "Jayjack Storm Trax: tornado chase GA",
+    "youtube": { "videoId": "PAUKC0_XzUk" },
+    "states": ["GA"]
+  },
+  {
+    "id": "mikes-weather-isaias-2026-10-10",
+    "title": "Mikes Weather Page: chasing Isaias",
+    "youtube": { "videoId": "xERSsW9bMnI" },
+    "states": ["GA", "SC"]
+  },
+  {
+    "id": "wrdw-augusta-2026-10-10",
+    "title": "WRDW News 12 (Augusta TV): Screven County tornado",
+    "youtube": { "videoId": "QaOKJLeJwDY" },
+    "states": ["GA", "SC"]
+  },
+  {
+    "id": "wltx-columbia-2026-10-10",
+    "title": "News 19 WLTX (Columbia TV): tracking Isaias",
+    "youtube": { "videoId": "2bdgSCa9jms" },
+    "states": ["SC"]
+  },
+  {
+    "id": "fox5-atlanta-2026-10-10",
+    "title": "FOX 5 Atlanta (TV): Isaias across Georgia",
+    "youtube": { "videoId": "OpOu11VNp0M" },
+    "states": ["GA"]
+  },
+  {
+    "id": "11alive-atlanta-2026-10-10",
+    "title": "11Alive (Atlanta TV): tracking Isaias",
+    "youtube": { "videoId": "PcFoQ_x0U8s" },
+    "states": ["GA"]
   }
 ]
