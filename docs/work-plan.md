@@ -42,7 +42,7 @@ Wave 3
 
 ## Running a wave (orchestrator)
 
-1. Ensure `main` is green: `npm run typecheck && npm run lint && npm test`.
+1. Ensure `main` is green: `npm run typecheck && npm run lint && npm test` — then **`git push origin main`**. Agent worktrees are cut from `origin/main`, not local `main`; an unpushed main gives builders a stale base (happened in Wave 2).
 2. Launch one `wp-builder` per package **in a single message** so they run concurrently, each with `isolation: "worktree"`. Prompt: `Build docs/packages/WP-NN-*.md`.
 3. As each returns, launch a `wp-verifier` on its branch. FAIL → resume the builder (SendMessage) with the verifier's findings.
 4. Merge PASS branches into `main` one at a time; resolve registry one-liners; re-run checks after each merge.
