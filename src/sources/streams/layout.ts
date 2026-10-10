@@ -1,6 +1,30 @@
 import type { ChaserStream } from './curated'
 
 export const PRIMARY_STORAGE_KEY = 'storm-chasers.streams.primary'
+export const SOUND_STORAGE_KEY = 'storm-chasers.streams.mainSound'
+
+/** Sets the YouTube embed `mute` param. Curated embeds are muted by default (`mute=1`). */
+export function withSound(embedUrl: string, soundOn: boolean): string {
+  const url = new URL(embedUrl)
+  url.searchParams.set('mute', soundOn ? '0' : '1')
+  return url.toString()
+}
+
+export function loadMainSound(): boolean {
+  try {
+    return window.localStorage.getItem(SOUND_STORAGE_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+export function saveMainSound(on: boolean): void {
+  try {
+    window.localStorage.setItem(SOUND_STORAGE_KEY, on ? '1' : '0')
+  } catch {
+    // Storage blocked: the preference simply does not persist.
+  }
+}
 
 /** AOI-relevant feeds first, other chasers next, context feeds last. Stable within each tier. */
 export function sortStreams(streams: ChaserStream[], aoiStates: string[]): ChaserStream[] {

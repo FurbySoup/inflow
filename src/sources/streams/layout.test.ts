@@ -6,7 +6,25 @@ import {
   loadPrimaryId,
   savePrimaryId,
   sortStreams,
+  withSound,
 } from './layout'
+
+describe('withSound', () => {
+  const muted = 'https://www.youtube.com/embed/abc?autoplay=1&mute=1'
+
+  it('unmutes and re-mutes while keeping other params', () => {
+    const on = withSound(muted, true)
+    expect(new URL(on).searchParams.get('mute')).toBe('0')
+    expect(new URL(on).searchParams.get('autoplay')).toBe('1')
+    expect(new URL(withSound(on, false)).searchParams.get('mute')).toBe('1')
+  })
+
+  it('works for channel live_stream embeds', () => {
+    const url = withSound('https://www.youtube.com/embed/live_stream?channel=UC1&autoplay=1&mute=1', true)
+    expect(new URL(url).searchParams.get('channel')).toBe('UC1')
+    expect(new URL(url).searchParams.get('mute')).toBe('0')
+  })
+})
 
 const fixtures = normalizeStreams([
   { id: 'ctx', title: 'ISS', youtube: { channelId: 'UCiss' }, states: [], context: true },

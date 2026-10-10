@@ -17,6 +17,10 @@ export interface StreamTileProps {
   primary?: boolean
   /** Makes this the primary feed. Wired to the caption and, on non-primary tiles, the "⇱ MAIN" swap button. */
   onSelect?: () => void
+  /** Primary only: whether the main feed plays with sound. Shown as a 🔇/🔊 toggle on the video corner. */
+  soundOn?: boolean
+  /** Primary only: toggles main-feed sound. Omit to hide the toggle. */
+  onToggleSound?: () => void
 }
 
 /**
@@ -25,7 +29,18 @@ export interface StreamTileProps {
  * (clicking the video itself only plays/pauses inside the player). Feedback: the primary tile shows a read-only MAIN tag
  * and an accent caption.
  */
-export function StreamTile({ title, embedUrl, watchUrl, index, inAoi, context, primary, onSelect }: StreamTileProps) {
+export function StreamTile({
+  title,
+  embedUrl,
+  watchUrl,
+  index,
+  inAoi,
+  context,
+  primary,
+  onSelect,
+  soundOn = false,
+  onToggleSound,
+}: StreamTileProps) {
   return (
     <figure className="stream-tile">
       <div className="stream-frame">
@@ -37,6 +52,18 @@ export function StreamTile({ title, embedUrl, watchUrl, index, inAoi, context, p
           allow="autoplay; encrypted-media; picture-in-picture"
           allowFullScreen
         />
+        {primary && onToggleSound && (
+          <button
+            type="button"
+            className="stream-sound"
+            onClick={onToggleSound}
+            aria-pressed={soundOn}
+            aria-label={soundOn ? 'Mute main feed' : 'Unmute main feed'}
+            title={soundOn ? 'Sound on: feeds swapped to main play with sound' : 'Sound off: main feed is muted'}
+          >
+            {soundOn ? '🔊 SOUND' : '🔇 MUTED'}
+          </button>
+        )}
         {primary ? (
           <span className="stream-main-tag">MAIN</span>
         ) : (
