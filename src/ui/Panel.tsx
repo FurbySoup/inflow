@@ -8,6 +8,8 @@ export interface PanelProps {
   code: string
   /** Feed health shown by the header LED. */
   status: FeedStatus
+  /** Data age after the meta, e.g. `12s` or `4m05s`. Sand when `status` is stale. Hidden while collapsed. */
+  age?: string
   /** Right-aligned header metadata, e.g. an item count. */
   meta?: ReactNode
   /** Shows a ▾/▸ collapse toggle in the header. */
@@ -20,11 +22,12 @@ export interface PanelProps {
   children?: ReactNode
 }
 
-/** Mission-control panel chrome. Every dashboard panel renders inside one: header (LED, code, title, meta) + scrolling body. */
+/** Mission-control panel chrome. Every dashboard panel renders inside one: header (LED, code, title, meta, age, toggle) + scrolling body. */
 export function Panel({
   title,
   code,
   status,
+  age,
   meta,
   collapsible,
   collapsed = false,
@@ -33,24 +36,33 @@ export function Panel({
   children,
 }: PanelProps) {
   const hasMeta = meta !== undefined && meta !== null && meta !== false
+  const showAge = age !== undefined && !collapsed
+  const hasTail = hasMeta || showAge || collapsible
   return (
     <section className={['panel', collapsed && 'panel-collapsed', className].filter(Boolean).join(' ')}>
       <header className="panel-head" title={collapsed ? title : undefined}>
-        <StatusLed status={status} />
+        <StatusLed status={status} age={age} />
         <span className="panel-code">{code}</span>
         <h2>{title}</h2>
-        {hasMeta && <span className="panel-meta">{meta}</span>}
-        {collapsible && (
-          <button
-            type="button"
-            className={hasMeta ? 'panel-toggle' : 'panel-toggle panel-toggle-push'}
-            onClick={onToggleCollapse}
-            aria-expanded={!collapsed}
-            aria-label={`${collapsed ? 'Expand' : 'Collapse'} ${title}`}
-            title={collapsed ? 'Expand' : 'Collapse'}
-          >
-            {collapsed ? '▸' : '▾'}
-          </button>
+        {hasTail && (
+          <span className="panel-tail">
+            {hasMeta && <span className="panel-meta">{meta}</span>}
+            {showAge && (
+              <span className={status === 'stale' ? 'panel-age panel-age-stale' : 'panel-age'}>{age}</span>
+            )}
+            {collapsible && (
+              <button
+                type="button"
+                className="panel-toggle"
+                onClick={onToggleCollapse}
+                aria-expanded={!collapsed}
+                aria-label={`${collapsed ? 'Expand' : 'Collapse'} ${title}`}
+                title={collapsed ? 'Expand' : 'Collapse'}
+              >
+                {collapsed ? '▸' : '▾'}
+              </button>
+            )}
+          </span>
         )}
       </header>
       {/* Stays mounted when collapsed so iframes and audio keep their state. */}
