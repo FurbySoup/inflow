@@ -25,6 +25,8 @@ export interface Ibi511Image {
 
 export interface Ibi511Record {
   id: number
+  /** Upstream area code (e.g. VT on New England 511). Used for state when it is one of the site's states. */
+  areaId?: string
   location: string
   latLng: { geography: { wellKnownText: string } }
   images: Ibi511Image[]
@@ -144,6 +146,11 @@ function backoffMs(failures: number): number {
 
 export function ibi511Adapter(site: Ibi511Site): SourceAdapter<Ibi511Raw, CameraFeed> {
   const { id, states, proxy, host, idPrefix } = site
+  // areaId wins when it is one of this site's states; otherwise stateFor (multi-state sites) or the only state.
+  const stateOf = (r: Ibi511Record, [lng, lat]: [number, number]): string => {
+    if (r.areaId && states.includes(r.areaId)) return r.areaId
+    return site.stateFor ? site.stateFor(lng, lat) : states[0]
+  }
   // Module-scope per adapter instance: the walked list is shared by every panel refresh for 12 h.
   let cache: { at: number; walk: Promise<Ibi511Record[]> } | null = null
   let failures = 0
@@ -190,7 +197,7 @@ export function ibi511Adapter(site: Ibi511Site): SourceAdapter<Ibi511Raw, Camera
           location: point,
           snapshotUrl: `${host}${img.imageUrl}`,
           streamUrl: null,
-          state: site.stateFor ? site.stateFor(point[0], point[1]) : states[0],
+          state: stateOf(r, point),
         })
       }
       return cameras
@@ -270,7 +277,7 @@ const pennsylvania: Ibi511Site = {
   idPrefix: 'pa511:',
 }
 
-// VT, NH and ME share one list; each camera is tagged by where it sits. Border points can land in the neighbour (ADR-0016).
+// VT, NH and ME share one list. A camera's areaId names its state; stateAt (ADR-0016) is the fallback when areaId is missing or unexpected.
 const newEngland: Ibi511Site = {
   id: 'newengland511-cameras',
   states: ['VT', 'NH', 'ME'],

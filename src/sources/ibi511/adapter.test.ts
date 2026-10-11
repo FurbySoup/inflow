@@ -148,6 +148,21 @@ describe('ibi511 normalize', () => {
       'newengland511:900': 'VT',
     })
   })
+
+  it('takes a New England state from areaId when it disagrees with stateAt', () => {
+    // Portland ME is inside Maine, but the record says VT: areaId wins.
+    const wide = { west: -75, south: 41, east: -69, north: 46 }
+    const disagree = { ...record(902, -70.26, 43.66), areaId: 'VT' }
+    expect(newEnglandCameras.normalize({ aoi: wide, records: [disagree] })[0].state).toBe('VT')
+  })
+
+  it('falls back to stateAt when areaId is missing or not one of the site states', () => {
+    const wide = { west: -75, south: 41, east: -69, north: 46 }
+    const missing = record(903, -70.26, 43.66)
+    const unexpected = { ...record(904, -70.26, 43.66), areaId: 'MA' }
+    const cams = newEnglandCameras.normalize({ aoi: wide, records: [missing, unexpected] })
+    expect(cams.map((c) => c.state)).toEqual(['ME', 'ME'])
+  })
 })
 
 describe('ibi511 site config', () => {
