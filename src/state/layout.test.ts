@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   CONSOLE_MIN,
+  type LayoutSnapshot,
   DEFAULT_CONSOLE_SPLIT,
   DEFAULT_LAYOUT,
   LAYOUT_LIMITS,
@@ -11,13 +12,16 @@ import {
   normalizeSplit,
   parseSnapshot,
   readStoredLayout,
+  SAVE_DELAY_MS,
   resizeConsoleSplit,
+  useLayout,
 } from './layout'
 
 const storage = (entries: Record<string, string>) => (key: string) => entries[key] ?? null
 const throwing = () => {
   throw new Error('storage blocked')
 }
+const DEFAULTS: LayoutSnapshot = { ...PRESETS.DEFAULT }
 
 describe('clamp', () => {
   it('clamps sizes to LAYOUT_LIMITS and rounds', () => {
@@ -65,36 +69,54 @@ describe('resizeConsoleSplit', () => {
 
 describe('readStoredLayout', () => {
   it('returns defaults when nothing is stored', () => {
-    const s = readStoredLayout(storage({}))
-    expect(s).toEqual({ ...DEFAULT_LAYOUT, consoleSplit: DEFAULT_CONSOLE_SPLIT, hidden: [] })
+    expect(readStoredLayout(storage({}))).toEqual(DEFAULTS)
   })
 
-  it('migrates a v1 {sideWidth, bottomHeight} record forward', () => {
+  it('reads a v3 record with its preset', () => {
+    const s = readStoredLayout(
+      storage({ [STORAGE_KEY]: JSON.stringify({ ...PRESETS.WALL }) }),
+    )
+    expect(s.preset).toBe('WALL')
+    expect(s.hidden).toEqual(['AUD-01', 'CCTV-01'])
+  })
+
+  it('migrates a v1 {sideWidth, bottomHeight} record forward as preset DEFAULT', () => {
     const s = readStoredLayout(
       storage({ 'storm-chasers.layout.v1': JSON.stringify({ sideWidth: 520, bottomHeight: 300 }) }),
     )
     expect(s.sideWidth).toBe(520)
     expect(s.bottomHeight).toBe(300)
+    expect(s.preset).toBe('DEFAULT')
     expect(s.consoleSplit).toEqual(DEFAULT_CONSOLE_SPLIT)
     expect(s.hidden).toEqual([])
   })
 
-  it('prefers the v2 record over a leftover v1 record', () => {
+  it('migrates a v2 record forward as preset DEFAULT, keeping its sizes and collapse set', () => {
     const s = readStoredLayout(
       storage({
-        [STORAGE_KEY]: JSON.stringify({ sideWidth: 300, bottomHeight: 160, hidden: ['AUD-01'] }),
+        'storm-chasers.layout.v2': JSON.stringify({ sideWidth: 300, bottomHeight: 160, hidden: ['AUD-01'] }),
+      }),
+    )
+    expect(s).toMatchObject({ preset: 'DEFAULT', sideWidth: 300, bottomHeight: 160, hidden: ['AUD-01'] })
+  })
+
+  it('prefers the v3 record over leftover v2 and v1 records', () => {
+    const s = readStoredLayout(
+      storage({
+        [STORAGE_KEY]: JSON.stringify({ preset: 'CHASE', sideWidth: 300, bottomHeight: 160, hidden: ['CCTV-01'] }),
+        'storm-chasers.layout.v2': JSON.stringify({ sideWidth: 700, bottomHeight: 500 }),
         'storm-chasers.layout.v1': JSON.stringify({ sideWidth: 900, bottomHeight: 600 }),
       }),
     )
+    expect(s.preset).toBe('CHASE')
     expect(s.sideWidth).toBe(300)
-    expect(s.hidden).toEqual(['AUD-01'])
+    expect(s.hidden).toEqual(['CCTV-01'])
   })
 
   it('falls back to defaults on corrupt JSON or blocked storage', () => {
-    const defaults = { ...DEFAULT_LAYOUT, consoleSplit: DEFAULT_CONSOLE_SPLIT, hidden: [] }
-    expect(readStoredLayout(storage({ [STORAGE_KEY]: '{not json' }))).toEqual(defaults)
-    expect(readStoredLayout(storage({ [STORAGE_KEY]: 'null' }))).toEqual(defaults)
-    expect(readStoredLayout(throwing)).toEqual(defaults)
+    expect(readStoredLayout(storage({ [STORAGE_KEY]: '{not json' }))).toEqual(DEFAULTS)
+    expect(readStoredLayout(storage({ [STORAGE_KEY]: 'null' }))).toEqual(DEFAULTS)
+    expect(readStoredLayout(throwing)).toEqual(DEFAULTS)
   })
 })
 
@@ -110,23 +132,60 @@ describe('parseSnapshot', () => {
     expect(s.bottomHeight).toBe(DEFAULT_LAYOUT.bottomHeight)
     expect(s.consoleSplit).toEqual(DEFAULT_CONSOLE_SPLIT)
     expect(s.hidden).toEqual(['WX-02', 'CCTV-01'])
+    expect(s.preset).toBe('DEFAULT')
+  })
+
+  it('keeps a known preset name and resets an unknown one to DEFAULT', () => {
+    expect(parseSnapshot({ preset: 'WALL' }).preset).toBe('WALL')
+    expect(parseSnapshot({ preset: 'MOBILE' }).preset).toBe('DEFAULT')
+    expect(parseSnapshot({ preset: 3 }).preset).toBe('DEFAULT')
   })
 })
 
 describe('PRESETS', () => {
-  it('matches the spec values', () => {
-    expect(PRESETS.WALL).toMatchObject({ sideWidth: 560, bottomHeight: 300, hidden: [] })
-    expect(PRESETS.CHASE).toMatchObject({
-      sideWidth: 300,
-      bottomHeight: 160,
-      hidden: ['AUD-01', 'CCTV-01'],
-    })
-    expect(PRESETS.DEFAULT).toMatchObject({ ...DEFAULT_LAYOUT, hidden: [] })
+  it('matches the spec sizes and collapse sets', () => {
+    expect(PRESETS.WALL).toMatchObject({ preset: 'WALL', sideWidth: 560, bottomHeight: 300 })
+    expect(PRESETS.CHASE).toMatchObject({ preset: 'CHASE', sideWidth: 300, bottomHeight: 160 })
+    expect(PRESETS.DEFAULT).toMatchObject({ preset: 'DEFAULT', ...DEFAULT_LAYOUT, hidden: [] })
+  })
+
+  it('collapses radio and cams in WALL, only cams in CHASE, nothing in DEFAULT', () => {
+    expect(PRESETS.WALL.hidden).toEqual(['AUD-01', 'CCTV-01'])
+    expect(PRESETS.CHASE.hidden).toEqual(['CCTV-01'])
+    expect(PRESETS.DEFAULT.hidden).toEqual([])
+    // Alerts (WX-02) stay open in every preset.
+    for (const p of Object.values(PRESETS)) expect(p.hidden).not.toContain('WX-02')
+  })
+})
+
+describe('applyPreset (store API used by the top bar and Shift+1..3)', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+    useLayout.getState().applyPreset('DEFAULT')
+  })
+
+  it('applies each preset name, its collapse set and records the preset', () => {
+    const { applyPreset } = useLayout.getState()
+    applyPreset('WALL')
+    expect(useLayout.getState()).toMatchObject({ preset: 'WALL', hidden: ['AUD-01', 'CCTV-01'] })
+    applyPreset('CHASE')
+    expect(useLayout.getState()).toMatchObject({ preset: 'CHASE', hidden: ['CCTV-01'] })
+    applyPreset('DEFAULT')
+    expect(useLayout.getState()).toMatchObject({ preset: 'DEFAULT', hidden: [] })
+  })
+
+  it('persists the chosen preset under the v3 key', async () => {
+    // Real timers: the saver's throttle timer may already be running from an earlier test.
+    useLayout.getState().applyPreset('WALL')
+    await new Promise((resolve) => setTimeout(resolve, SAVE_DELAY_MS + 50))
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null')
+    expect(saved).toMatchObject({ preset: 'WALL', hidden: ['AUD-01', 'CCTV-01'] })
+    expect(parseSnapshot(saved).preset).toBe('WALL')
   })
 })
 
 describe('createSaver', () => {
-  const snap = (sideWidth: number) => ({ ...DEFAULT_LAYOUT, consoleSplit: DEFAULT_CONSOLE_SPLIT, hidden: [], sideWidth })
+  const snap = (sideWidth: number) => ({ ...DEFAULTS, sideWidth })
 
   it('coalesces a burst of changes into one trailing write of the latest state', () => {
     vi.useFakeTimers()

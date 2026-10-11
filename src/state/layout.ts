@@ -13,7 +13,11 @@ export interface LayoutSizes {
 /** Fractions of the console row for its three panels. Sums to 1, each >= CONSOLE_MIN. */
 export type ConsoleSplit = [number, number, number]
 
+export type PresetName = 'DEFAULT' | 'WALL' | 'CHASE'
+
 export interface LayoutSnapshot extends LayoutSizes {
+  /** The preset last applied. Drives `data-preset` on the layout root (ADR-0015). */
+  preset: PresetName
   consoleSplit: ConsoleSplit
   /** Panel codes (`<Panel code>`) the user collapsed to their header bar. */
   hidden: string[]
@@ -30,21 +34,30 @@ export const LAYOUT_LIMITS = {
   bottomHeight: { min: 120, max: 600 },
 } as const
 
-export const STORAGE_KEY = 'storm-chasers.layout.v2'
-const LEGACY_KEY = 'storm-chasers.layout.v1'
+// v3 added `preset`. v2 and v1 are read as fallbacks and migrate forward on the next save.
+export const STORAGE_KEY = 'storm-chasers.layout.v3'
+const LEGACY_KEYS = ['storm-chasers.layout.v2', 'storm-chasers.layout.v1'] as const
 
-export const PRESETS: Record<'DEFAULT' | 'WALL' | 'CHASE', LayoutSnapshot> = {
-  DEFAULT: { ...DEFAULT_LAYOUT, consoleSplit: DEFAULT_CONSOLE_SPLIT, hidden: [] },
-  WALL: { sideWidth: 560, bottomHeight: 300, consoleSplit: DEFAULT_CONSOLE_SPLIT, hidden: [] },
-  CHASE: {
-    sideWidth: 300,
-    bottomHeight: 160,
+// Sizes and collapse sets for the named presets. WALL and CHASE draw from the preset token
+// geometry (tokens.css), so their sizes are stored but not used for tracks; only `hidden` matters
+// there. `hidden` is what each preset collapses: WALL shows alerts + map + feeds, CHASE adds radio.
+export const PRESETS: Record<PresetName, LayoutSnapshot> = {
+  DEFAULT: { preset: 'DEFAULT', ...DEFAULT_LAYOUT, consoleSplit: DEFAULT_CONSOLE_SPLIT, hidden: [] },
+  WALL: {
+    preset: 'WALL',
+    sideWidth: 560,
+    bottomHeight: 300,
     consoleSplit: DEFAULT_CONSOLE_SPLIT,
     hidden: ['AUD-01', 'CCTV-01'],
   },
+  CHASE: {
+    preset: 'CHASE',
+    sideWidth: 300,
+    bottomHeight: 160,
+    consoleSplit: DEFAULT_CONSOLE_SPLIT,
+    hidden: ['CCTV-01'],
+  },
 }
-
-export type PresetName = keyof typeof PRESETS
 
 export const clamp = (key: keyof LayoutSizes, value: number) =>
   Math.round(Math.min(LAYOUT_LIMITS[key].max, Math.max(LAYOUT_LIMITS[key].min, value)))
@@ -53,6 +66,9 @@ const isFiniteNumber = (v: unknown): v is number => typeof v === 'number' && Num
 
 const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v)
+
+const isPresetName = (v: unknown): v is PresetName =>
+  v === 'DEFAULT' || v === 'WALL' || v === 'CHASE'
 
 /** Valid fractions summing to 1, or the equal split when the input is unusable. */
 export function normalizeSplit(value: unknown): ConsoleSplit {
@@ -87,6 +103,7 @@ export function parseSnapshot(raw: unknown): LayoutSnapshot {
   const size = (key: keyof LayoutSizes): number =>
     isFiniteNumber(raw[key]) ? clamp(key, raw[key]) : DEFAULT_LAYOUT[key]
   return {
+    preset: isPresetName(raw.preset) ? raw.preset : 'DEFAULT',
     sideWidth: size('sideWidth'),
     bottomHeight: size('bottomHeight'),
     consoleSplit: normalizeSplit(raw.consoleSplit),
@@ -97,7 +114,7 @@ export function parseSnapshot(raw: unknown): LayoutSnapshot {
 }
 
 function snapshotDefaults(): LayoutSnapshot {
-  return { ...DEFAULT_LAYOUT, consoleSplit: DEFAULT_CONSOLE_SPLIT, hidden: [] }
+  return { ...PRESETS.DEFAULT, hidden: [] }
 }
 
 function readJson(read: (key: string) => string | null, key: string): unknown {
@@ -110,14 +127,14 @@ function readJson(read: (key: string) => string | null, key: string): unknown {
 }
 
 /**
- * Reads the current (v2) snapshot, else migrates a v1 `{sideWidth, bottomHeight}` record forward,
- * else returns defaults. `read` is injected so this is testable without a real localStorage.
+ * Reads the current (v3) snapshot, else migrates a v2 or v1 record forward, else returns defaults.
+ * Migrated records get preset DEFAULT. `read` is injected so this is testable without a real localStorage.
  */
 export function readStoredLayout(read: (key: string) => string | null): LayoutSnapshot {
-  const current = readJson(read, STORAGE_KEY)
-  if (current !== undefined) return parseSnapshot(current)
-  const legacy = readJson(read, LEGACY_KEY)
-  if (legacy !== undefined) return parseSnapshot(legacy)
+  for (const key of [STORAGE_KEY, ...LEGACY_KEYS]) {
+    const saved = readJson(read, key)
+    if (saved !== undefined) return parseSnapshot(saved)
+  }
   return snapshotDefaults()
 }
 
@@ -168,6 +185,7 @@ interface LayoutState extends LayoutSnapshot {
   /** Splits the pair around `boundary` evenly. */
   resetConsoleSplit: (boundary: 0 | 1) => void
   toggleHidden: (code: string) => void
+  /** Applies a named preset: sizes, collapse set and the preset name. Used by the top bar and Shift+1..3. */
   applyPreset: (name: PresetName) => void
 }
 
@@ -176,6 +194,7 @@ export const useLayout = create<LayoutState>((set, get) => {
     set(patch)
     const s = get()
     saver.schedule({
+      preset: s.preset,
       sideWidth: s.sideWidth,
       bottomHeight: s.bottomHeight,
       consoleSplit: s.consoleSplit,
@@ -194,6 +213,9 @@ export const useLayout = create<LayoutState>((set, get) => {
       const pair = consoleSplit[boundary] + consoleSplit[boundary + 1]
       commit({ consoleSplit: resizeConsoleSplit(consoleSplit, boundary, pair / 2) })
     },
+    // Collapsing or expanding a panel does not change `preset`, so in WALL or CHASE the top bar can
+    // still show that preset label after a manual toggle. This is intentional: the label records the
+    // last applied preset, not the current collapse state.
     toggleHidden: (code) => {
       const { hidden } = get()
       commit({
@@ -203,6 +225,7 @@ export const useLayout = create<LayoutState>((set, get) => {
     applyPreset: (name) => {
       const p = PRESETS[name]
       commit({
+        preset: name,
         sideWidth: p.sideWidth,
         bottomHeight: p.bottomHeight,
         consoleSplit: [...p.consoleSplit] as ConsoleSplit,
