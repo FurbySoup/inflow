@@ -5,7 +5,8 @@
   min-height: 0;
   flex: 1;
   background: var(--surface-panel);
-  border: 1px solid var(--border-default);
+  /* HANDOFF §4: panels have no border; the --gutter of --surface-app separates them. */
+  border: none;
 }
 .panel-collapsed { flex: none; }
 .panel-head {

@@ -20,6 +20,7 @@ import { useLiveness } from '../sources/streams/useLiveness'
 import { useSnapshotClock } from '../sources/streams/useSnapshots'
 import { useAoi } from '../state/aoi'
 import { useStreams } from '../state/streams'
+import { useLayout } from '../state/layout'
 import { StreamTile, type FeedStatus as LedStatus } from '../ui'
 import { Panel } from './Panel'
 
@@ -87,6 +88,7 @@ export function StreamsGrid() {
   const states = useAoi((s) => s.states)
   const primaryId = useStreams((s) => s.primaryId)
   const chosenThisSession = useStreams((s) => s.chosenThisSession)
+  const singleStream = useLayout((s) => s.preset) === 'CHASE'
   const setPrimary = useStreams((s) => s.setPrimary)
   const setOrder = useStreams((s) => s.setOrder)
   const [soundOn, setSoundOn] = useState(() => loadMainSound())
@@ -160,6 +162,10 @@ export function StreamsGrid() {
           />
         </FeedSlot>
       )}
+      {singleStream ? (
+        // CHASE preset (HANDOFF §5): one stream only; `[`/`]` still cycle the main feed.
+        <p className="muted">CHASE · 1 STREAM · {thumbs.length} MORE ([ ] TO CYCLE)</p>
+      ) : (
       <div className="stream-grid">
         {thumbs.map((s) => {
           const at = refreshedAt[s.id]
@@ -187,6 +193,7 @@ export function StreamsGrid() {
           )
         })}
       </div>
+      )}
     </Panel>
   )
 }
