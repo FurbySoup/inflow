@@ -1,5 +1,5 @@
 import { defaultZoneCache, ZONE_TTL_MS, type ZoneCache } from './cache'
-import { normalizeZone, zoneIdFromUrl, zoneUrlToProxy, type NwsZoneResponse, type ZoneShape } from './zones'
+import { normalizeZone, zoneKeyFromUrl, zoneUrlToProxy, type NwsZoneResponse, type ZoneShape } from './zones'
 
 const CONCURRENCY = 4
 const RETRY_AFTER_429_MS = 5_000
@@ -39,8 +39,8 @@ async function fetchOne(url: string, deps: Required<Omit<ZoneShapeDeps, 'cache'>
 }
 
 /**
- * Resolves zone URLs to shapes, keyed by zone id. Cached shapes (30-day TTL) skip the network;
- * misses are fetched with concurrency ≤ 4. A zone that fails is left out of the result.
+ * Resolves zone URLs to shapes, keyed by `<type>/<id>` (see zoneKeyFromUrl). Cached shapes (30-day TTL)
+ * skip the network; misses are fetched with concurrency ≤ 4. A zone that fails is left out of the result.
  */
 export async function getZoneShapes(urls: string[], signal?: AbortSignal, deps: ZoneShapeDeps = {}): Promise<Map<string, ZoneShape>> {
   sharedCache ??= defaultZoneCache()
@@ -51,26 +51,26 @@ export async function getZoneShapes(urls: string[], signal?: AbortSignal, deps: 
     now: deps.now ?? (() => Date.now()),
   }
   const out = new Map<string, ZoneShape>()
-  const ids = new Map<string, string>()
-  for (const url of urls) ids.set(zoneIdFromUrl(url), url)
+  const keys = new Map<string, string>()
+  for (const url of urls) keys.set(zoneKeyFromUrl(url), url)
 
   const misses: [string, string][] = []
   await Promise.all(
-    [...ids].map(async ([id, url]) => {
-      const hit = await cache.get(id)
-      if (hit && resolved.now() - hit.storedAt < ZONE_TTL_MS) out.set(id, hit.shape)
-      else misses.push([id, url])
+    [...keys].map(async ([key, url]) => {
+      const hit = await cache.get(key)
+      if (hit && resolved.now() - hit.storedAt < ZONE_TTL_MS) out.set(key, hit.shape)
+      else misses.push([key, url])
     }),
   )
 
   let next = 0
   const worker = async () => {
     while (next < misses.length && !signal?.aborted) {
-      const [id, url] = misses[next++]
+      const [key, url] = misses[next++]
       const shape = await fetchOne(url, resolved, signal)
       if (shape) {
-        out.set(id, shape)
-        await cache.put(id, { shape, storedAt: resolved.now() })
+        out.set(key, shape)
+        await cache.put(key, { shape, storedAt: resolved.now() })
       }
     }
   }

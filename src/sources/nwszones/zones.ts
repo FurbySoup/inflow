@@ -7,8 +7,8 @@ const PROXY_BASE = '/api/nws'
 export type ZoneGeometry = GeoJSON.Polygon | GeoJSON.MultiPolygon
 
 export interface ZoneShape {
-  /** Zone id from the URL, e.g. `GAC033`. Also the cache key. */
-  id: string
+  /** `<type>/<id>` from the URL, e.g. `county/GAC033`. Also the cache key. */
+  key: string
   geometry: ZoneGeometry
 }
 
@@ -23,14 +23,17 @@ export function zoneUrlToProxy(url: string): string {
   return url.startsWith(NWS_ORIGIN) ? `${PROXY_BASE}${url.slice(NWS_ORIGIN.length)}` : url
 }
 
-/** Last path segment of a zone URL: `https://api.weather.gov/zones/county/GAC033` → `GAC033`. */
-export function zoneIdFromUrl(url: string): string {
-  return url.slice(url.lastIndexOf('/') + 1)
+/**
+ * `<type>/<id>` from a zone URL: `https://api.weather.gov/zones/county/GAC033` → `county/GAC033`.
+ * The type is part of the key because forecast and fire zones share ids (GAZ087).
+ */
+export function zoneKeyFromUrl(url: string): string {
+  return url.split('/').slice(-2).join('/')
 }
 
 /** Pure: a zone response to a shape, or null when the zone has no usable polygon. */
 export function normalizeZone(raw: NwsZoneResponse): ZoneShape | null {
   const g = raw.geometry
   if (!g || (g.type !== 'Polygon' && g.type !== 'MultiPolygon')) return null
-  return { id: zoneIdFromUrl(raw.id), geometry: g }
+  return { key: zoneKeyFromUrl(raw.id), geometry: g }
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import county from './fixtures/county-GAC033.json'
 import forecast from './fixtures/forecast-GAZ087.json'
-import { normalizeZone, zoneIdFromUrl, zoneUrlToProxy, type NwsZoneResponse } from './zones'
+import { normalizeZone, zoneKeyFromUrl, zoneUrlToProxy, type NwsZoneResponse } from './zones'
 
 describe('zoneUrlToProxy', () => {
   it('rewrites the NWS origin onto the same-origin proxy', () => {
@@ -13,23 +13,36 @@ describe('zoneUrlToProxy', () => {
   })
 })
 
-describe('zoneIdFromUrl', () => {
-  it('takes the last path segment', () => {
-    expect(zoneIdFromUrl('https://api.weather.gov/zones/fire/GAZ087')).toBe('GAZ087')
+describe('zoneKeyFromUrl', () => {
+  it('is <type>/<id> from the URL', () => {
+    expect(zoneKeyFromUrl('https://api.weather.gov/zones/fire/GAZ087')).toBe('fire/GAZ087')
+    expect(zoneKeyFromUrl('https://api.weather.gov/zones/county/GAC033')).toBe('county/GAC033')
+  })
+
+  it('keeps forecast and fire zones with the same id apart', () => {
+    const forecastKey = zoneKeyFromUrl('https://api.weather.gov/zones/forecast/GAZ087')
+    const fireKey = zoneKeyFromUrl('https://api.weather.gov/zones/fire/GAZ087')
+    expect(forecastKey).not.toBe(fireKey)
+  })
+
+  it('does not collide county/X with forecast/X', () => {
+    expect(zoneKeyFromUrl('https://api.weather.gov/zones/county/GAC033')).not.toBe(
+      zoneKeyFromUrl('https://api.weather.gov/zones/forecast/GAC033'),
+    )
   })
 })
 
 describe('normalizeZone', () => {
   it('normalizes a trimmed county fixture', () => {
     const shape = normalizeZone(county as unknown as NwsZoneResponse)
-    expect(shape?.id).toBe('GAC033')
+    expect(shape?.key).toBe('county/GAC033')
     expect(shape?.geometry.type).toBe('Polygon')
     expect(shape?.geometry.coordinates[0][0]).toEqual([-82.096596, 33.230614])
   })
 
-  it('normalizes a trimmed forecast-zone fixture (id from URL, not properties.type)', () => {
+  it('normalizes a trimmed forecast-zone fixture (key from URL, not properties.type)', () => {
     const shape = normalizeZone(forecast as unknown as NwsZoneResponse)
-    expect(shape?.id).toBe('GAZ087')
+    expect(shape?.key).toBe('forecast/GAZ087')
     expect(shape?.geometry.type).toBe('Polygon')
   })
 

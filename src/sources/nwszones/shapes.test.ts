@@ -20,7 +20,7 @@ describe('getZoneShapes', () => {
   it('fetches misses through the proxy and keys results by zone id', async () => {
     const fetchZone = vi.fn(async (url: string) => okResponse(url))
     const shapes = await getZoneShapes([A], undefined, { cache: createMemoryZoneCache(), fetchZone })
-    expect(shapes.get('GAC033')?.geometry.type).toBe('Polygon')
+    expect(shapes.get('county/GAC033')?.geometry.type).toBe('Polygon')
     expect(fetchZone).toHaveBeenCalledWith(A, undefined)
   })
 
@@ -48,7 +48,18 @@ describe('getZoneShapes', () => {
   it('skips a failed zone without failing the rest', async () => {
     const fetchZone = vi.fn(async (url: string) => (url === B ? status(500) : okResponse(url)))
     const shapes = await getZoneShapes([A, B, C], undefined, { cache: createMemoryZoneCache(), fetchZone })
-    expect([...shapes.keys()].sort()).toEqual(['GAC033', 'SCC011'])
+    expect([...shapes.keys()].sort()).toEqual(['county/GAC033', 'county/SCC011'])
+  })
+
+  it('caches county/X and forecast/X separately', async () => {
+    const cache = createMemoryZoneCache()
+    const fetchZone = vi.fn(async (url: string) => okResponse(url))
+    const forecastUrl = 'https://api.weather.gov/zones/forecast/GAC033'
+    const shapes = await getZoneShapes([A, forecastUrl], undefined, { cache, fetchZone })
+    expect([...shapes.keys()].sort()).toEqual(['county/GAC033', 'forecast/GAC033'])
+    expect(fetchZone).toHaveBeenCalledTimes(2)
+    await getZoneShapes([forecastUrl], undefined, { cache, fetchZone })
+    expect(fetchZone).toHaveBeenCalledTimes(2)
   })
 
   it('skips a zone that throws a network error', async () => {
@@ -57,8 +68,8 @@ describe('getZoneShapes', () => {
       return okResponse(url)
     })
     const shapes = await getZoneShapes([A, B], undefined, { cache: createMemoryZoneCache(), fetchZone })
-    expect(shapes.has('SCC009')).toBe(false)
-    expect(shapes.has('GAC033')).toBe(true)
+    expect(shapes.has('county/SCC009')).toBe(false)
+    expect(shapes.has('county/GAC033')).toBe(true)
   })
 
   it('backs off 5 s on 429 and retries', async () => {
@@ -67,7 +78,7 @@ describe('getZoneShapes', () => {
     const shapes = await getZoneShapes([A], undefined, { cache: createMemoryZoneCache(), fetchZone, sleep })
     expect(sleep).toHaveBeenCalledWith(5_000)
     expect(fetchZone).toHaveBeenCalledTimes(2)
-    expect(shapes.has('GAC033')).toBe(true)
+    expect(shapes.has('county/GAC033')).toBe(true)
   })
 
   it('gives up after repeated 429s and skips the zone', async () => {

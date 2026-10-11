@@ -1,6 +1,6 @@
 import type maplibregl from 'maplibre-gl'
 import { nwsAlerts } from '../sources/nws/alerts'
-import { allCountyZoneUrls, buildOutlineFeatures, zoneBasedAlerts } from '../sources/nwszones/outlines'
+import { allOutlineZoneUrls, buildOutlineFeatures, zoneBasedAlerts } from '../sources/nwszones/outlines'
 import { getZoneShapes } from '../sources/nwszones/shapes'
 import { useAoi } from '../state/aoi'
 import type { MapLayer } from './layers'
@@ -29,7 +29,7 @@ async function load(map: maplibregl.Map) {
   try {
     const { bbox, states } = useAoi.getState()
     const alerts = zoneBasedAlerts(nwsAlerts.normalize(await nwsAlerts.fetch(bbox)), states)
-    const shapes = await getZoneShapes(allCountyZoneUrls(alerts))
+    const shapes = await getZoneShapes(allOutlineZoneUrls(alerts))
     src.setData({ type: 'FeatureCollection', features: buildOutlineFeatures(alerts, shapes) })
   } catch {
     // keep previous data
@@ -38,7 +38,7 @@ async function load(map: maplibregl.Map) {
 
 export const watchOutlinesLayer: MapLayer = {
   id: SOURCE_ID,
-  label: 'Watch county outlines',
+  label: 'Watch zone outlines',
   add(map) {
     map.addSource(SOURCE_ID, { type: 'geojson', data: EMPTY })
     map.addLayer({
