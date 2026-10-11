@@ -5,7 +5,7 @@ A dark, dense **mission-control console** for live severe-weather data. Componen
 ## Setup
 - Load `styles.css`. It defines every token and component class, and its import closure includes `_ds_bundle.css`.
 - **Dark surfaces only.** `body` gets the `--bg` canvas from the stylesheet. Put components on `var(--bg)`, `var(--panel)` or `var(--panel-head)`; light surfaces make the muted text unreadable.
-- Components come from `window.StormChasersUI`: `Panel`, `StatusLed`, `Badge`, `ConsoleButton`, `AlertList`, `AlertRow`, `StreamTile`, `CameraTile`, plus the `formatRemaining(ms)` helper (returns `T-mm:ss`).
+- Components come from `window.StormChasersUI`: `Panel`, `StatusLed`, `Badge`, `ConsoleButton`, `AlertList`, `AlertRow`, `StreamTile`, `CameraTile`, `Toast`, plus the `formatRemaining(ms)` helper (returns `T-mm:ss`).
 
 ## Styling idiom: CSS custom properties + a small class vocabulary
 - **Never hardcode colours.** Use `var(--…)` tokens:
@@ -28,6 +28,8 @@ A dark, dense **mission-control console** for live severe-weather data. Componen
 - Every interactive element needs a **persistent signifier**, plus hover, `:focus-visible` and visible feedback. Read-only items (badges, LEDs, counts) must never look clickable.
 - `AlertRow` with `onSelect` shows a ⌖ "focus on map" glyph; `zone` rows don't.
 - `ConsoleButton pressed` is a solid accent fill.
+- `StreamTile`: only the `primary` tile plays on load. A thumbnail shows a `snapshot` still until the user presses ▶ WATCH (`onPlay`); then pass `playing` and an `embedUrl`, and it plays muted with a PLAYING · MUTED plate and a ■ STILL button (`onStop`). Always pass `liveKind` (`live` · `replay` · `offline` · `unchecked`): it draws the ● LIVE / ↺ REPLAY tag, so live video is never confused with a recording. `offline` tiles get no WATCH button.
+- `Toast` is for new NWS tornado warnings only (`role="alert"`): pass `title`, `area`, `issued`, `remainingMs`, `onDismiss`, and `onFocus` for the ⌖ FOCUS MAP action; `pds` / `emergency` add the PDS badge and ring. Never use it for non-NWS messages.
 - Never use colour alone for severity or status. Pair it with a badge, glyph or text (`PDS`, `ZONE`, `T-mm:ss`).
 
 ## Where the truth lives
