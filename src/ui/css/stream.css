@@ -21,11 +21,38 @@
   pointer-events: none;
 }
 .stream-age-stale { color: var(--status-stale); }
-/* Promote affordance (ADR-0012): always visible, no hover dependency, outside the player's own controls. */
-.stream-promote {
+/* Top bar over the frame (ADR-0017): start group left, end group right; wraps rather than overlapping when narrow.
+   The bar itself takes no pointer, so the player under it stays usable; only its buttons do. */
+.stream-bar {
   position: absolute;
   top: 6px;
+  left: 6px;
   right: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 4px;
+  pointer-events: none;
+}
+.stream-bar-group { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 4px; }
+.stream-bar button { pointer-events: auto; }
+/* Read-only PLAYING · MUTED plate, where a still's THUMB age sits. */
+.stream-state {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  padding: 2px 4px;
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  background: var(--surface-scrim);
+  pointer-events: none;
+}
+/* Promote affordance (ADR-0012): always visible, no hover dependency, outside the player's own controls. */
+.stream-promote {
   font-family: var(--font-data);
   font-size: 0.65rem;
   letter-spacing: 0.08em;
@@ -38,11 +65,12 @@
 }
 .stream-promote:hover { background: var(--accent); color: var(--surface-app); }
 .stream-promote:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+/* WATCH / STILL: a btn-console over the frame. Feedback: a playing tile's button fills solid accent. */
+.stream-play { background: var(--surface-scrim); font-size: 0.65rem; letter-spacing: 0.08em; line-height: 1.4; padding: 1px 6px; }
+.stream-play[data-playing='true'] { background: var(--accent); color: var(--surface-app); }
+.stream-play:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 /* Main-feed sound toggle: outlined when muted, solid accent when sound is on (feedback via aria-pressed). */
 .stream-sound {
-  position: absolute;
-  top: 6px;
-  left: 6px;
   font-family: var(--font-data);
   font-size: 0.65rem;
   letter-spacing: 0.08em;
@@ -55,11 +83,8 @@
 }
 .stream-sound[aria-pressed='true'] { background: var(--accent); color: var(--surface-app); }
 .stream-sound:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-/* Read-only state tag: filled, no border-button look, no pointer. */
+/* Read-only state tags: filled or outlined, no pointer, no hover. Live is solid phosphor (never hazard red: ADR-0012). */
 .stream-main-tag {
-  position: absolute;
-  top: 6px;
-  right: 6px;
   font-family: var(--font-data);
   font-size: 0.65rem;
   letter-spacing: 0.08em;
@@ -69,6 +94,18 @@
   background: var(--accent);
   pointer-events: none;
 }
+.stream-live {
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  padding: 1px 6px;
+  color: var(--text-muted);
+  background: var(--surface-scrim);
+  border: 1px solid var(--text-muted);
+  pointer-events: none;
+}
+.stream-live[data-kind='live'] { color: var(--surface-app); background: var(--status-live); border-color: var(--status-live); }
 .stream-tile figcaption { font-size: 0.75rem; color: var(--text-muted); padding-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .stream-select { background: none; border: none; padding: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; }
 /* Signifier: the caption is a control (make primary), so it underlines/brightens like one; feedback: the primary feed's caption stays accent. */
@@ -81,6 +118,6 @@
 
 /* Touch (ADR-0014): controls grow to a usable target; hover-only cues never carry meaning (ADR-0012). */
 @media (pointer: coarse) {
-  .stream-promote, .stream-sound { min-height: 28px; padding: 4px 10px; }
+  .stream-promote, .stream-sound, .stream-play { min-height: 28px; padding: 4px 10px; }
   .stream-select { min-height: 28px; }
 }

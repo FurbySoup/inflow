@@ -10,6 +10,7 @@ import {
   withSound,
 } from '../sources/streams/layout'
 import { applyResolution, shouldAutoplay, withAutoplay, type FeedStatus, type LiveFeed } from '../sources/streams/resolve'
+import { liveKind, prunePlaying, startTile, stopTile } from '../sources/streams/playing'
 import {
   isSnapshotStale,
   snapshotAgeLabel,
@@ -41,12 +42,7 @@ function useUserActivated() {
   return active
 }
 
-/** ENDED / OFFLINE tag for a feed that is not live; none while live or not yet checked. */
-function statusLabelFor(status: FeedStatus | undefined): string | undefined {
-  if (status === 'ended') return 'ENDED'
-  if (status === 'offline') return 'OFFLINE'
-  return undefined
-}
+const NONE: string[] = []
 
 /** Feed health as the LED shape: live ●, ended/offline ○, unknown check ◐, not checked yet ◌. */
 function ledFor(status: FeedStatus | undefined): LedStatus {
@@ -95,6 +91,8 @@ export function StreamsGrid() {
   const activated = useUserActivated()
   const [onScreen, setOnScreen] = useState<ReadonlySet<string>>(() => new Set())
   const [checkedPrimary, setCheckedPrimary] = useState<string | null>(null)
+  // User-started thumbnails (ADR-0017), oldest first. Session state only; never persisted.
+  const [playing, setPlaying] = useState<string[]>(NONE)
   const setVisible = useCallback((id: string, visible: boolean) => {
     setOnScreen((prev) => {
       if (prev.has(id) === visible) return prev
@@ -108,13 +106,16 @@ export function StreamsGrid() {
   const { now, refreshedAt } = useSnapshotClock(onScreen)
 
   // Liveness runs for the primary and on-screen tiles only (ADR-0013). The primary is included so a
-  // default primary that turns out to be ENDED is checked once it is shown.
-  const resolutions = useLiveness(curatedStreams, (id) => onScreen.has(id) || id === checkedPrimary)
+  // default primary that turns out to be ENDED is checked once it is shown. Playing tiles count as on screen.
+  const resolutions = useLiveness(curatedStreams, (id) => onScreen.has(id) || id === checkedPrimary || playing.includes(id))
   const feeds: LiveFeed[] = curatedStreams.map((s) => applyResolution(s, resolutions.get(s.id)))
   // Streams in the AOI first; others still shown so a chaser is never hidden by map panning.
   const sorted = sortStreams(feeds, states)
   const { primary, thumbs } = layoutStreams(sorted, primaryId, chosenThisSession)
   if ((primary?.id ?? null) !== checkedPrimary) setCheckedPrimary(primary?.id ?? null)
+  // CHASE shows no thumbnails, so nothing plays there. Offline, primary and vanished feeds are dropped (render-time, like checkedPrimary).
+  const playingNow = singleStream ? NONE : prunePlaying(playing, sorted, primary?.id ?? null)
+  if (playingNow !== playing) setPlaying(playingNow)
   const liveCount = sorted.filter((s) => s.status === 'live').length
 
   // Publish the sorted order and the feed in the main slot so shortcuts can cycle it.
@@ -152,7 +153,7 @@ export function StreamsGrid() {
             inAoi={isInAoi(primary, states)}
             context={primary.context}
             ledStatus={ledFor(primary.status)}
-            statusLabel={statusLabelFor(primary.status)}
+            liveKind={liveKind(primary.status, 'videoId' in primary.youtube)}
             primary
             // Autoplay only once confirmed live: an unchecked or ENDED pin would replay the finished broadcast.
             embedUrl={withAutoplay(withSound(primary.embedUrl, soundOn && activated), shouldAutoplay(primary.status))}
@@ -170,8 +171,9 @@ export function StreamsGrid() {
         {thumbs.map((s) => {
           const at = refreshedAt[s.id]
           const src = snapshotSource(resolutions.get(s.id)?.videoId, s.status, at)
+          const isPlaying = playingNow.includes(s.id)
           return (
-            // Thumbnails never mount an iframe: stills only, so 10+ feeds cost no player decode (ADR-0013).
+            // Thumbnails mount an iframe only after the user's WATCH press (ADR-0017); otherwise stills only (ADR-0013).
             <FeedSlot key={s.id} id={s.id} onVisible={setVisible}>
               <StreamTile
                 title={s.title}
@@ -180,8 +182,16 @@ export function StreamsGrid() {
                 inAoi={isInAoi(s, states)}
                 context={s.context}
                 ledStatus={ledFor(s.status)}
-                statusLabel={statusLabelFor(s.status)}
-                onSelect={() => choose(s.id)}
+                liveKind={liveKind(s.status, 'videoId' in s.youtube)}
+                playing={isPlaying}
+                // Sound off. The press is the user gesture, so autoplay here is not autoplay on load.
+                embedUrl={isPlaying ? withAutoplay(withSound(s.embedUrl, false), true) : undefined}
+                onPlay={() => setPlaying((p) => startTile(p, s.id))}
+                onStop={() => setPlaying((p) => stopTile(p, s.id))}
+                onSelect={() => {
+                  choose(s.id)
+                  setPlaying((p) => stopTile(p, s.id))
+                }}
                 snapshot={{
                   src,
                   placeholder: snapshotPlaceholder(s.status),
