@@ -1,0 +1,138 @@
+/* Toast (INFLOW v1 §6, §8). Semantic tokens only; keyframes come from tokens.css. */
+.toast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  background: var(--surface-raised);
+  box-shadow: var(--elev-toast);
+  outline: var(--focus-w) solid var(--hz-tor);
+  outline-offset: 0;
+  font-family: var(--font-ui);
+  color: var(--text-primary);
+  animation:
+    inflow-arrive var(--dur-arrive) var(--ease-out) both,
+    inflow-flash var(--dur-flash-period) linear var(--dur-arrive) 3;
+}
+
+.toast-chip {
+  min-width: calc(var(--chip-w) + 8px);
+  background: var(--hz-tor);
+  color: var(--hz-tor-ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-2);
+}
+.toast-pds .toast-chip { box-shadow: inset 0 0 0 3px var(--hz-pds-mark); }
+.toast-glyph { font: 700 var(--fs-data-xl)/1 var(--font-data); }
+.toast-code { font: 700 var(--fs-data-xs)/1 var(--font-data); letter-spacing: var(--tr-code); }
+.toast-emergency { font: 700 var(--fs-data-xs)/1 var(--font-data); letter-spacing: var(--tr-code); }
+
+.toast-body {
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+.toast-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font: 600 var(--fs-ui-xs)/1 var(--font-ui);
+  letter-spacing: var(--tr-label);
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.toast-new { color: var(--text-bright); }
+.toast-issued { font-family: var(--font-data); letter-spacing: 0; }
+.toast-spacer { flex: 1; }
+.toast-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  font: 600 var(--fs-ui-l)/1.2 var(--font-ui);
+  color: var(--text-bright);
+  min-width: 0;
+}
+.toast-area { font-weight: 400; color: var(--text-secondary); }
+.toast-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.toast-countdown {
+  font: 600 var(--fs-data-m)/1 var(--font-data);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Buttons. Primary: at most one per toast, solid accent. Quiet: 1 px control border. */
+.toast-btn {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 var(--sp-4);
+  border-radius: var(--radius-control);
+  font: 700 var(--fs-ui-xs)/1 var(--font-ui);
+  letter-spacing: var(--tr-label);
+  cursor: pointer;
+}
+.toast-btn-primary {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--ink-dark);
+}
+.toast-btn-primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+.toast-btn-quiet {
+  background: transparent;
+  border: 1px solid var(--border-control);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.toast-btn-quiet:hover { border-color: var(--accent); }
+.toast-btn:focus-visible {
+  outline: var(--focus-w) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+.toast-btn:active { box-shadow: inset 0 0 0 1px var(--ink-dark); }
+.toast-btn:disabled {
+  color: var(--text-disabled);
+  border-color: var(--border-default);
+  background: transparent;
+  cursor: default;
+}
+
+/* Region: fixed top-centre over the map, below the top bar (ToastRegion). Pointer events only on toasts. */
+.toast-region {
+  position: fixed;
+  top: calc(var(--topbar-h) + var(--sp-4));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(600px, calc(100% - 24px));
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  z-index: 20;
+  pointer-events: none;
+}
+.toast-region > * { pointer-events: auto; }
+
+/* Touch (ADR-0014): controls grow to a usable target. */
+@media (pointer: coarse) {
+  .toast-btn { min-height: 36px; }
+}
+
+/* Reduced motion (§8): no slide and no flashing; the toast sits in place with a static double outline. */
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+    outline: var(--focus-w) solid var(--hz-tor);
+    outline-offset: var(--focus-offset);
+    box-shadow: var(--elev-toast), 0 0 0 1px var(--hz-pds-mark);
+  }
+}
