@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 
 import { kiwisdrDirectory, nearestCbReceivers, receiverFeeds } from '../sources/kiwisdr/receivers'
 import { openmhzCalls, type ScannerCall } from '../sources/openmhz/calls'
-import { scannerSystemsFor, type ScannerSystem } from '../sources/openmhz/systems'
+import { coveredStates, openmhzSystems, systemsInAoi, type ScannerSystem } from '../sources/openmhz/systems'
 import { useSource } from '../lib/useSource'
 import { queryFeed } from '../lib/feedStatus'
 import { useAoi } from '../state/aoi'
@@ -42,7 +42,9 @@ function callAge(iso: string): string {
 export function AudioPanel() {
   const bbox = useAoi((s) => s.bbox)
   const states = useAoi((s) => s.states)
-  const systems = useMemo(() => scannerSystemsFor(states), [states])
+  const scanner = useSource(openmhzSystems)
+  const systems = useMemo(() => systemsInAoi(scanner.data ?? [], states), [scanner.data, states])
+  const covered = useMemo(() => coveredStates(scanner.data ?? []), [scanner.data])
   const [picked, setPicked] = useState<string | null>(null)
   const system: ScannerSystem | undefined =
     systems.find((s) => s.shortName === picked) ?? systems[0]
@@ -66,26 +68,33 @@ export function AudioPanel() {
       meta={directory.data ? `${near.length} RX NEAR` : undefined}
     >
       <p className="muted">SCANNER · OPENMHZ</p>
-      {system ? (
-        <>
-          <select
-            aria-label="Scanner system"
-            style={select}
-            value={system.shortName}
-            onChange={(e) => setPicked(e.target.value)}
-          >
-            {systems.map((s) => (
-              <option key={s.shortName} value={s.shortName}>
-                {s.shortName} ({s.state})
-              </option>
-            ))}
-          </select>
-          {/* Keyed so playback state never carries over to another system. */}
-          <ScannerPlayer key={system.shortName} shortName={system.shortName} />
-        </>
-      ) : (
-        <p className="muted">NO SCANNER SYSTEMS IN AOI</p>
-      )}
+      {scanner.isError && <p className="error">OPENMHZ UNAVAILABLE</p>}
+      {!scanner.isError && scanner.isPending && <p className="muted">LOADING SYSTEMS</p>}
+      {scanner.data &&
+        (system ? (
+          <>
+            <select
+              aria-label="Scanner system"
+              style={select}
+              value={system.shortName}
+              onChange={(e) => setPicked(e.target.value)}
+            >
+              {systems.map((s) => (
+                <option key={s.shortName} value={s.shortName}>
+                  {s.place ? `${s.name} · ${s.place} (${s.state})` : `${s.name} (${s.state})`}
+                </option>
+              ))}
+            </select>
+            {/* Keyed so playback state never carries over to another system. */}
+            <ScannerPlayer key={system.shortName} shortName={system.shortName} />
+          </>
+        ) : (
+          <p className="muted">
+            {covered.length > 0
+              ? `NO OPENMHZ SYSTEMS IN AOI — COVERED: ${covered.join(' · ')}`
+              : 'NO OPENMHZ SYSTEMS IN AOI'}
+          </p>
+        ))}
 
       <p className="muted" style={{ marginTop: 12 }}>
         CB 19 / 2M · KIWISDR LINK-OUT
