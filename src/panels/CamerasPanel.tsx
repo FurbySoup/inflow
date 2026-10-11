@@ -5,6 +5,7 @@ import type { SourceAdapter } from '../sources/types'
 import { kansasCameras, nebraskaCameras } from '../sources/cars/adapter'
 import { southCarolinaCameras } from '../sources/sc511/adapter'
 import { isTxdotFeed, txdotCameras } from '../sources/txdot/adapter'
+import { floridaCameras, georgiaCameras } from '../sources/ibi511/adapter'
 import { fetchSnapshotDataUrl } from '../sources/txdot/snapshot'
 import { useAoi } from '../state/aoi'
 import { queryStatus, type FeedStatus } from '../lib/feedStatus'
@@ -15,11 +16,18 @@ type CameraAdapter = SourceAdapter<unknown, CameraFeed> & { state: string }
 
 // Append a new DOT camera adapter here.
 // eslint-disable-next-line react-refresh/only-export-components -- adapters are appended to this list
-export const CAMERA_ADAPTERS: CameraAdapter[] = [kansasCameras, nebraskaCameras, txdotCameras, southCarolinaCameras]
+export const CAMERA_ADAPTERS: CameraAdapter[] = [
+  kansasCameras,
+  nebraskaCameras,
+  txdotCameras,
+  georgiaCameras,
+  floridaCameras,
+  southCarolinaCameras,
+]
 
 const MAX_TILES = 12
 const REFRESH_MS = 60_000
-const NO_COVERAGE = 'NO DOT CAMERA COVERAGE IN AOI — KS · NE · TX'
+const NO_COVERAGE = 'NO DOT CAMERA COVERAGE IN AOI — KS · NE · TX · GA · SC · FL'
 
 // Snapshot URLs may already carry a query string (e.g. ?1791658260000).
 function withCacheBuster(url: string, tick: number) {
@@ -185,7 +193,7 @@ export function CamerasPanel() {
         status === 'live' && <p className="muted">NO CAMERAS IN VIEW</p>
       )}
       <p className="muted" style={{ marginTop: 8 }}>
-        Snapshots: KanDrive (KS) · Nebraska 511 (NE) · TxDOT (TX)
+        Snapshots: KanDrive (KS) · Nebraska 511 (NE) · TxDOT (TX) · 511GA (GA) · 511SC (SC) · FL511 (FL)
       </p>
     </Panel>
   )

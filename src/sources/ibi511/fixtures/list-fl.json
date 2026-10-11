@@ -1,0 +1,96 @@
+{
+  "_note": "SYNTHETIC: record 9999 is hand-made with images[0].disabled set to true. Records 675, 677 and 1 are real; the upstream list had no disabled image at capture time (2026-10-11).",
+  "draw": 0,
+  "recordsTotal": 4965,
+  "recordsFiltered": 4965,
+  "data": [
+    {
+      "DT_RowId": "9999",
+      "id": 9999,
+      "areaId": "OSC",
+      "roadway": "I-4",
+      "direction": "Eastbound",
+      "location": "SYNTHETIC disabled I-4 camera",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-81.5 28.4)" } },
+      "state": "Florida",
+      "images": [
+        {
+          "id": 9999,
+          "cameraSiteId": 9999,
+          "description": "SYNTHETIC",
+          "imageUrl": "/map/Cctv/9999",
+          "videoUrl": "",
+          "isVideoAuthRequired": true,
+          "disabled": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "DT_RowId": "675",
+      "id": 675,
+      "areaId": "OSC",
+      "roadway": "I-4",
+      "direction": "Westbound",
+      "location": "I-4 @ MM 62.9 WB",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-81.559064 28.319239)" } },
+      "state": "Florida",
+      "images": [
+        {
+          "id": 675,
+          "cameraSiteId": 675,
+          "description": "0060_I-4_WB_MM_62.9",
+          "imageUrl": "/map/Cctv/675",
+          "videoUrl": "",
+          "isVideoAuthRequired": true,
+          "disabled": false,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "DT_RowId": "677",
+      "id": 677,
+      "areaId": "OSC",
+      "roadway": "I-4",
+      "direction": "Eastbound",
+      "location": "I-4 @ MM 64.1 EB",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-81.544669 28.332572)" } },
+      "state": "Florida",
+      "images": [
+        {
+          "id": 677,
+          "cameraSiteId": 677,
+          "description": "0080_I-4_EB_MM_64.1",
+          "imageUrl": "/map/Cctv/677",
+          "videoUrl": "https://dis-se7.divas.cloud:8200/chan-1473_h/index.m3u8",
+          "isVideoAuthRequired": true,
+          "disabled": false,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "DT_RowId": "1",
+      "id": 1,
+      "areaId": "COLL",
+      "roadway": "I-75",
+      "direction": "Northbound",
+      "location": "0517N_75_Alligator_Alley_M052",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-80.892882 26.17325)" } },
+      "state": "Florida",
+      "images": [
+        {
+          "id": 1,
+          "cameraSiteId": 1,
+          "description": "0517N_75_Alligator_Alley_M052",
+          "imageUrl": "/map/Cctv/1",
+          "videoUrl": "https://dis-se18.divas.cloud:8200/chan-1_h/index.m3u8",
+          "isVideoAuthRequired": true,
+          "disabled": false,
+          "blocked": false
+        }
+      ]
+    }
+  ]
+}

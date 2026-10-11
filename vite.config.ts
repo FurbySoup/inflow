@@ -41,6 +41,17 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/api\/511sc/, ''),
       },
+      // IBI "511" sites (GA, FL): the keyless camera list has no CORS.
+      '/api/511ga': {
+        target: 'https://511ga.org',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/511ga/, ''),
+      },
+      '/api/fl511': {
+        target: 'https://fl511.com',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/fl511/, ''),
+      },
       '/api/kiwisdr': {
         target: 'http://rx.linkfanel.net',
         changeOrigin: true,
