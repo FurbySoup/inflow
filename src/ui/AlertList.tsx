@@ -1,6 +1,8 @@
 /* eslint-disable react-refresh/only-export-components -- pure time formatters sit beside the row that uses them; format.ts is orchestrator-owned */
 import type { ReactNode, Ref } from 'react'
 import { hazardCode, isWatch, type HazardCode } from './hazard'
+import { Abbr } from './Abbr'
+import { GLOSSARY } from './glossary'
 
 export type AlertSeverity = 'Extreme' | 'Severe' | 'Moderate' | 'Minor' | 'Unknown'
 
@@ -185,17 +187,25 @@ export function AlertRow({
           <span className="alert-glyph" aria-hidden="true">
             {GLYPH[code]}
           </span>
-          {code}
+          <Abbr term={code} />
         </span>
         <span className="alert-main">
           <span className="alert-line">
             <span className="alert-event">{event}</span>
-            {emergency && <span className="alert-pds">PDS</span>}
+            {emergency && (
+              <span className="alert-pds">
+                <Abbr term="PDS" />
+              </span>
+            )}
           </span>
           <span className="alert-area">{area}</span>
         </span>
         <span className="alert-slot">
-          {zone && <span className="alert-zone">ZONE</span>}
+          {zone && (
+            <span className="alert-zone">
+              <Abbr term="ZONE" />
+            </span>
+          )}
           {clickable && (
             <span className="alert-target" aria-hidden="true">
               ⌖
@@ -204,7 +214,9 @@ export function AlertRow({
         </span>
         {hasCountdown && (
           <span className={low ? 'alert-time alert-time-low' : 'alert-time'}>
-            <span className="alert-count">{formatCountdown(remainingMs)}</span>
+            <span className="alert-count" title={GLOSSARY['T-']}>
+              {formatCountdown(remainingMs)}
+            </span>
             {fraction !== null && (
               <span className="alert-bar" aria-hidden="true">
                 <span className="alert-bar-fill" style={{ width: `${fraction * 100}%` }} />

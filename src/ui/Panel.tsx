@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { StatusLed, type FeedStatus } from './StatusLed'
+import { Abbr } from './Abbr'
 
 export interface PanelProps {
   /** Uppercase-tracked panel title, e.g. "NWS Alerts". */
@@ -42,7 +43,9 @@ export function Panel({
     <section className={['panel', collapsed && 'panel-collapsed', className].filter(Boolean).join(' ')}>
       <header className="panel-head" title={collapsed ? title : undefined}>
         <StatusLed status={status} age={age} />
-        <span className="panel-code">{code}</span>
+        <span className="panel-code">
+          <Abbr term={code} />
+        </span>
         <h2>{title}</h2>
         {hasTail && (
           <span className="panel-tail">

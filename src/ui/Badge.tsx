@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 
+import { Abbr } from './Abbr'
+
 export type BadgeVariant = 'aoi' | 'ctx' | 'zone' | 'pds'
 
 export interface BadgeProps {
@@ -11,7 +13,7 @@ export interface BadgeProps {
 
 const LABELS: Record<BadgeVariant, string> = { aoi: 'IN AOI', ctx: 'CTX', zone: 'ZONE', pds: 'PDS' }
 
-/** Small outlined monospace tag for status labels on tiles and alert rows. */
+/** Small outlined monospace tag for status labels on tiles and alert rows. Standard labels carry their glossary tip (ADR-0018). */
 export function Badge({ variant, children }: BadgeProps) {
-  return <span className={`badge badge-${variant}`}>{children ?? LABELS[variant]}</span>
+  return <span className={`badge badge-${variant}`}>{children ?? <Abbr term={LABELS[variant]} />}</span>
 }

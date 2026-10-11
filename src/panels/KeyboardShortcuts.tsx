@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react'
+import { Fragment, useEffect, useRef, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react'
 import { useAoi } from '../state/aoi'
 import { useLayout } from '../state/layout'
 import { useStreams } from '../state/streams'
 import { toggleLayer } from '../map/LayerControl'
-import { ConsoleButton, Panel } from '../ui'
+import { ConsoleButton, GLOSSARY, Panel } from '../ui'
 import { AOI_PRESETS } from './aoiPresetData'
 import { isTypingTarget, resolveShortcut, type ShortcutAction } from './shortcuts'
 
@@ -98,23 +98,21 @@ function trapTab(e: KeyboardEvent, dialog: HTMLElement | null): void {
 }
 
 // Touch-only devices get no key hints (ADR-0014): nothing advertises keys they cannot press.
-function hasFinePointer(): boolean {
-  return typeof window.matchMedia !== 'function' || !window.matchMedia('(pointer: coarse)').matches
-}
 
-/** Top-bar button that opens the keyboard help. Hidden on touch-only devices. */
+/**
+ * Top-bar button that opens the help: keyboard shortcuts and the acronym glossary. Shown on touch screens too,
+ * because the glossary is the only way to read an acronym's meaning without a mouse-over tip (ADR-0018).
+ */
 export function KeysButton() {
   const open = useHelpOpen()
-  const [showButton] = useState(hasFinePointer)
-  if (!showButton) return null
   return (
-    // No aria-label: the visible "? KEYS" is the accessible name (WCAG 2.5.3 label in name); the title describes it.
+    // No aria-label: the visible "? HELP" is the accessible name (WCAG 2.5.3 label in name); the title describes it.
     <ConsoleButton
       aria-expanded={open}
-      title="Keyboard shortcuts (?)"
+      title="Help: keyboard shortcuts and glossary (?)"
       onClick={() => setHelpOpen(!helpOpen)}
     >
-      ? KEYS
+      ? HELP
     </ConsoleButton>
   )
 }
@@ -200,19 +198,22 @@ export function KeyboardShortcuts() {
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Keyboard shortcuts"
+        aria-label="Help: keyboard shortcuts and glossary"
         style={{ width: 'min(44rem, 100%)', maxHeight: '100%', overflow: 'auto' }}
       >
         <Panel
           code="KBD-01"
-          title="Keyboard shortcuts"
+          title="Help"
           status="offline"
           meta={
-            <ConsoleButton aria-label="Close keyboard shortcuts" onClick={() => setHelpOpen(false)}>
+            <ConsoleButton aria-label="ESC: close help" onClick={() => setHelpOpen(false)}>
               ESC
             </ConsoleButton>
           }
         >
+          <p className="muted" style={{ margin: 0, padding: '12px 12px 0' }}>
+            KEYBOARD SHORTCUTS
+          </p>
           {/* Each row wraps: on a phone the description drops under its keys instead of a one-word column (ADR-0014). */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: 12 }}>
             {ROWS.map((row) => (
@@ -232,6 +233,18 @@ export function KeyboardShortcuts() {
             Keys are ignored while typing in a field. A focused YouTube player keeps the keyboard for itself:
             click elsewhere on the page first.
           </p>
+          {/* ADR-0018: every acronym's expansion, reachable without hover. Underlined terms on screen show the same text as a tip. */}
+          <p className="muted" style={{ margin: 0, padding: '0 12px' }}>
+            GLOSSARY
+          </p>
+          <dl style={{ margin: 0, padding: '8px 12px 12px', display: 'grid', gridTemplateColumns: 'max-content minmax(0, 1fr)', gap: '6px 16px' }}>
+            {Object.entries(GLOSSARY).map(([term, meaning]) => (
+              <Fragment key={term}>
+                <dt style={{ fontFamily: 'var(--font-data)', color: 'var(--accent)' }}>{term}</dt>
+                <dd style={{ margin: 0 }}>{meaning}</dd>
+              </Fragment>
+            ))}
+          </dl>
         </Panel>
       </div>
     </div>

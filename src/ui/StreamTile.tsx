@@ -2,6 +2,8 @@ import { useState } from 'react'
 
 import { Badge } from './Badge'
 import { StatusLed, type FeedStatus } from './StatusLed'
+import { Abbr } from './Abbr'
+import { GLOSSARY } from './glossary'
 
 /** A thumbnail's still image and its age label. Only the primary feed plays by default; a thumbnail plays only after WATCH (ADR-0017). */
 export interface StreamSnapshot {
@@ -191,7 +193,9 @@ export function StreamTile({
               <span className="stream-still-empty">{snapshot?.placeholder ?? 'connecting…'}</span>
             )}
             {snapshot?.ageLabel && (
-              <span className={snapshot.stale ? 'stream-age stream-age-stale' : 'stream-age'}>{snapshot.ageLabel}</span>
+              <span className={snapshot.stale ? 'stream-age stream-age-stale' : 'stream-age'} title={GLOSSARY.THUMB}>
+                {snapshot.ageLabel}
+              </span>
             )}
           </div>
         )}
@@ -212,7 +216,10 @@ export function StreamTile({
           aria-current={primary ? 'true' : undefined}
           title="Show this feed large"
         >
-          <span className="panel-code">CAM {String(index + 1).padStart(2, '0')}</span> {title}
+          <span className="panel-code">
+            <Abbr term="CAM" /> {String(index + 1).padStart(2, '0')}
+          </span>{' '}
+          {title}
         </button>
         {statusLabel && !liveKind && <Badge variant="ctx">{statusLabel}</Badge>}
         {inAoi && <Badge variant="aoi" />}

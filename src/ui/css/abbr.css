@@ -1,0 +1,10 @@
+/* Abbr (ADR-0018): an acronym with a mouse-over expansion. Signifier: dotted underline + help cursor. Read-only. */
+abbr.abbr {
+  text-decoration: underline dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  cursor: help;
+}
+/* On solid hazard chips the underline would cross the fill edge; a lighter dotted line keeps the signifier. */
+.alert-chip abbr.abbr,
+.toast-chip abbr.abbr { text-decoration-color: color-mix(in srgb, currentColor 55%, transparent); }

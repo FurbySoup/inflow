@@ -1,6 +1,8 @@
 import type { Ref } from 'react'
 import { Badge } from './Badge'
 import { formatRemaining } from './format'
+import { Abbr } from './Abbr'
+import { GLOSSARY } from './glossary'
 
 export interface ToastProps {
   /** Tornado Emergency (catastrophic damage threat): adds an EMERGENCY line under the TOR chip. */
@@ -47,13 +49,23 @@ export function Toast({
     <div role="alert" className={pds ? 'toast toast-pds' : 'toast'}>
       <div className="toast-chip">
         <span className="toast-glyph" aria-hidden="true">▼</span>
-        <span className="toast-code">TOR</span>
-        {emergency && <span className="toast-emergency">EMERGENCY</span>}
+        <span className="toast-code">
+          <Abbr term="TOR" />
+        </span>
+        {emergency && (
+          <span className="toast-emergency">
+            <Abbr term="EMERGENCY" />
+          </span>
+        )}
       </div>
       <div className="toast-body">
         <div className="toast-meta">
-          <span className="toast-new">NEW IN AOI</span>
-          <span>· SOURCE NWS</span>
+          <span className="toast-new">
+            NEW <Abbr term="IN AOI" />
+          </span>
+          <span>
+            · SOURCE <Abbr term="NWS" />
+          </span>
           <span className="toast-spacer" />
           <span className="toast-issued">ISSUED {issued}</span>
         </div>
@@ -64,7 +76,7 @@ export function Toast({
         </div>
         <div className="toast-row">
           {/* aria-live off: role="alert" announces the toast once; the ticking countdown must not re-announce it every second. */}
-          <span className="toast-countdown" aria-live="off">
+          <span className="toast-countdown" aria-live="off" title={GLOSSARY['T-']}>
             {until ? `until ${until} · ` : ''}
             {countdown}
           </span>

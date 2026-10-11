@@ -8,6 +8,7 @@ import { useSource } from '../lib/useSource'
 import { nwsPoint } from '../sources/nws/points'
 import { DEVICE_ZONE, sameOffset, zoneLabel } from './clock'
 import { OutlookRisk } from './OutlookRisk'
+import { Abbr } from '../ui'
 
 // With 52 codes a wide AOI can touch 20+ states; the top bar shows the first few and a count.
 const MAX_AOI_CODES = 6
@@ -46,7 +47,7 @@ export function Topbar() {
       </span>
       {/* One AOI item: the states and the time where the AOI is (WP-34), so the bar fits one row with a live threat. */}
       <span className="topbar-item">
-        AOI <strong title={states.join(' · ')}>{states.length ? aoiLabel(states) : '—'}</strong>
+        <Abbr term="AOI" /> <strong title={states.join(' · ')}>{states.length ? aoiLabel(states) : '—'}</strong>
         {aoiZone && (
           <>
             {' · '}
@@ -64,11 +65,11 @@ export function Topbar() {
       <KeysButton />
       <LayoutMenu />
       <span className="topbar-item">
-        UTC <strong className="clock">{fmtUtc(now)}Z</strong>
+        <Abbr term="UTC" /> <strong className="clock">{fmtUtc(now)}Z</strong>
       </span>
       {showLocal && (
         <span className="topbar-item topbar-local">
-          LOCAL <strong className="clock">{zoneLabel(now, DEVICE_ZONE)}</strong>
+          <Abbr term="LOCAL" /> <strong className="clock">{zoneLabel(now, DEVICE_ZONE)}</strong>
         </span>
       )}
     </header>

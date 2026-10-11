@@ -9,3 +9,5 @@ export { StreamTile, type StreamSnapshot, type StreamTileProps } from './StreamT
 export { Toast, type ToastProps } from './Toast'
 export { CameraTile, type CameraTileProps } from './CameraTile'
 export { formatRemaining } from './format'
+export { Abbr, type AbbrProps } from './Abbr'
+export { GLOSSARY, expand } from './glossary'
