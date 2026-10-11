@@ -37,6 +37,16 @@ describe('zoneBasedAlerts', () => {
     const otherState = alert({ id: 'o', states: ['TX'] })
     expect(zoneBasedAlerts([watch, stormOnly, otherState], ['SC']).map((a) => a.id)).toEqual(['w'])
   })
+
+  it('outlines watches and warnings but not statements or advisories', () => {
+    const kept = ['Flood Watch', 'Tornado Watch', 'Tropical Storm Warning', 'Flood Warning'].map((event, i) =>
+      alert({ id: `k${i}`, event, states: ['GA'] }),
+    )
+    const dropped = ['Rip Current Statement', 'Coastal Flood Advisory', 'High Surf Advisory', 'Beach Hazards Statement'].map(
+      (event, i) => alert({ id: `d${i}`, event, states: ['GA'] }),
+    )
+    expect(zoneBasedAlerts([...kept, ...dropped], ['GA']).map((a) => a.id)).toEqual(['k0', 'k1', 'k2', 'k3'])
+  })
 })
 
 describe('outlineZoneUrls', () => {

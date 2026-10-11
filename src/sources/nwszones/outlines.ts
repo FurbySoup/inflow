@@ -1,9 +1,18 @@
 import type { Alert } from '../../types'
 import { zoneKeyFromUrl, type ZoneShape } from './zones'
 
-/** Zone-based alerts (geometry null) that touch one of the given states. */
+/**
+ * Only Watch and Warning products get outlined. Zone-based statements and advisories (rip current,
+ * beach hazards, high surf, coastal flood statements) stay in the alerts list but would bury the map:
+ * on 2026-10-11 they were 39 of 105 outlines in the GA/SC AOI.
+ */
+export const isOutlinedEvent = (event: string) => / (Watch|Warning)$/.test(event.trim())
+
+/** Zone-based Watch/Warning alerts (geometry null) that touch one of the given states. */
 export function zoneBasedAlerts(alerts: Alert[], states: string[]): Alert[] {
-  return alerts.filter((a) => a.geometry === null && a.states.some((s) => states.includes(s)))
+  return alerts.filter(
+    (a) => a.geometry === null && isOutlinedEvent(a.event) && a.states.some((s) => states.includes(s)),
+  )
 }
 
 /**
