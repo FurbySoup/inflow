@@ -137,6 +137,29 @@ function save(state: LayoutSnapshot) {
   }
 }
 
+/** Trailing-edge throttle for persistence: a drag fires setSize per pointermove, storage needs one write. */
+export const SAVE_DELAY_MS = 250
+
+export function createSaver(write: (s: LayoutSnapshot) => void, delayMs = SAVE_DELAY_MS) {
+  let pending: LayoutSnapshot | null = null
+  let timer: ReturnType<typeof setTimeout> | null = null
+  const flush = () => {
+    if (timer !== null) clearTimeout(timer)
+    timer = null
+    if (pending) write(pending)
+    pending = null
+  }
+  const schedule = (s: LayoutSnapshot) => {
+    pending = s
+    if (timer === null) timer = setTimeout(flush, delayMs)
+  }
+  return { schedule, flush }
+}
+
+const saver = createSaver(save)
+// Don't lose the last change if the tab closes inside the throttle window.
+if (typeof window !== 'undefined') window.addEventListener('pagehide', saver.flush)
+
 interface LayoutState extends LayoutSnapshot {
   setSize: (key: keyof LayoutSizes, value: number) => void
   reset: (key: keyof LayoutSizes) => void
@@ -152,7 +175,7 @@ export const useLayout = create<LayoutState>((set, get) => {
   const commit = (patch: Partial<LayoutSnapshot>) => {
     set(patch)
     const s = get()
-    save({
+    saver.schedule({
       sideWidth: s.sideWidth,
       bottomHeight: s.bottomHeight,
       consoleSplit: s.consoleSplit,

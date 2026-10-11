@@ -1,4 +1,4 @@
-import type { KeyboardEvent, PointerEvent } from 'react'
+import { useEffect, useRef, type KeyboardEvent, type PointerEvent } from 'react'
 import { useLayout, type LayoutSizes } from '../state/layout'
 
 interface SplitterProps {
@@ -9,6 +9,35 @@ interface SplitterProps {
 }
 
 const KEY_STEP = 16
+
+/**
+ * Pointer-drag lifecycle shared by both splitters. Ends the drag on pointerup, pointercancel,
+ * lostpointercapture (capture stolen, e.g. by an iframe or alt-tab) and on unmount, so
+ * `body.resizing` (which disables iframe pointer events) can never be left stuck on.
+ */
+function useDrag() {
+  const end = useRef<(() => void) | null>(null)
+  useEffect(() => () => end.current?.(), [])
+
+  return (el: HTMLElement, pointerId: number, move: (ev: globalThis.PointerEvent) => void) => {
+    end.current?.()
+    el.setPointerCapture(pointerId)
+    document.body.classList.add('resizing')
+    const stop = () => {
+      el.removeEventListener('pointermove', move)
+      el.removeEventListener('pointerup', stop)
+      el.removeEventListener('pointercancel', stop)
+      el.removeEventListener('lostpointercapture', stop)
+      document.body.classList.remove('resizing')
+      end.current = null
+    }
+    el.addEventListener('pointermove', move)
+    el.addEventListener('pointerup', stop)
+    el.addEventListener('pointercancel', stop)
+    el.addEventListener('lostpointercapture', stop)
+    end.current = stop
+  }
+}
 const CONSOLE_KEY_STEP = 0.02
 
 /**
@@ -19,29 +48,17 @@ export function Splitter({ target, area }: SplitterProps) {
   const value = useLayout((s) => s[target])
   const setSize = useLayout((s) => s.setSize)
   const reset = useLayout((s) => s.reset)
+  const drag = useDrag()
   const vertical = target === 'sideWidth' // vertical bar, drags horizontally
 
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
-    const el = e.currentTarget
-    el.setPointerCapture(e.pointerId)
     const start = vertical ? e.clientX : e.clientY
     const startValue = value
-    document.body.classList.add('resizing')
-
-    const move = (ev: globalThis.PointerEvent) => {
+    drag(e.currentTarget, e.pointerId, (ev) => {
       const delta = (vertical ? ev.clientX : ev.clientY) - start
       setSize(target, startValue - delta)
-    }
-    const up = () => {
-      el.removeEventListener('pointermove', move)
-      el.removeEventListener('pointerup', up)
-      el.removeEventListener('pointercancel', up)
-      document.body.classList.remove('resizing')
-    }
-    el.addEventListener('pointermove', move)
-    el.addEventListener('pointerup', up)
-    el.addEventListener('pointercancel', up)
+    })
   }
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -86,6 +103,7 @@ export function ConsoleSplitter({ boundary, disabled }: ConsoleSplitterProps) {
   const split = useLayout((s) => s.consoleSplit)
   const setConsoleSplit = useLayout((s) => s.setConsoleSplit)
   const resetConsoleSplit = useLayout((s) => s.resetConsoleSplit)
+  const drag = useDrag()
   const pair = split[boundary] + split[boundary + 1]
   const leftShare = Math.round((split[boundary] / pair) * 100)
 
@@ -99,25 +117,13 @@ export function ConsoleSplitter({ boundary, disabled }: ConsoleSplitterProps) {
     const leftPx = left.getBoundingClientRect().width
     const pairPx = leftPx + right.getBoundingClientRect().width
     if (pairPx <= 0) return
-    el.setPointerCapture(e.pointerId)
     const startX = e.clientX
     const startSplit = useLayout.getState().consoleSplit
     const pairTotal = startSplit[boundary] + startSplit[boundary + 1]
-    document.body.classList.add('resizing')
-
-    const move = (ev: globalThis.PointerEvent) => {
+    drag(el, e.pointerId, (ev) => {
       const leftFraction = ((leftPx + ev.clientX - startX) / pairPx) * pairTotal
       setConsoleSplit(boundary, leftFraction)
-    }
-    const up = () => {
-      el.removeEventListener('pointermove', move)
-      el.removeEventListener('pointerup', up)
-      el.removeEventListener('pointercancel', up)
-      document.body.classList.remove('resizing')
-    }
-    el.addEventListener('pointermove', move)
-    el.addEventListener('pointerup', up)
-    el.addEventListener('pointercancel', up)
+    })
   }
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {

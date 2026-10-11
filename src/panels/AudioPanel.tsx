@@ -6,19 +6,8 @@ import { scannerSystemsFor, type ScannerSystem } from '../sources/openmhz/system
 import { useSource } from '../lib/useSource'
 import { queryStatus } from '../lib/feedStatus'
 import { useAoi } from '../state/aoi'
+import { ConsoleButton } from '../ui'
 import { Panel } from './Panel'
-
-const button: CSSProperties = {
-  fontFamily: 'var(--font-data)',
-  fontSize: '0.72rem',
-  letterSpacing: '0.08em',
-  color: 'var(--accent)',
-  background: 'transparent',
-  border: '1px solid var(--accent)',
-  padding: '2px 8px',
-  cursor: 'pointer',
-  textDecoration: 'none',
-}
 
 const select: CSSProperties = {
   fontFamily: 'var(--font-data)',
@@ -113,8 +102,8 @@ export function AudioPanel() {
           </span>
           <span className="muted">{Math.round(km)} KM</span>
           {receiverFeeds(receiver).map((f) => (
-            <a key={f.id} href={f.pageUrl ?? undefined} target="_blank" rel="noopener noreferrer" style={button}>
-              {f.kind === 'cb' ? 'CB 19' : '2M'}
+            <a key={f.id} className="btn-console" href={f.pageUrl ?? undefined} target="_blank" rel="noopener noreferrer">
+              {f.kind === 'cb' ? 'CB 19' : '2M'} ↗
             </a>
           ))}
         </div>
@@ -167,9 +156,9 @@ function ScannerPlayer({ shortName }: { shortName: string }) {
       {calls.length > 0 && (
         <>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
-            <button type="button" style={button} onClick={toggle}>
+            <ConsoleButton pressed={playing} onClick={toggle}>
               {playing ? 'STOP' : 'PLAY LATEST'}
-            </button>
+            </ConsoleButton>
             <audio
               ref={audio}
               src={current ?? undefined}
@@ -183,17 +172,9 @@ function ScannerPlayer({ shortName }: { shortName: string }) {
           <ol style={{ listStyle: 'none', margin: 0, padding: 0 }}>
             {calls.slice(0, MAX_CALLS_LISTED).map((c) => (
               <li key={c.id} style={row}>
-                <button
-                  type="button"
-                  onClick={() => playCall(c)}
-                  style={{
-                    ...button,
-                    borderColor: c.url === current ? 'var(--live)' : 'var(--border)',
-                    color: c.url === current ? 'var(--live)' : 'var(--text)',
-                  }}
-                >
+                <ConsoleButton pressed={c.url === current} onClick={() => playCall(c)}>
                   {new Date(c.time).toISOString().slice(11, 19)}Z
-                </button>
+                </ConsoleButton>
                 <span className="muted">{c.talkgroup !== null ? `TG ${c.talkgroup}` : 'TG —'} · {callAge(c.time)}</span>
               </li>
             ))}

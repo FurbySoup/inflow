@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   CONSOLE_MIN,
   DEFAULT_CONSOLE_SPLIT,
@@ -7,6 +7,7 @@ import {
   PRESETS,
   STORAGE_KEY,
   clamp,
+  createSaver,
   normalizeSplit,
   parseSnapshot,
   readStoredLayout,
@@ -121,5 +122,34 @@ describe('PRESETS', () => {
       hidden: ['AUD-01', 'CCTV-01'],
     })
     expect(PRESETS.DEFAULT).toMatchObject({ ...DEFAULT_LAYOUT, hidden: [] })
+  })
+})
+
+describe('createSaver', () => {
+  const snap = (sideWidth: number) => ({ ...DEFAULT_LAYOUT, consoleSplit: DEFAULT_CONSOLE_SPLIT, hidden: [], sideWidth })
+
+  it('coalesces a burst of changes into one trailing write of the latest state', () => {
+    vi.useFakeTimers()
+    const write = vi.fn()
+    const saver = createSaver(write, 250)
+    saver.schedule(snap(300))
+    saver.schedule(snap(320))
+    saver.schedule(snap(340))
+    expect(write).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(250)
+    expect(write).toHaveBeenCalledTimes(1)
+    expect(write.mock.calls[0][0].sideWidth).toBe(340)
+    vi.useRealTimers()
+  })
+
+  it('flush writes the pending state immediately and only once', () => {
+    vi.useFakeTimers()
+    const write = vi.fn()
+    const saver = createSaver(write, 250)
+    saver.schedule(snap(500))
+    saver.flush()
+    vi.advanceTimersByTime(1000)
+    expect(write).toHaveBeenCalledTimes(1)
+    vi.useRealTimers()
   })
 })
