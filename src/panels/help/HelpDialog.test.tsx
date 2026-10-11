@@ -1,7 +1,6 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { KeyboardShortcuts, KeysButton } from '../KeyboardShortcuts'
-import helpCss from './help.css?raw'
 
 vi.mock('../../map/LayerControl', () => ({ toggleLayer: vi.fn() }))
 // A glossary term that is not in the group map: it must show under Other.
@@ -40,10 +39,18 @@ describe('HelpDialog', () => {
     delete (window as { matchMedia?: unknown }).matchMedia
   })
 
-  it('the help panel body has no max-height cap, at any width (index.css caps .panel-body at 900 px)', () => {
+  it('the help panel body has no max-height cap, at any width (index.css caps .panel-body at 900 px)', async () => {
     openHelp()
     expect(screen.getByRole('dialog').querySelector('.panel-body')).not.toBeNull()
-    // jsdom does not load index.css, so check the rule that overrides the cap in help.css (higher specificity).
+    // jsdom does not load index.css, and vitest blanks CSS imports, so read help.css from disk. The id is a
+    // variable so the type checker leaves node:fs alone (Node types are not part of this project).
+    // npm test runs from the project root, which is the path below.
+    const fsId: string = 'node:fs'
+    const { readFileSync } = (await import(/* @vite-ignore */ fsId)) as {
+      readFileSync: (path: string, encoding: 'utf8') => string
+    }
+    const helpCss = readFileSync('src/panels/help/help.css', 'utf8')
+    // The rule that overrides the cap in index.css (its specificity is higher than `.panel-body`).
     const rule = /\.help-dialog \.panel-body \{([^}]*)\}/.exec(helpCss)?.[1] ?? ''
     expect(rule).toMatch(/max-height:\s*none;/)
   })
