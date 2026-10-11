@@ -5,6 +5,7 @@ import { spcMesoscaleLayer } from './spcMesoscale'
 import { spcOutlookLayer } from './spcOutlook'
 import { spcWatchesLayer } from './spcWatches'
 import { stormReportsLayer } from './stormReports'
+import { watchOutlinesLayer } from './watchOutlines'
 
 /**
  * A map overlay. Each work package that draws on the map adds one MapLayer module and one
@@ -21,4 +22,12 @@ export interface MapLayer {
 }
 
 // Order = draw order (first is bottom-most).
-export const mapLayers: MapLayer[] = [satelliteLayer, spcOutlookLayer, radarLayer, spcMesoscaleLayer, spcWatchesLayer, stormReportsLayer]
+export const mapLayers: MapLayer[] = [
+  satelliteLayer,
+  spcOutlookLayer,
+  radarLayer,
+  watchOutlinesLayer,
+  spcMesoscaleLayer,
+  spcWatchesLayer,
+  stormReportsLayer,
+]
