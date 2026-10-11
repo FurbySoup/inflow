@@ -19,7 +19,7 @@ export const HazardChips = () => (
 export const WatchVsWarning = () => (
   <div style={frame}>
     <AlertList>
-      <AlertRow event="Tornado Watch 212" area="34 counties · OK KS" severity="Extreme" remainingMs={14_420_000} durationMs={25_200_000} zone />
+      <AlertRow event="Tornado Watch" area="212 · 34 counties · OK KS" severity="Extreme" remainingMs={14_420_000} durationMs={25_200_000} zone />
       <AlertRow event="Tornado Warning" area="Cotton OK" severity="Extreme" remainingMs={2_010_000} durationMs={2_700_000} onSelect={() => {}} />
     </AlertList>
   </div>

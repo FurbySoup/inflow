@@ -2,7 +2,10 @@
 .alert-list { display: flex; flex-direction: column; min-height: 0; }
 .alerts { list-style: none; margin: 0; padding: 0; font-family: var(--font-data); }
 
-/* Row: chip | main | signifier | countdown. Chip is read-only: no radius, no control border. */
+/* Item (listitem): carries state (focus, PDS outline, expired, last-known) and the divider. */
+.alert-item { border-bottom: 1px solid var(--border-default); }
+
+/* Row: chip | main | signifier | countdown. Fills the item; the interactive element for clickable rows. */
 .alert-row {
   display: grid;
   grid-template-columns: var(--chip-w) minmax(0, 1fr) auto auto;
@@ -11,7 +14,6 @@
   min-height: var(--row-h);
   padding: 0 var(--sp-4) 0 var(--sp-3);
   box-sizing: border-box;
-  border-bottom: 1px solid var(--border-default);
   background: transparent;
   font-family: var(--font-ui);
 }
@@ -38,6 +40,8 @@
 .alert-chip[data-hz='SPS'] { --chip-hz: var(--hz-sps); --chip-ink: var(--hz-sps-ink); }
 
 .alert-chip-warning { background: var(--chip-hz); color: var(--chip-ink); }
+/* Unclassified hazards: neutral, never a solid fill. */
+.alert-chip-warning[data-hz='OTHER'] { background: var(--surface-raised); color: var(--text-primary); }
 /* Watch: raised surface with a 2 px dashed hazard border (no fill). */
 .alert-chip-watch { background: var(--surface-raised); color: var(--text-primary); border: 2px dashed var(--chip-hz); }
 .alert-chip-watch .alert-glyph { color: var(--chip-hz); }
@@ -56,7 +60,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.alert-row[data-hz='TOR'] .alert-event { font-weight: 600; }
+.alert-item[data-hz='TOR'] .alert-event { font-weight: 600; }
 .alert-area {
   font: 400 var(--fs-ui-s) / 1.15 var(--font-ui);
   color: var(--text-muted);
@@ -121,14 +125,15 @@
 .alert-clickable:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
 .alert-clickable:active { box-shadow: inset 0 0 0 1px var(--ink-dark); }
 
-/* Focused: accent fill, 1 px accent outline, filled ⌖ box. Wins over hover. */
-.alert-selected,
-.alert-selected:hover { background: var(--accent-fill); outline: 1px solid var(--accent); outline-offset: -1px; }
+/* Focused: accent fill and 1 px accent outline on the item, filled ⌖ box. Hover keeps the focused fill. */
+.alert-selected { background: var(--accent-fill); outline: 1px solid var(--accent); outline-offset: -1px; }
+.alert-selected > .alert-clickable:hover { background: var(--accent-fill-hover); }
 .alert-selected .alert-target { background: var(--accent); border-color: var(--accent); color: var(--ink-dark); }
 
-/* PDS: 2 px outline alternating TOR and white at 1 Hz; static double outline under reduced motion. */
+/* PDS: 2 px outline alternating TOR and white at 1 Hz; static double outline under reduced motion.
+   Keyboard focus inside the item stops the flash so the focus ring stays readable. */
 .alert-emergency { outline: 2px solid var(--hz-tor); outline-offset: -2px; animation: inflow-flash 1000ms linear infinite; }
-.alert-emergency:focus-visible { animation: none; outline: 2px solid var(--focus-ring); }
+.alert-emergency:focus-within { animation: none; outline: 2px solid var(--focus-ring); }
 
 /* Expired: kept 60 s at 60% opacity with strike-through, then the panel drops it. */
 .alert-expired { opacity: 0.6; }

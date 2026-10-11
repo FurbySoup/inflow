@@ -82,12 +82,14 @@ function FeedErrorBanner({ lastGood, retrying, onRetry }: AlertFeedError) {
         <span className="alert-banner-mark" aria-hidden="true" />
         NWS FEED ERROR · WARNINGS MAY BE MISSING
       </span>
-      <span className="alert-banner-note">Last good {formatZulu(lastGood)}. Rows below are last known.</span>
+      <span className="alert-banner-note">
+        {lastGood === null ? 'No successful update yet.' : `Last good ${formatZulu(lastGood)}. Rows below are last known.`}
+      </span>
       <span className="alert-banner-actions">
         <button type="button" className="alert-retry" onClick={onRetry} disabled={retrying}>
           {retrying ? '◌ LOADING' : 'RETRY ↻'}
         </button>
-        <a className="alert-weathergov" href="https://www.weather.gov/" target="_blank" rel="noreferrer">
+        <a className="alert-weathergov" href="https://www.weather.gov/" target="_blank" rel="noopener noreferrer">
           WEATHER.GOV ↗
         </a>
       </span>
@@ -146,9 +148,9 @@ export function AlertRow({
   const low = hasCountdown && !watch && remainingMs < LOW_TIME_MS
   const fraction = hasCountdown ? remainingFraction(remainingMs, durationMs) : null
 
-  const rowClasses = [
-    'alert-row',
-    clickable && 'alert-clickable',
+  // State classes sit on the listitem (outline, opacity); the inner element is the interactive row.
+  const itemClasses = [
+    'alert-item',
     selected && 'alert-selected',
     emergency && 'alert-emergency',
     expired && 'alert-expired',
@@ -156,61 +158,61 @@ export function AlertRow({
   ]
     .filter(Boolean)
     .join(' ')
+  const rowClasses = ['alert-row', clickable && 'alert-clickable'].filter(Boolean).join(' ')
   const chipClasses = ['alert-chip', watch ? 'alert-chip-watch' : 'alert-chip-warning', emergency && 'alert-chip-pds']
     .filter(Boolean)
     .join(' ')
 
   return (
-    <li
-      data-alert-id={alertId}
-      data-hz={code}
-      data-severity={severity.toLowerCase()}
-      className={rowClasses}
-      role={clickable ? 'button' : undefined}
-      tabIndex={clickable ? 0 : undefined}
-      onClick={clickable ? onSelect : undefined}
-      onKeyDown={
-        clickable
-          ? (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault()
-                onSelect()
+    <li data-alert-id={alertId} data-hz={code} data-severity={severity.toLowerCase()} className={itemClasses}>
+      <div
+        className={rowClasses}
+        role={clickable ? 'button' : undefined}
+        tabIndex={clickable ? 0 : undefined}
+        onClick={clickable ? onSelect : undefined}
+        onKeyDown={
+          clickable
+            ? (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  onSelect()
+                }
               }
-            }
-          : undefined
-      }
-    >
-      <span className={chipClasses} data-hz={code}>
-        <span className="alert-glyph" aria-hidden="true">
-          {GLYPH[code]}
-        </span>
-        {code}
-      </span>
-      <span className="alert-main">
-        <span className="alert-line">
-          <span className="alert-event">{event}</span>
-          {emergency && <span className="alert-pds">PDS</span>}
-        </span>
-        <span className="alert-area">{area}</span>
-      </span>
-      <span className="alert-slot">
-        {zone && <span className="alert-zone">ZONE</span>}
-        {clickable && (
-          <span className="alert-target" aria-hidden="true">
-            ⌖
+            : undefined
+        }
+      >
+        <span className={chipClasses} data-hz={code}>
+          <span className="alert-glyph" aria-hidden="true">
+            {GLYPH[code]}
           </span>
-        )}
-      </span>
-      {hasCountdown && (
-        <span className={low ? 'alert-time alert-time-low' : 'alert-time'}>
-          <span className="alert-count">{formatCountdown(remainingMs)}</span>
-          {fraction !== null && (
-            <span className="alert-bar" aria-hidden="true">
-              <span className="alert-bar-fill" style={{ width: `${fraction * 100}%` }} />
+          {code}
+        </span>
+        <span className="alert-main">
+          <span className="alert-line">
+            <span className="alert-event">{event}</span>
+            {emergency && <span className="alert-pds">PDS</span>}
+          </span>
+          <span className="alert-area">{area}</span>
+        </span>
+        <span className="alert-slot">
+          {zone && <span className="alert-zone">ZONE</span>}
+          {clickable && (
+            <span className="alert-target" aria-hidden="true">
+              ⌖
             </span>
           )}
         </span>
-      )}
+        {hasCountdown && (
+          <span className={low ? 'alert-time alert-time-low' : 'alert-time'}>
+            <span className="alert-count">{formatCountdown(remainingMs)}</span>
+            {fraction !== null && (
+              <span className="alert-bar" aria-hidden="true">
+                <span className="alert-bar-fill" style={{ width: `${fraction * 100}%` }} />
+              </span>
+            )}
+          </span>
+        )}
+      </div>
     </li>
   )
 }
