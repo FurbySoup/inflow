@@ -1,10 +1,11 @@
-import { Fragment, useEffect, useRef, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useRef, useSyncExternalStore } from 'react'
 import { useAoi } from '../state/aoi'
 import { useLayout } from '../state/layout'
 import { useStreams } from '../state/streams'
 import { toggleLayer } from '../map/LayerControl'
-import { ConsoleButton, GLOSSARY, Panel } from '../ui'
+import { ConsoleButton } from '../ui'
 import { AOI_PRESETS } from './aoiPresetData'
+import { HelpDialog } from './help/HelpDialog'
 import { isTypingTarget, resolveShortcut, type ShortcutAction } from './shortcuts'
 
 // Wall-display keyboard control (WP-17). The keymap itself is pure (shortcuts.ts). KeyboardShortcuts is
@@ -71,8 +72,9 @@ function perform(action: ShortcutAction): void {
   }
 }
 
+// Roving-tabindex tabs (tabindex=-1) are not tab stops, so they are left out of the trap too.
 const FOCUSABLE =
-  'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  'button:not([disabled]):not([tabindex="-1"]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
 /** Keeps Tab and Shift+Tab cycling inside the open dialog (it is aria-modal). */
 function trapTab(e: KeyboardEvent, dialog: HTMLElement | null): void {
@@ -100,7 +102,7 @@ function trapTab(e: KeyboardEvent, dialog: HTMLElement | null): void {
 // Touch-only devices get no key hints (ADR-0014): nothing advertises keys they cannot press.
 
 /**
- * Top-bar button that opens the help: keyboard shortcuts and the acronym glossary. Shown on touch screens too,
+ * Top-bar button that opens the help: keyboard shortcuts, the acronym glossary and chaser terms. Shown on touch screens too,
  * because the glossary is the only way to read an acronym's meaning without a mouse-over tip (ADR-0018).
  */
 export function KeysButton() {
@@ -109,7 +111,7 @@ export function KeysButton() {
     // No aria-label: the visible "? HELP" is the accessible name (WCAG 2.5.3 label in name); the title describes it.
     <ConsoleButton
       aria-expanded={open}
-      title="Help: keyboard shortcuts and glossary (?)"
+      title="Help: keyboard shortcuts, glossary and chaser terms (?)"
       onClick={() => setHelpOpen(!helpOpen)}
     >
       ? HELP
@@ -117,31 +119,7 @@ export function KeysButton() {
   )
 }
 
-const KEY_CAP: CSSProperties = {
-  fontFamily: 'var(--font-data)',
-  color: 'var(--accent)',
-  border: '1px solid var(--border)',
-  background: 'var(--panel-head)',
-  padding: '0 6px',
-  minWidth: '2em',
-  textAlign: 'center',
-  whiteSpace: 'nowrap',
-}
-
-const ROWS: readonly { keys: readonly string[]; label: ReactNode }[] = [
-  { keys: ['[', ']'], label: 'Previous / next primary stream' },
-  { keys: ['1', '2', '3'], label: 'AOI preset: Plains, Dixie Alley, Southeast' },
-  { keys: ['Shift+1', 'Shift+2', 'Shift+3'], label: 'Layout preset: DEFAULT, WALL, CHASE' },
-  { keys: ['R'], label: 'Toggle radar' },
-  { keys: ['V'], label: 'Toggle velocity (SRV, nearest radar)' },
-  { keys: ['S'], label: 'Toggle satellite' },
-  { keys: ['W'], label: 'Toggle watch outlines (SPC and NWS)' },
-  { keys: ['F'], label: 'Toggle fullscreen' },
-  { keys: ['?'], label: 'Show or hide this help' },
-  { keys: ['Esc'], label: 'Close this help' },
-]
-
-/** Global keydown handler and the `?` help overlay. Mount once; the top-bar entry point is KeysButton. */
+/** Global keydown handler and the `?` help overlay (HelpDialog). Mount once; the top-bar entry point is KeysButton. */
 export function KeyboardShortcuts() {
   const open = useHelpOpen()
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -153,6 +131,13 @@ export function KeyboardShortcuts() {
       if (e.defaultPrevented) return
       if (helpOpen && e.key === 'Tab') {
         trapTab(e, dialogRef.current)
+        return
+      }
+      // Esc closes the help even while the search box has focus (a typing target, so it is handled before that guard).
+      if (helpOpen && e.key === 'Escape') {
+        // Stops the native search-clear that Esc would otherwise trigger in the search box.
+        e.preventDefault()
+        setHelpOpen(false)
         return
       }
       if (isTypingTarget(e.target instanceof HTMLElement ? e.target : null)) return
@@ -177,76 +162,5 @@ export function KeyboardShortcuts() {
 
   if (!open) return null
 
-  // Status is a grey LED: this panel is not a feed, so no live/error state applies.
-  return (
-    <div
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) setHelpOpen(false)
-      }}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 12,
-        background: 'color-mix(in srgb, var(--bg) 85%, transparent)',
-      }}
-    >
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Help: keyboard shortcuts and glossary"
-        style={{ width: 'min(44rem, 100%)', maxHeight: '100%', overflow: 'auto' }}
-      >
-        <Panel
-          code="KBD-01"
-          title="Help"
-          status="offline"
-          meta={
-            <ConsoleButton aria-label="ESC: close help" onClick={() => setHelpOpen(false)}>
-              ESC
-            </ConsoleButton>
-          }
-        >
-          <p className="muted" style={{ margin: 0, padding: '12px 12px 0' }}>
-            KEYBOARD SHORTCUTS
-          </p>
-          {/* Each row wraps: on a phone the description drops under its keys instead of a one-word column (ADR-0014). */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: 12 }}>
-            {ROWS.map((row) => (
-              <div key={row.keys.join(' ')} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 16px' }}>
-                <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap', minWidth: '13em' }}>
-                  {row.keys.map((k) => (
-                    <kbd key={k} style={KEY_CAP}>
-                      {k}
-                    </kbd>
-                  ))}
-                </span>
-                <span style={{ flex: '1 1 14em' }}>{row.label}</span>
-              </div>
-            ))}
-          </div>
-          <p style={{ margin: 0, padding: '0 12px 12px', color: 'var(--muted)', fontSize: '0.8rem' }}>
-            Keys are ignored while typing in a field. A focused YouTube player keeps the keyboard for itself:
-            click elsewhere on the page first.
-          </p>
-          {/* ADR-0018: every acronym's expansion, reachable without hover. Underlined terms on screen show the same text as a tip. */}
-          <p className="muted" style={{ margin: 0, padding: '0 12px' }}>
-            GLOSSARY
-          </p>
-          <dl style={{ margin: 0, padding: '8px 12px 12px', display: 'grid', gridTemplateColumns: 'max-content minmax(0, 1fr)', gap: '6px 16px' }}>
-            {Object.entries(GLOSSARY).map(([term, meaning]) => (
-              <Fragment key={term}>
-                <dt style={{ fontFamily: 'var(--font-data)', color: 'var(--accent)' }}>{term}</dt>
-                <dd style={{ margin: 0 }}>{meaning}</dd>
-              </Fragment>
-            ))}
-          </dl>
-        </Panel>
-      </div>
-    </div>
-  )
+  return <HelpDialog dialogRef={dialogRef} onClose={() => setHelpOpen(false)} />
 }
