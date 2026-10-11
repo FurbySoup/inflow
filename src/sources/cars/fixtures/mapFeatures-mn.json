@@ -1,0 +1,177 @@
+{
+  "data": {
+    "mapFeaturesQuery": {
+      "mapFeatures": [
+        {
+          "bbox": [
+            -93.18755,
+            45.01002,
+            -93.18755,
+            45.01002
+          ],
+          "title": "MN 36: Cleveland Ave SB @ Co Rd B",
+          "tooltip": "MN 36: Cleveland Ave SB @ Co Rd B",
+          "uri": "camera/512007",
+          "features": [
+            {
+              "id": "camera/512007-1065894019",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  -93.18755,
+                  45.01002
+                ]
+              },
+              "properties": {
+                "icon": {
+                  "url": "/images/icon-camera-fill-solid.svg",
+                  "scaledSize": {
+                    "width": 26,
+                    "height": 26
+                  }
+                }
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [
+            {
+              "uri": "camera/512007/2070819040",
+              "url": "https://public.carsprogram.org/cameras/MN/C30559?1791742380000",
+              "category": "IMAGE"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -93.34779,
+            44.94834,
+            -93.34779,
+            44.94834
+          ],
+          "title": "MN 100: T.H.100 SB @ Minnetonka Blvd EB",
+          "tooltip": "MN 100: T.H.100 SB @ Minnetonka Blvd EB",
+          "uri": "camera/512021",
+          "features": [
+            {
+              "id": "camera/512021-2437932864",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  -93.34779,
+                  44.94834
+                ]
+              },
+              "properties": {
+                "icon": {
+                  "url": "/images/icon-camera-fill-solid.svg",
+                  "scaledSize": {
+                    "width": 26,
+                    "height": 26
+                  }
+                }
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [
+            {
+              "uri": "camera/512021/4266030044",
+              "url": "https://public.carsprogram.org/cameras/MN/C2151",
+              "category": "VIDEO"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -93.20183,
+            44.96569,
+            -93.20183,
+            44.96569
+          ],
+          "title": "MN 280: T.H.280 SB @ University Ave",
+          "tooltip": "MN 280: T.H.280 SB @ University Ave",
+          "uri": "camera/512018",
+          "features": [
+            {
+              "id": "camera/512018-825859974",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  -93.20183,
+                  44.96569
+                ]
+              },
+              "properties": {
+                "icon": {
+                  "url": "/images/icon-camera-fill-solid.svg",
+                  "scaledSize": {
+                    "width": 26,
+                    "height": 26
+                  }
+                }
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [
+            {
+              "uri": "camera/512018/2930336804",
+              "url": "https://public.carsprogram.org/cameras/MN/C280",
+              "category": "VIDEO"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -93.24321,
+            45.08661,
+            -93.24321,
+            45.08661
+          ],
+          "title": "MN 65: T.H.65 NB @ Mississippi St",
+          "tooltip": "MN 65: T.H.65 NB @ Mississippi St",
+          "uri": "camera/512030",
+          "features": [
+            {
+              "id": "camera/512030-896291681",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  -93.24321,
+                  45.08661
+                ]
+              },
+              "properties": {
+                "icon": {
+                  "url": "/images/icon-camera-fill-solid.svg",
+                  "scaledSize": {
+                    "width": 26,
+                    "height": 26
+                  }
+                }
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [
+            {
+              "uri": "camera/512030/2388396124",
+              "url": "https://public.carsprogram.org/cameras/MN/C1485",
+              "category": "VIDEO"
+            }
+          ]
+        }
+      ],
+      "error": null
+    }
+  }
+}

@@ -1,0 +1,181 @@
+{
+  "data": {
+    "mapFeaturesQuery": {
+      "mapFeatures": [
+        {
+          "bbox": [
+            -86.14306,
+            39.76022,
+            -86.14306,
+            39.76022
+          ],
+          "title": "I-65: 1-065-110-8-1 FLETCHER AVE",
+          "tooltip": "I-65: 1-065-110-8-1 FLETCHER AVE",
+          "uri": "camera/24616",
+          "features": [
+            {
+              "id": "camera/24616-2632384108",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  -86.14306,
+                  39.76022
+                ]
+              },
+              "properties": {
+                "icon": {
+                  "url": "/images/icon-camera-fill-solid.svg",
+                  "scaledSize": {
+                    "width": 26,
+                    "height": 26
+                  }
+                },
+                "active": true
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [
+            {
+              "uri": "camera/24616/1173162635",
+              "url": "https://public.carsprogram.org/cameras/IN/INDOT_111_B2MlPM_Rqux_4_KJ.flv.png",
+              "category": "VIDEO"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -86.10785,
+            39.70243,
+            -86.10785,
+            39.70243
+          ],
+          "title": "I-65: 1-065-106-0-1 I-465 SOUTH",
+          "tooltip": "I-65: 1-065-106-0-1 I-465 SOUTH",
+          "uri": "camera/24620",
+          "features": [
+            {
+              "id": "camera/24620-4146788715",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  -86.10785,
+                  39.70243
+                ]
+              },
+              "properties": {
+                "icon": {
+                  "url": "/images/icon-camera-fill-solid.svg",
+                  "scaledSize": {
+                    "width": 26,
+                    "height": 26
+                  }
+                },
+                "active": true
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [
+            {
+              "uri": "camera/24620/953026071",
+              "url": "https://public.carsprogram.org/cameras/IN/INDOT_241_AlHO4McMkugnqpez.flv.png",
+              "category": "VIDEO"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -86.10796,
+            39.70281,
+            -86.10796,
+            39.70281
+          ],
+          "title": "I-65: 1-065-106-0-2 I-465 SOUTH",
+          "tooltip": "I-65: 1-065-106-0-2 I-465 SOUTH",
+          "uri": "camera/24621",
+          "features": [
+            {
+              "id": "camera/24621-131759107",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  -86.10796,
+                  39.70281
+                ]
+              },
+              "properties": {
+                "icon": {
+                  "url": "/images/icon-camera-fill-solid.svg",
+                  "scaledSize": {
+                    "width": 26,
+                    "height": 26
+                  }
+                },
+                "active": true
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [
+            {
+              "uri": "camera/24621/290770068",
+              "url": "https://public.carsprogram.org/cameras/IN/INDOT_242_xvY5FbP5Ve5yCwXb.flv.png",
+              "category": "VIDEO"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -86.14113,
+            39.77697,
+            -86.14113,
+            39.77697
+          ],
+          "title": "I-65: 1-065-111-9-_-_-cam-1 I-65/111.9  ST. CLAIR ST",
+          "tooltip": "I-65: 1-065-111-9-_-_-cam-1 I-65/111.9  ST. CLAIR ST",
+          "uri": "camera/24627",
+          "features": [
+            {
+              "id": "camera/24627-923841916",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  -86.14113,
+                  39.77697
+                ]
+              },
+              "properties": {
+                "icon": {
+                  "url": "/images/icon-camera-fill-solid.svg",
+                  "scaledSize": {
+                    "width": 26,
+                    "height": 26
+                  }
+                },
+                "active": true
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [
+            {
+              "uri": "camera/24627/1355772841",
+              "url": "https://public.carsprogram.org/cameras/IN/INDOT_113_TvJxfniKm0UI2_ta.flv.png",
+              "category": "VIDEO"
+            }
+          ]
+        }
+      ],
+      "error": null
+    }
+  }
+}
