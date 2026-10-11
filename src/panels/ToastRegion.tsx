@@ -38,10 +38,13 @@ export function ToastRegion() {
   const [focusKey, setFocusKey] = useState<string | null>(null)
   const [now, setNow] = useState(() => Date.now())
 
+  // Tick the countdowns only while a toast is open.
+  const open = keys.length > 0
   useEffect(() => {
+    if (!open) return
     const timer = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(timer)
-  }, [])
+  }, [open])
 
   useEffect(() => {
     if (!alerts) return
@@ -72,7 +75,13 @@ export function ToastRegion() {
   })
   if (visible.length === 0) return null
 
-  const dismiss = (key: string) => setKeys((prev) => prev.filter((x) => x !== key))
+  // Keyboard users keep their place: after a toast closes, focus moves to the newest remaining toast.
+  const dismiss = (key: string) =>
+    setKeys((prev) => {
+      const rest = prev.filter((x) => x !== key)
+      setFocusKey(rest.length > 0 ? rest[rest.length - 1] : null)
+      return rest
+    })
 
   return (
     <div className="toast-region">

@@ -1,7 +1,6 @@
 import type { Ref } from 'react'
 import { Badge } from './Badge'
 import { formatRemaining } from './format'
-import './css/toast.css'
 
 export interface ToastProps {
   /** Tornado Emergency (catastrophic damage threat): adds an EMERGENCY line under the TOR chip. */
@@ -64,7 +63,8 @@ export function Toast({
           <span className="toast-area">{area}</span>
         </div>
         <div className="toast-row">
-          <span className="toast-countdown">
+          {/* aria-live off: role="alert" announces the toast once; the ticking countdown must not re-announce it every second. */}
+          <span className="toast-countdown" aria-live="off">
             {until ? `until ${until} · ` : ''}
             {countdown}
           </span>
