@@ -41,6 +41,8 @@ export function MapPanel() {
   const setAoi = useAoi((s) => s.setAoi)
   const focus = useAoi((s) => s.focus)
   const setFocus = useAoi((s) => s.setFocus)
+  const aoiRequest = useAoi((s) => s.aoiRequest)
+  const clearAoiRequest = useAoi((s) => s.clearAoiRequest)
   const { data: alerts } = useSource(nwsAlerts)
   const focusGeometry = (focus && alerts?.find((a) => a.id === focus.id)?.geometry) || null
 
@@ -147,6 +149,21 @@ export function MapPanel() {
       { padding: 80, maxZoom: 11 },
     )
   }, [focus, ready])
+
+  // AOI preset requests: fly to the region; the moveend handler then updates the AOI as usual.
+  useEffect(() => {
+    const m = map.current
+    if (!m || !ready || !aoiRequest) return
+    const { west, south, east, north } = aoiRequest.bbox
+    m.fitBounds(
+      [
+        [west, south],
+        [east, north],
+      ],
+      { padding: 20 },
+    )
+    clearAoiRequest()
+  }, [aoiRequest, ready, clearAoiRequest])
 
   useEffect(() => {
     const src = map.current?.getSource('alerts-focus') as maplibregl.GeoJSONSource | undefined
