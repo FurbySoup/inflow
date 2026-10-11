@@ -5,11 +5,10 @@ import { compareAlerts, isPds } from '../lib/hazards'
 import { useAoi } from '../state/aoi'
 import type { Alert } from '../types'
 import { Panel } from './Panel'
-import { queryStatus } from '../lib/feedStatus'
+import { queryFeed } from '../lib/feedStatus'
 import {
   alertDurationMs,
   alertsView,
-  formatAge,
   formatZulu,
   geometryBbox,
   isListed,
@@ -46,7 +45,6 @@ export function AlertsList() {
   const view = alertsView({ isError: query.isError, hasData: query.data !== undefined, rows: listed.length })
   const degraded = view === 'degraded'
   const lastGood = query.dataUpdatedAt > 0 ? query.dataUpdatedAt : null
-  const age = lastGood === null ? '--' : formatAge(now - lastGood)
 
   const select = (a: Alert) => {
     const bbox = geometryBbox(a.geometry)
@@ -58,8 +56,9 @@ export function AlertsList() {
       collapsible
       code="WX-02"
       title="NWS Alerts"
-      status={queryStatus(query)}
-      meta={`${active} ACTIVE · ${age}`}
+      // The header shows the data age (WP-20), so meta is the count only.
+      status={queryFeed(query, nwsAlerts.refreshMs)}
+      meta={`${active} ACTIVE`}
     >
       <AlertList
         ref={listRef}
