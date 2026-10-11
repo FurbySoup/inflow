@@ -1,0 +1,31 @@
+{
+  "@context": { "@version": "1.1" },
+  "id": "https://api.weather.gov/zones/county/GAC033",
+  "type": "Feature",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [-82.096596, 33.230614],
+        [-82.091293, 33.230412],
+        [-82.087494, 33.231113],
+        [-82.081093, 33.233711],
+        [-82.096596, 33.230614]
+      ]
+    ]
+  },
+  "properties": {
+    "@id": "https://api.weather.gov/zones/county/GAC033",
+    "@type": "wx:Zone",
+    "id": "GAC033",
+    "type": "county",
+    "name": "Burke",
+    "effectiveDate": "2026-04-16T18:00:00+00:00",
+    "expirationDate": "2200-01-01T00:00:00+00:00",
+    "state": "GA",
+    "forecastOffice": "https://api.weather.gov/offices/CAE",
+    "gridIdentifier": "CAE",
+    "cwa": ["CAE"],
+    "timeZone": ["America/New_York"]
+  }
+}

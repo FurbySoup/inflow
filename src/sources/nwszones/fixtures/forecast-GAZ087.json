@@ -1,0 +1,31 @@
+{
+  "@context": { "@version": "1.1" },
+  "id": "https://api.weather.gov/zones/forecast/GAZ087",
+  "type": "Feature",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [-81.839394, 32.945313],
+        [-81.836098, 32.944313],
+        [-81.833298, 32.944412],
+        [-81.830795, 32.943111],
+        [-81.839394, 32.945313]
+      ]
+    ]
+  },
+  "properties": {
+    "@id": "https://api.weather.gov/zones/forecast/GAZ087",
+    "@type": "wx:Zone",
+    "id": "GAZ087",
+    "type": "public",
+    "name": "Jenkins",
+    "effectiveDate": "2026-04-16T18:00:00+00:00",
+    "expirationDate": "2200-01-01T00:00:00+00:00",
+    "state": "GA",
+    "forecastOffice": "https://api.weather.gov/offices/CHS",
+    "gridIdentifier": "CHS",
+    "cwa": ["CHS"],
+    "timeZone": ["America/New_York"]
+  }
+}
