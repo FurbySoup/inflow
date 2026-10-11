@@ -6,18 +6,14 @@ describe('startTile', () => {
     expect(startTile(['a'], 'b')).toEqual(['a', 'b'])
   })
 
-  it('drops the oldest past the cap of 3', () => {
-    expect(startTile(['a', 'b', 'c'], 'd')).toEqual(['b', 'c', 'd'])
+  it('has no cap: a fourth start keeps the first three playing', () => {
+    expect(startTile(['a', 'b', 'c'], 'd')).toEqual(['a', 'b', 'c', 'd'])
   })
 
   it('is idempotent: an id already playing is not added again', () => {
     const playing = ['a', 'b']
     expect(startTile(playing, 'a')).toBe(playing)
     expect(startTile(['a', 'b', 'c'], 'b')).toEqual(['a', 'b', 'c'])
-  })
-
-  it('honours a custom max', () => {
-    expect(startTile(['a'], 'b', 1)).toEqual(['b'])
   })
 })
 

@@ -1,19 +1,14 @@
 import type { FeedStatus } from './resolve'
 
-/** Most user-started tiles that may play at once (ADR-0017). Starting one more stops the oldest. */
-export const MAX_PLAYING = 3
-
 /** Live-kind label for a tile: confirmed live, a recording (ended or pinned past video), offline, or not checked. */
 export type LiveKind = 'live' | 'replay' | 'offline' | 'unchecked'
 
 /**
- * Appends `id` as the newest playing tile. Drops the oldest past `max`. Already playing: returns the same array.
- * The input array is never mutated.
+ * Appends `id` as the newest playing tile. There is no cap (ADR-0017, amended 2026-10-11): a started tile plays
+ * until the user stops it. Already playing: returns the same array. The input array is never mutated.
  */
-export function startTile(playing: string[], id: string, max = MAX_PLAYING): string[] {
-  if (playing.includes(id)) return playing
-  const next = [...playing, id]
-  return next.length > max ? next.slice(next.length - max) : next
+export function startTile(playing: string[], id: string): string[] {
+  return playing.includes(id) ? playing : [...playing, id]
 }
 
 /** Removes `id` from the playing set. Not playing: returns the same array. */

@@ -110,11 +110,11 @@ describe('StreamsGrid playback', () => {
     expect(stillButtons()).toHaveLength(1)
   })
 
-  it('a fourth start stops the oldest: at most 3 thumbnails play', () => {
+  it('has no cap: starting a fourth thumbnail keeps the first three playing (user report 2026-10-11)', () => {
     const { container } = render(<StreamsGrid />)
     for (let i = 0; i < 4; i++) fireEvent.click(watchButtons()[0]!)
-    expect(container.querySelectorAll('iframe')).toHaveLength(4)
-    expect(stillButtons()).toHaveLength(3)
+    expect(container.querySelectorAll('iframe')).toHaveLength(5)
+    expect(stillButtons()).toHaveLength(4)
   })
 
   it('STILL returns a playing thumbnail to its still', () => {

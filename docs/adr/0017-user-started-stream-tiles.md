@@ -17,11 +17,11 @@ Wave 7 (WP-23) made thumbnails stills and the primary the only player, to cut CP
   - `○ OFFLINE`;
   - `◌ UNCHECKED`: not checked yet.
   - A playing tile also says `PLAYING`, so a running player is never mistaken for a still, and vice versa.
-- At most **3** user-started tiles play at once. Starting a fourth stops the oldest, which goes back to its still.
+- ~~At most 3 user-started tiles play at once; starting a fourth stops the oldest.~~ **Amended 2026-10-11 (user, after the live check):** there is no cap. Silently stopping the oldest read as a bug (a start elsewhere paused a feed the user was watching, with no feedback). A started tile plays until the user presses `■ STILL` or promotes it.
 - User-started tiles are session state: they don't persist, and the WALL/CHASE presets don't start any.
 - Liveness rules (ADR-0013) still apply: OFFLINE tiles can't be started. An ENDED tile can be watched, but it's labelled `↺ REPLAY`.
 - Only the primary may have sound. Unmuting a tile makes it the primary (`▲ MAIN`).
 
 ## Consequences
-- The worst-case decode cost rises from 1 to 4 players, and that only happens by the user's choice.
+- Decode cost grows with each tile the user starts (one player per started tile, plus the primary). That cost is the user's choice; all tiles are muted.
 - The kit `StreamTile` gains a playing state (an embed on a thumbnail), so re-sync Claude Design.
