@@ -1,6 +1,30 @@
 import type maplibregl from 'maplibre-gl'
+import { expand } from '../ui'
 
 const STORAGE_KEY = 'storm-chasers.layers'
+
+/**
+ * A layer label as DOM nodes (ADR-0018). Each word the glossary knows (GOES, IR, SPC, NEXRAD, SRV, NWS) becomes an
+ * `abbr` with its expansion as the tip; the text itself is unchanged, so the row's name stays the label.
+ */
+export function labelNodes(label: string): Node[] {
+  // Odd indices are the captured words; even indices are the text between them.
+  const nodes: Node[] = []
+  label.split(/\b([A-Z][A-Z0-9]*)\b/).forEach((part, i) => {
+    if (part === '') return
+    const tip = i % 2 === 1 ? expand(part) : undefined
+    if (!tip) {
+      nodes.push(document.createTextNode(part))
+      return
+    }
+    const abbr = document.createElement('abbr')
+    abbr.className = 'abbr'
+    abbr.title = tip
+    abbr.textContent = part
+    nodes.push(abbr)
+  })
+  return nodes
+}
 
 interface Toggleable {
   id: string
@@ -181,7 +205,7 @@ export class LayerControl implements maplibregl.IControl {
     })
     const led = document.createElement('span')
     led.className = 'led'
-    btn.append(led, row.label)
+    btn.append(led, ...labelNodes(row.label))
     btn.addEventListener('click', () => this.toggle(row.id))
     this.leds.set(row.id, led)
     this.buttons.set(row.id, btn)

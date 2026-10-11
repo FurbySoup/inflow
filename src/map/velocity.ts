@@ -4,6 +4,7 @@ import { formatUtcHHMM } from '../sources/radar/frames'
 import { loadNexradSites, nearestSite, weatherWiseUrl, type NexradSite } from '../sources/nexrad/sites'
 import { fetchRidgeMeta, isStale, siteValid, srvTileUrl, type RidgeMetaEntry } from '../sources/nexrad/srv'
 import { useAoi } from '../state/aoi'
+import { expand } from '../ui'
 import type { MapLayer } from './layers'
 
 const SOURCE_ID = 'velocity'
@@ -32,6 +33,26 @@ export interface VelocityReadout {
   /** `15:18Z`, or `--:--Z` when the scan time is unknown. */
   time: string
   stale: boolean
+}
+
+/** A DOM `abbr` with a mouse-over tip (ADR-0018), as used for the readout's terms. */
+function tipNode(text: string, tip: string | undefined): Node {
+  if (!tip) return document.createTextNode(text)
+  const abbr = document.createElement('abbr')
+  abbr.className = 'abbr'
+  abbr.title = tip
+  abbr.textContent = text
+  return abbr
+}
+
+/** The readout's label as DOM: `SRV · KFFC` with SRV and the radar id tipped. Same text as `velocityReadout().label`. */
+export function readoutLabelNodes(view: VelocityView): Node[] {
+  const site = view.label
+  return [
+    tipNode('SRV', expand('SRV')),
+    document.createTextNode(' · '),
+    site ? tipNode(site, `NEXRAD radar site ${site}`) : document.createTextNode('---'),
+  ]
 }
 
 /** Pure: the readout text and stale flag for a view at `nowMs`. */
@@ -92,8 +113,9 @@ class VelocityControl implements maplibregl.IControl {
   private render(): void {
     const r = velocityReadout(this.view, Date.now())
     this.glyph.textContent = r.stale ? '◐ ' : ''
-    this.label.textContent = r.label
-    this.time.textContent = ` · ${r.time}`
+    this.label.replaceChildren(...readoutLabelNodes(this.view))
+    // r.time is always `HH:MMZ` or `--:--Z`; the Z is the tipped UTC suffix.
+    this.time.replaceChildren(` · ${r.time.slice(0, -1)}`, tipNode('Z', expand('Z')))
     this.time.style.display = this.narrow?.matches ? 'none' : ''
     // Stale is sand plus the ◐ glyph, never colour alone.
     this.readout.style.color = r.stale ? 'var(--status-stale)' : ''

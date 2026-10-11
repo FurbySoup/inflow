@@ -3,7 +3,7 @@ import { nwsAlerts } from '../sources/nws/alerts'
 import { useSource } from '../lib/useSource'
 import { useAoi } from '../state/aoi'
 import { isLayerOn, subscribeLayers, toggleLayer } from '../map/LayerControl'
-import { ConsoleButton, formatRemaining } from '../ui'
+import { Abbr, ConsoleButton, formatRemaining } from '../ui'
 import { geometryBbox } from './alertGeometry'
 import { threatSummary } from './threat'
 import './threat.css'
@@ -39,7 +39,11 @@ export function ThreatButton() {
 
   // A failed feed with no last-good data must not read as "no warnings" (INFLOW v1 §10).
   if (query.isError && !query.data) {
-    return <span className="threat-none">■ NWS ALERTS UNAVAILABLE</span>
+    return (
+      <span className="threat-none">
+        ■ <Abbr term="NWS" /> ALERTS UNAVAILABLE
+      </span>
+    )
   }
   if (query.isPending) {
     return <span className="threat-none">◌ LOADING</span>
@@ -65,11 +69,19 @@ export function ThreatButton() {
       <ConsoleButton className="threat-btn" onClick={press} aria-label={`${countText}, focus most severe`}>
         <span aria-hidden="true">▼</span>
         <span className="threat-full">{countText}</span>
-        <span className="threat-short">{count} TOR</span>
-        {pdsCount > 0 && <span className="threat-pds">· {pdsCount} PDS</span>}
+        <span className="threat-short">
+          {count} <Abbr term="TOR" />
+        </span>
+        {pdsCount > 0 && (
+          <span className="threat-pds">
+            · {pdsCount} <Abbr term="PDS" />
+          </span>
+        )}
         {nextExpiryMs !== null && (
           <span className="threat-next">
-            <span className="threat-next-label">NEXT EXP </span>
+            <span className="threat-next-label">
+              NEXT <Abbr term="EXP" title="Expires: time left until the soonest tornado warning ends" />{' '}
+            </span>
             {formatRemaining(nextExpiryMs)}
           </span>
         )}
@@ -79,7 +91,11 @@ export function ThreatButton() {
       </ConsoleButton>
       {/* Mounted with the button, so the live region already exists when the note is written into it. */}
       <span className="threat-note" role="status">
-        {zoneNoteAt !== null ? 'ZONE ALERT · NO POLYGON' : null}
+        {zoneNoteAt !== null ? (
+          <>
+            <Abbr term="ZONE" /> ALERT · NO POLYGON
+          </>
+        ) : null}
       </span>
     </>
   )

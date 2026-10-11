@@ -29,7 +29,7 @@ import { californiaCameras } from '../sources/caltrans/adapter'
 import { useAoi } from '../state/aoi'
 import { queryStatus, type FeedState, type FeedStatus } from '../lib/feedStatus'
 import { Panel } from './Panel'
-import { CameraTile as UiCameraTile, ConsoleButton } from '../ui'
+import { Abbr, CameraTile as UiCameraTile, ConsoleButton } from '../ui'
 
 /** One DOT camera feed: its adapter, the states it covers (the panel only queries it while the AOI touches one), and its credit. */
 interface CameraSource {
@@ -63,10 +63,47 @@ export const CAMERA_SOURCES: CameraSource[] = [
   { adapter: californiaCameras, states: ['CA'], attribution: 'Caltrans' },
 ]
 
+const STATE_NAMES: Readonly<Record<string, string>> = {
+  KS: 'Kansas',
+  NE: 'Nebraska',
+  TX: 'Texas',
+  GA: 'Georgia',
+  FL: 'Florida',
+  SC: 'South Carolina',
+  IA: 'Iowa',
+  MN: 'Minnesota',
+  IN: 'Indiana',
+  AZ: 'Arizona',
+  ID: 'Idaho',
+  AK: 'Alaska',
+  LA: 'Louisiana',
+  CT: 'Connecticut',
+  NV: 'Nevada',
+  PA: 'Pennsylvania',
+  VT: 'Vermont',
+  NH: 'New Hampshire',
+  ME: 'Maine',
+  WA: 'Washington',
+  CA: 'California',
+}
+
+/** Footer names that are agency acronyms (511GA, WSDOT, TxDOT, Caltrans) get a tip; brand names (KanDrive, CTroads) don't. */
+const AGENCY_NAME = /511|DOT|Caltrans/
+
+/** Tip for a footer agency name, e.g. "Georgia DOT traveller site". Multi-state sources list their states. */
+function agencyTip(source: CameraSource): string {
+  const names = source.states.map((st) => STATE_NAMES[st] ?? st).join(' / ')
+  return `${names} DOT traveller site`
+}
+
 /** "NO DOT CAMERA COVERAGE IN AOI — COVERED: FL · GA · …" built from the source list. */
-function noCoverageText(sources: readonly CameraSource[]): string {
+function NoCoverage({ sources }: { sources: readonly CameraSource[] }) {
   const covered = [...new Set(sources.flatMap((s) => s.states))].sort()
-  return `NO DOT CAMERA COVERAGE IN AOI — COVERED: ${covered.join(' · ')}`
+  return (
+    <>
+      NO <Abbr term="DOT" /> CAMERA COVERAGE IN <Abbr term="AOI" /> — COVERED: {covered.join(' · ')}
+    </>
+  )
 }
 
 const MAX_TILES = 12
@@ -202,7 +239,9 @@ export function CamerasPanel() {
   if (covered.length === 0) {
     return (
       <Panel collapsible code="CCTV-01" title="DOT Cameras" status="offline">
-        <p className="muted">{noCoverageText(CAMERA_SOURCES)}</p>
+        <p className="muted">
+          <NoCoverage sources={CAMERA_SOURCES} />
+        </p>
       </Panel>
     )
   }
@@ -239,7 +278,18 @@ export function CamerasPanel() {
         status === 'live' && <p className="muted">NO CAMERAS IN VIEW</p>
       )}
       <p className="muted" style={{ marginTop: 8 }}>
-        Snapshots: {covered.map((r) => `${r.source.attribution} (${r.source.states.join('/')})`).join(' · ')}
+        Snapshots:{' '}
+        {covered.map((r, i) => (
+          <span key={r.source.attribution}>
+            {i > 0 && ' · '}
+            {AGENCY_NAME.test(r.source.attribution) ? (
+              <Abbr term={r.source.attribution} title={agencyTip(r.source)} />
+            ) : (
+              r.source.attribution
+            )}{' '}
+            ({r.source.states.join('/')})
+          </span>
+        ))}
       </p>
     </Panel>
   )
