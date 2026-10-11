@@ -3,6 +3,7 @@ import { useAoi } from '../state/aoi'
 import { LayoutMenu } from './LayoutMenu'
 import { AoiPresets } from './AoiPresets'
 import { KeysButton } from './KeyboardShortcuts'
+import { NotifyControl } from '../notify/NotifyControl'
 import { ThreatButton, WarningsHiddenChip } from './ThreatButton'
 import { useSource } from '../lib/useSource'
 import { nwsPoint } from '../sources/nws/points'
@@ -62,6 +63,7 @@ export function Topbar() {
       <OutlookRisk />
       <AoiPresets />
       <span className="spacer" />
+      <NotifyControl />
       <KeysButton />
       <LayoutMenu />
       <span className="topbar-item">

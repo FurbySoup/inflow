@@ -8,6 +8,7 @@ import { ConsoleSplitter, Splitter } from './panels/Splitter'
 import { Topbar } from './panels/Topbar'
 import { KeyboardShortcuts } from './panels/KeyboardShortcuts'
 import { ToastRegion } from './panels/ToastRegion'
+import { NotifyEngine } from './notify/NotifyEngine'
 import { useLayout } from './state/layout'
 
 // Panel codes of the console row, left to right (must match each panel's `code`).
@@ -82,6 +83,7 @@ export default function App() {
       </div>
       <KeyboardShortcuts />
       <ToastRegion />
+      <NotifyEngine />
     </div>
   )
 }
