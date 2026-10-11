@@ -157,6 +157,9 @@ Merge order: 26, 27, 32, 28, 29, 30, then 31, 34, 33. After merging: the full AD
     - a `chaser-positions` layer joins the roster by verified SN `public_id`;
     - staleness tiers: live under 5 min, dimmed to 20, ghosted to 60, then hidden;
     - each map marker links to its stream tile.
+  - **Pin a chaser on the map** (user, 2026-10-11): from a stream tile, pin that chaser's position as a map marker that follows them, so stream and location sit side by side. It depends on the position source above:
+    - with SN permission, the pin is the roster join;
+    - without it, nothing is drawn (no guessed or scraped positions), and the tile offers only the SN MAP ↗ link-out.
 
 **Needs the v2 Worker:**
 - push notifications while the tab is closed (cron poller + Web Push);
