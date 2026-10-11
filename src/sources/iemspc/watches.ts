@@ -44,15 +44,22 @@ export function normalizeWatches(raw: GeoJSON.FeatureCollection, now: number): W
   return out
 }
 
-export const spcWatchBoxes: SourceAdapter<GeoJSON.FeatureCollection, WatchFeature> = {
+export interface WatchesRaw {
+  data: GeoJSON.FeatureCollection
+  /** When the feed was fetched; expiry is judged against this, keeping normalize pure. */
+  fetchedAt: string
+}
+
+// spc_watch_outline has no PDS flag, so PDS watches are not drawn distinctly. The spcwatch.py `is_pds` join was deliberately not added (unverified).
+export const spcWatchBoxes: SourceAdapter<WatchesRaw, WatchFeature> = {
   id: 'spc-watch-boxes',
   refreshMs: 180_000,
   async fetch(_aoi, signal) {
     const res = await fetch(SPC_WATCH_URL, { signal })
     if (!res.ok) throw new Error(`SPC watch boxes ${res.status}`)
-    return res.json()
+    return { data: await res.json(), fetchedAt: new Date().toISOString() }
   },
-  normalize(raw, now = Date.now()) {
-    return normalizeWatches(raw, now)
+  normalize(raw) {
+    return normalizeWatches(raw.data, Date.parse(raw.fetchedAt))
   },
 }

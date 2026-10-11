@@ -1,11 +1,23 @@
 import { describe, expect, it } from 'vitest'
 import mcdJson from './fixtures/spc-mcd.geojson?raw'
-import { normalizeMesoscale } from './mesoscale'
+import { normalizeMesoscale, spcMesoscale } from './mesoscale'
 
 const raw = (): GeoJSON.FeatureCollection => JSON.parse(mcdJson)
 const at = (iso: string) => Date.parse(iso)
 
+describe('spcMesoscale.normalize', () => {
+  it('judges expiry against the fetchedAt stamp, not the clock', () => {
+    const features = spcMesoscale.normalize({ data: raw(), fetchedAt: '2025-05-06T00:10:00Z' })
+    expect(features.map((f) => f.properties.num)).toEqual([703, 706])
+  })
+})
+
 describe('normalizeMesoscale', () => {
+  it('treats now equal to expire as expired', () => {
+    const features = normalizeMesoscale(raw(), at('2025-05-06T00:00:00Z'))
+    expect(features.map((f) => f.properties.num)).toEqual([703, 706])
+  })
+
   it('labels each active discussion MD <num> and keeps only the trimmed shape', () => {
     const features = normalizeMesoscale(raw(), at('2025-05-05T23:00:00Z'))
     expect(features.map((f) => f.properties.label)).toEqual(['MD 702', 'MD 703', 'MD 706'])

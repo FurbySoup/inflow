@@ -35,15 +35,21 @@ export function normalizeMesoscale(raw: GeoJSON.FeatureCollection, now: number):
   return out
 }
 
-export const spcMesoscale: SourceAdapter<GeoJSON.FeatureCollection, MesoscaleFeature> = {
+export interface MesoscaleRaw {
+  data: GeoJSON.FeatureCollection
+  /** When the feed was fetched; expiry is judged against this, keeping normalize pure. */
+  fetchedAt: string
+}
+
+export const spcMesoscale: SourceAdapter<MesoscaleRaw, MesoscaleFeature> = {
   id: 'spc-mesoscale',
   refreshMs: 180_000,
   async fetch(_aoi, signal) {
     const res = await fetch(SPC_MCD_URL, { signal })
     if (!res.ok) throw new Error(`SPC mesoscale discussions ${res.status}`)
-    return res.json()
+    return { data: await res.json(), fetchedAt: new Date().toISOString() }
   },
-  normalize(raw, now = Date.now()) {
-    return normalizeMesoscale(raw, now)
+  normalize(raw) {
+    return normalizeMesoscale(raw.data, Date.parse(raw.fetchedAt))
   },
 }

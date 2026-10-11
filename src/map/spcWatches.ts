@@ -21,6 +21,7 @@ async function load(map: maplibregl.Map) {
   }
 }
 
+// spc_watch_outline has no PDS flag, so PDS watches are not drawn distinctly; the spcwatch.py is_pds join was deliberately not added (unverified).
 const KIND_COLOR: maplibregl.ExpressionSpecification = [
   'match',
   ['get', 'kind'],
@@ -46,7 +47,7 @@ export const spcWatchesLayer: MapLayer = {
       source: SOURCE_ID,
       layout: {
         'text-field': ['get', 'label'],
-        'text-font': ['Noto Sans Bold'],
+        'text-font': ['Noto Sans Regular'],
         'text-size': 12,
         'text-allow-overlap': false,
       },
