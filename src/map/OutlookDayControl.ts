@@ -69,19 +69,9 @@ export class OutlookDayControl implements maplibregl.IControl {
 
     const head = document.createElement('button')
     head.type = 'button'
+    // Same head as the Layers control: its class carries the hover and :focus-visible signifiers (ADR-0012).
+    head.className = 'layer-ctrl-head'
     head.setAttribute('aria-controls', body.id)
-    Object.assign(head.style, {
-      display: 'block',
-      background: 'none',
-      border: 'none',
-      padding: '4px 10px',
-      color: 'inherit',
-      font: 'inherit',
-      letterSpacing: 'inherit',
-      textTransform: 'inherit',
-      textAlign: 'left',
-      cursor: 'pointer',
-    })
     head.addEventListener('click', () => this.setOpen(!this.open))
 
     root.append(head, body)

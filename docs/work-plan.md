@@ -80,7 +80,26 @@ Expected conflicts:
 
 After merge: update the kit previews where builders didn't, then re-sync Claude Design.
 
-## Wave 8 (any area): planned 2026-10-11
+## Wave 8 (any area): merged 2026-10-11
+- **Verifiers caught:** an always-mounted empty live region leaving a 24 px gap in the top bar (WP-26).
+- **Orchestrator review caught:**
+  - a Windows case clash I wrote into WP-31 (`OutlookRisk.tsx` / `outlookRisk.ts`, now `spcRisk.ts`);
+  - a GOES credit that couldn't follow the sector (now one sector-neutral credit);
+  - New England 511 records carry an exact `areaId` (used before `stateAt`).
+- **Live checks caught:**
+  - the top bar wrapped to two rows at 1920 with a live TOR (one AOI item now carries the AOI time; zone clocks show HH:MM);
+  - the AOI label led with far states alphabetically (now nearest first);
+  - the 3-tile stream cap silently stopping feeds (user report: no cap now, ADR-0017 amended);
+  - the OutlookDayControl head had no `:focus-visible` style (it now uses `layer-ctrl-head`).
+- **Viewport matrix:** passes at all 7 sizes (no page scroll, map on the first screen, 28 px touch buttons).
+- **Still open:**
+  - real-click check of the WeatherWise link, Layers toggle and day buttons with the browser pane visible (the pane was hidden, so the map never loaded);
+  - Claude Design re-sync for StreamTile + Badge (run `/design-sync`);
+  - D4–8 render and the D1→D3 switch on a live map.
+- **Follow-ups (minor, from verifiers):**
+  - OutlookRisk refetches 3 SPC files on every pan (query key includes the bbox);
+  - the panel LED ignores OpenMHz list errors;
+  - two OpenMHz systems share the name "Alabama Interoperable Radio System".
 Endpoints were re-verified on 2026-10-11 by curl, plus the browser pane for OpenMHz. The facts are in each package and in the ADR-0004 corrections.
 
 Prep (done, on `main`):
