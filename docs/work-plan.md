@@ -9,7 +9,18 @@ Basic resizing (feeds column + console row splitters, ADR-0011), shared types, a
 - Wave 1 (WP-01, 02, 03, 05, 06, 07): **merged** 2026-10-10. Verifier caught: impure SPC normalize, CARS preflight CORS (proxied).
 - Wave 2 (WP-04, 08, 09): **merged** 2026-10-10. Verifier caught: stale focus, eager off-screen TxDOT fetches.
 - Wave 3 (WP-10): **merged** 2026-10-10. Orchestrator follow-up: collapsible wired on all panels; collapsed headers compacted.
-- Wave 4 (WP-11…16): **in progress** 2026-10-11 — WP-16 merged. Wave 5 (WP-17) follows.
+- Wave 4 (WP-11…16): **merged** 2026-10-11.
+  - Verifiers caught: impure SPC normalize (WP-13), an IndexedDB open-failure path that disabled outlines for the session (WP-14), and unguarded 12 h camera-list caching (WP-11).
+  - The orchestrator review caught county-only zones dropping every Flood Watch (WP-14).
+  - Live checks caught:
+    - statements/advisories cluttering the outline layer (now Watch/Warning only);
+    - a 10-state AOI table (no LA/MS for DIXIE);
+    - PLAINS never pressing on wide maps;
+    - the short-landscape top bar hiding controls.
+  - Follow-ups:
+    - back off when a GA/FL list walk keeps failing;
+    - optional `status` slot on `StreamTile`, so ENDED/OFFLINE can sit in the caption (kit change + re-sync).
+- Wave 5 (WP-17) is next: do prep P3 first, then confirm the keymap with the user.
 
 ## Wave 4 (v1.1 coverage polish)
 
