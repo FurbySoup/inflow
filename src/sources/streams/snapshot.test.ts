@@ -45,6 +45,7 @@ describe('snapshotPlaceholder', () => {
     expect(snapshotPlaceholder('unknown')).toBe('◐ STALE')
     expect(snapshotPlaceholder('offline')).toBe('○ OFFLINE')
     expect(snapshotPlaceholder(undefined)).toBe('connecting…')
+    expect(snapshotPlaceholder('live')).toBe('◐ NO STILL')
   })
 })
 

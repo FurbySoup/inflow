@@ -29,6 +29,8 @@ export function snapshotPlaceholder(status: FeedStatus | undefined): string {
   if (status === 'unknown') return '◐ STALE'
   if (status === 'offline') return '○ OFFLINE'
   if (status === 'ended') return '○ ENDED'
+  // Live but no resolved video id (e.g. a channel whose embed names no video): no still exists, so don't promise one.
+  if (status === 'live') return '◐ NO STILL'
   return 'connecting…'
 }
 

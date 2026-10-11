@@ -89,7 +89,7 @@ export function StreamTile({
               <img
                 className="stream-still-img"
                 src={still}
-                alt={title}
+                alt="" // the caption already names the feed
                 decoding="async"
                 onError={() => setFailedSrc(still)}
               />
@@ -108,7 +108,7 @@ export function StreamTile({
             onClick={onToggleSound}
             aria-pressed={soundOn}
             aria-label={soundOn ? 'Mute main feed' : 'Unmute main feed'}
-            title={soundOn ? 'Sound on: feeds swapped to main play with sound' : 'Sound off: main feed is muted'}
+            title={soundOn ? 'Sound on: feeds promoted to main play with sound' : 'Sound off: main feed is muted'}
           >
             {soundOn ? '🔊 SOUND' : '🔇 MUTED'}
           </button>

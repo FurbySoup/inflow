@@ -24,7 +24,7 @@ import { StreamTile, type FeedStatus as LedStatus } from '../ui'
 import { Panel } from './Panel'
 
 // Browsers block autoplay-with-sound until the page has had a user gesture, so the main feed only
-// switches to an unmuted embed after the first click/keypress (a swap click counts).
+// switches to an unmuted embed after the first click/keypress (a ▲ MAIN click counts).
 function useUserActivated() {
   const [active, setActive] = useState(() => navigator.userActivation?.hasBeenActive ?? false)
   useEffect(() => {
