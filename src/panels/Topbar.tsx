@@ -3,6 +3,7 @@ import { useAoi } from '../state/aoi'
 import { LayoutMenu } from './LayoutMenu'
 import { AoiPresets } from './AoiPresets'
 import { KeysButton } from './KeyboardShortcuts'
+import { ThreatButton, WarningsHiddenChip } from './ThreatButton'
 
 const fmt = (d: Date, timeZone?: string) =>
   d.toLocaleTimeString('en-US', { hour12: false, timeZone })
@@ -29,6 +30,8 @@ export function Topbar() {
       <span className="topbar-item">
         AOI <strong>{states.length ? states.join(' · ') : '—'}</strong>
       </span>
+      <ThreatButton />
+      <WarningsHiddenChip />
       <AoiPresets />
       <span className="spacer" />
       <KeysButton />

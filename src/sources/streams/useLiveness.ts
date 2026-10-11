@@ -2,7 +2,7 @@ import { useQueries, useQueryClient } from '@tanstack/react-query'
 
 import type { ChaserStream } from './curated'
 import { checkLiveness } from './liveness'
-import { mergeLiveness, resolveFeed, type FeedResolution, type LivenessResult } from './resolve'
+import { currentVideoId, mergeLiveness, resolveFeed, type FeedResolution, type LivenessResult } from './resolve'
 
 export const LIVENESS_INTERVAL_MS = 5 * 60_000
 
@@ -31,7 +31,7 @@ export function useLiveness(feeds: ChaserStream[], isActive: (id: string) => boo
   const resolved = new Map<string, FeedResolution>()
   feeds.forEach((feed, i) => {
     const data = results[i]?.data
-    if (data !== undefined) resolved.set(feed.id, resolveFeed(feed.youtube, data))
+    if (data !== undefined) resolved.set(feed.id, { ...resolveFeed(feed.youtube, data), videoId: currentVideoId(feed.youtube, data) })
   })
   return resolved
 }

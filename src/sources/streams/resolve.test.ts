@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { normalizeStreams } from './curated'
-import { applyResolution, mergeLiveness, resolveFeed, shouldAutoplay, withAutoplay } from './resolve'
+import { applyResolution, currentVideoId, mergeLiveness, resolveFeed, shouldAutoplay, withAutoplay } from './resolve'
 
 const pinnedWithChannel = { videoId: 'Syyvt9aidlQ', channelId: 'UCPqLI_AohMn1jnFg8ocMyHA' }
 const pinnedOnly = { videoId: 'vGA' }
@@ -142,5 +142,26 @@ describe('withAutoplay', () => {
     const url = withAutoplay('https://www.youtube.com/embed/live_stream?channel=UC1&autoplay=1&mute=1', false)
     expect(new URL(url).searchParams.get('channel')).toBe('UC1')
     expect(new URL(url).searchParams.has('autoplay')).toBe(false)
+  })
+})
+
+describe('currentVideoId', () => {
+  it('is the pin while it is live or ended with no fallback', () => {
+    expect(currentVideoId(pinnedWithChannel, { watch: 'live' })).toBe('Syyvt9aidlQ')
+    expect(currentVideoId(pinnedOnly, { watch: 'ended' })).toBe('vGA')
+  })
+
+  it('is the channel fallback once the pin has ended', () => {
+    expect(currentVideoId(pinnedWithChannel, { watch: 'ended', channel: { videoId: '6nTCsMwGwoY' } })).toBe('6nTCsMwGwoY')
+  })
+
+  it('is the channel video for channel-only feeds only when the channel is confirmed live', () => {
+    expect(currentVideoId(channelOnly, { channel: { videoId: 'abcdefghijk' } })).toBe('abcdefghijk')
+    expect(currentVideoId(channelOnly, { channel: 'offline' })).toBeUndefined()
+    expect(currentVideoId(channelOnly, { channel: 'unknown' })).toBeUndefined()
+  })
+
+  it('is unknown before any check has run', () => {
+    expect(currentVideoId(pinnedWithChannel, undefined)).toBeUndefined()
   })
 })

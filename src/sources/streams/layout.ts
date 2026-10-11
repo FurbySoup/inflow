@@ -49,7 +49,7 @@ export function isInAoi(stream: ChaserStream, aoiStates: string[]): boolean {
  * Primary is the stored id if still present, otherwise the first feed in sorted order (live first).
  * A choice remembered from an earlier session (`chosenThisSession` false) gives way once it is known
  * to be ENDED/OFFLINE, so a reload doesn't reopen yesterday's broadcast; the id is kept and returns
- * if it goes live. A choice made this session (click, ⇱ MAIN, `[`/`]`) is always honoured.
+ * if it goes live. A choice made this session (click, ▲ MAIN, `[`/`]`) is always honoured.
  */
 export function layoutStreams<T extends ChaserStream & { status?: FeedStatus }>(
   sorted: T[],
