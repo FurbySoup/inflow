@@ -1,0 +1,46 @@
+{
+  "id": "https://api.weather.gov/points/33.7,-84.4",
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-84.4, 33.7]
+  },
+  "properties": {
+    "@id": "https://api.weather.gov/points/33.7,-84.4",
+    "@type": "wx:Point",
+    "cwa": "FFC",
+    "type": "land",
+    "forecastOffice": "https://api.weather.gov/offices/FFC",
+    "gridId": "FFC",
+    "gridX": 50,
+    "gridY": 85,
+    "forecast": "https://api.weather.gov/gridpoints/FFC/50,85/forecast",
+    "forecastHourly": "https://api.weather.gov/gridpoints/FFC/50,85/forecast/hourly",
+    "forecastGridData": "https://api.weather.gov/gridpoints/FFC/50,85",
+    "observationStations": "https://api.weather.gov/gridpoints/FFC/50,85/stations",
+    "relativeLocation": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-84.4226745, 33.7629088]
+      },
+      "properties": {
+        "city": "Atlanta",
+        "state": "GA",
+        "distance": {
+          "unitCode": "wmoUnit:m",
+          "value": 0
+        },
+        "bearing": {
+          "unitCode": "wmoUnit:degree_(angle)",
+          "value": 0
+        }
+      }
+    },
+    "forecastZone": "https://api.weather.gov/zones/forecast/GAZ033",
+    "county": "https://api.weather.gov/zones/county/GAC121",
+    "fireWeatherZone": "https://api.weather.gov/zones/fire/GAZ033",
+    "timeZone": "America/New_York",
+    "radarStation": "KFFC"
+  }
+}

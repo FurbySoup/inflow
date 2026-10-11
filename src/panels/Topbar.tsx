@@ -4,6 +4,9 @@ import { LayoutMenu } from './LayoutMenu'
 import { AoiPresets } from './AoiPresets'
 import { KeysButton } from './KeyboardShortcuts'
 import { ThreatButton, WarningsHiddenChip } from './ThreatButton'
+import { useSource } from '../lib/useSource'
+import { nwsPoint } from '../sources/nws/points'
+import { DEVICE_ZONE, sameOffset, zoneLabel } from './clock'
 
 // With 52 codes a wide AOI can touch 20+ states; the top bar shows the first few and a count.
 const MAX_AOI_CODES = 6
@@ -12,12 +15,18 @@ const aoiLabel = (states: string[]) =>
     ? `${states.slice(0, MAX_AOI_CODES).join(' · ')} +${states.length - MAX_AOI_CODES}`
     : states.join(' · ')
 
-const fmt = (d: Date, timeZone?: string) =>
-  d.toLocaleTimeString('en-US', { hour12: false, timeZone })
+const fmtUtc = (d: Date) => d.toLocaleTimeString('en-US', { hourCycle: 'h23', timeZone: 'UTC' })
 
 export function Topbar() {
   const [now, setNow] = useState(() => new Date())
   const states = useAoi((s) => s.states)
+  const point = useSource(nwsPoint).data?.[0]
+  const aoiZone = point?.timeZone
+  // LOCAL only earns its place when the device is on a different offset from the AOI (or there is no AOI zone to compare).
+  const showLocal = !aoiZone || !sameOffset(now, DEVICE_ZONE, aoiZone)
+  const aoiTitle = point
+    ? `${point.place ?? point.timeZone} (AOI centre; an AOI spanning two zones uses the centre)`
+    : 'AOI centre: no NWS zone (offshore or loading)'
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000)
@@ -44,11 +53,16 @@ export function Topbar() {
       <KeysButton />
       <LayoutMenu />
       <span className="topbar-item">
-        UTC <strong className="clock">{fmt(now, 'UTC')}Z</strong>
+        UTC <strong className="clock">{fmtUtc(now)}Z</strong>
       </span>
-      <span className="topbar-item topbar-local">
-        LOCAL <strong className="clock">{fmt(now)}</strong>
+      <span className="topbar-item">
+        AOI <strong className="clock" title={aoiTitle}>{aoiZone ? zoneLabel(now, aoiZone) : '—'}</strong>
       </span>
+      {showLocal && (
+        <span className="topbar-item topbar-local">
+          LOCAL <strong className="clock">{zoneLabel(now, DEVICE_ZONE)}</strong>
+        </span>
+      )}
     </header>
   )
 }
