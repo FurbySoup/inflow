@@ -1,0 +1,45 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 1022,
+      "geometry": { "type": "Point", "coordinates": [-122.28229999999996, 47.507922000000065] },
+      "properties": {
+        "OBJECTID": 1022,
+        "CameraTitle": "I-5 at MP 158: Boeing Access Rd North",
+        "ImageURL": "https://images.wsdot.wa.gov/nw/005vc15805.jpg"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 1113,
+      "geometry": { "type": "Point", "coordinates": [-117.48363799999998, 47.63125500000007] },
+      "properties": {
+        "OBJECTID": 1113,
+        "CameraTitle": "I-90 at MP 277.5: US 2 Interchange",
+        "ImageURL": "https://images.wsdot.wa.gov/spokane/wsdot_090_27586_002.jpg"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 3011,
+      "geometry": { "type": "Point", "coordinates": [-122.63510999999994, 45.53036000000003] },
+      "properties": {
+        "OBJECTID": 3011,
+        "CameraTitle": "I-84 at 28th",
+        "ImageURL": "https://www.tripcheck.com/RoadCams/cams/i8428th_pid578.jpg"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 9377,
+      "geometry": { "type": "Point", "coordinates": [-122.39288299999998, 47.52671800000007] },
+      "properties": {
+        "OBJECTID": 9377,
+        "CameraTitle": "WSF Fauntleroy Way and Cloverdale St.",
+        "ImageURL": "https://www.seattle.gov/trafficcams/images/Fauntleroy_SW_Cloverdale_NS.jpg"
+      }
+    }
+  ]
+}
