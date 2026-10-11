@@ -27,8 +27,8 @@ export interface Hwo {
   /** Paragraphs separated by a blank line. */
   dayOne: string
   daysTwoToSeven: string
-  /** True when the spotter section asks for spotter reports; false when it says activation is not expected or not needed. */
-  spotterActivation: boolean
+  /** True when activation is requested or expected; false when the text says it is not expected, needed or requested; null when no spotter sentence exists. */
+  spotterActivation: boolean | null
   url: string
 }
 
@@ -85,9 +85,13 @@ export function parseHwo(text: string): HwoSections {
 
 const NOT_ACTIVATED = /\bnot (?:be )?(?:expected|needed|requested)\b/i
 
-/** "Spotter activation will not be needed" and "Spotter Activation Not Expected" are both no. */
-export function isSpotterActivation(spotter: string): boolean {
-  return /spotter activation/i.test(spotter) && !NOT_ACTIVATED.test(spotter)
+/**
+ * "Spotter activation will not be needed" and "Spotter Activation Not Expected" are both false.
+ * Null when there is no spotter activation sentence: the caller shows nothing rather than guess.
+ */
+export function isSpotterActivation(spotter: string): boolean | null {
+  if (!/spotter activation/i.test(spotter)) return null
+  return !NOT_ACTIVATED.test(spotter)
 }
 
 export function fullTextUrl(cwa: string): string {

@@ -55,7 +55,10 @@ export function HwoStrip() {
         style={toggleStyle}
       >
         {open ? '▾' : '▸'} <Abbr term="HWO" /> · <Abbr term={hwo.cwa} title="NWS office" /> · ISSUED {hhmm(hwo.issued)}
-        <Abbr term="Z" /> · SPOTTERS: {hwo.spotterActivation ? 'NEEDED' : 'NOT NEEDED'}
+        <Abbr term="Z" />
+        {hwo.spotterActivation !== null && (
+          <> · SPOTTERS: {hwo.spotterActivation ? 'NEEDED' : 'NOT NEEDED'}</>
+        )}
       </ConsoleButton>
       {open && (
         <div id={id} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>

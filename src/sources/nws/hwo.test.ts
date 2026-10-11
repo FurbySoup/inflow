@@ -59,6 +59,14 @@ describe('spotter flag', () => {
     expect(isSpotterActivation(parseHwo(tsa.productText).spotter)).toBe(false)
   })
 
+  it('is null when no spotter activation sentence exists', () => {
+    expect(isSpotterActivation('')).toBeNull()
+    expect(isSpotterActivation('Spotters are encouraged to report severe weather.')).toBeNull()
+    const noSentence = `.DAY ONE...Tonight.\n\nSevere storms likely.\n\n$$\n`
+    const [item] = nwsHwo.normalize({ cwa: 'FFC', product: { ...ffc, productText: noSentence } })
+    expect(item.spotterActivation).toBeNull()
+  })
+
   it('is true when the spotter section asks for activation (synthetic text: no real product in the fixtures)', () => {
     const synthetic = `.DAY ONE...Tonight.\n\nSevere storms likely.\n\n.SPOTTER INFORMATION STATEMENT...\n\nSpotter activation will be needed this evening.\n\n$$\n`
     const product: NwsHwoProduct = { ...ffc, productText: synthetic }

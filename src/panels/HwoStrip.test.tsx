@@ -59,6 +59,14 @@ describe('HwoStrip', () => {
     expect(screen.getByRole('button').textContent).toContain('SPOTTERS: NEEDED')
   })
 
+  it('omits the SPOTTERS part when the product has no spotter sentence (null, never guessed)', () => {
+    mockQuery({ data: [{ ...hwo, spotterActivation: null }] })
+    render(<HwoStrip />)
+    const text = screen.getByRole('button').textContent
+    expect(text).toBe('▸ HWO · FFC · ISSUED 0951Z')
+    expect(text).not.toContain('SPOTTERS')
+  })
+
   it('renders nothing while loading and when the office has no HWO', () => {
     mockQuery({ data: undefined, isPending: true })
     const { container, rerender } = render(<HwoStrip />)
