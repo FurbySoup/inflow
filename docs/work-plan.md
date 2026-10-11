@@ -40,6 +40,28 @@ WeatherWise research (2026-10-11):
 ## Waves 7–9 — outline (from the user's recurring-use brief and the INFLOW design handoff, 2026-10-11)
 Live proofing used one area and one known event. These waves make INFLOW work for **any area, every day**. Packages are written when each wave is approved; research is in this session's reports, summarised here.
 
+## Wave 7 (INFLOW design implementation) — approved 2026-10-11
+Prep (done):
+- **P7a:** `Alert.damageThreat` + `Alert.pds`, plus `src/lib/hazards.ts` (codes, PDS/emergency, sort order, most severe TOR).
+- **P7b:** one CSS file per kit component (`src/ui/css/*.css`).
+- **ADR-0015:** INFLOW adopted; design-wave kit ownership allowed.
+
+| WP | Title | Wave | Owns (exclusive) | Registry edits allowed |
+|---|---|---|---|---|
+| [19](packages/WP-19-alert-rows.md) | Alert rows + NWS feed-error state | 7 | kit AlertList/AlertRow + `css/alerts.css` + previews; `AlertsList.tsx`, `alertGeometry.ts` | — |
+| [20](packages/WP-20-status-leds-data-age.md) | Shape LEDs + data age in headers | 7 | kit StatusLed, Panel + `css/led.css`, `css/panel.css` + previews; `panels/Panel.tsx`, `lib/feedStatus.ts` | — |
+| [21](packages/WP-21-threat-button.md) | Top-bar threat button + WARNINGS HIDDEN | 7 | `ThreatButton.tsx`, `threat.ts`, `Topbar.tsx` | `LayerControl.ts` isLayerOn/subscribe |
+| [22](packages/WP-22-map-styling.md) | Map casing, watches, focus, palettes | 7 | `MapPanel.tsx`, `mapStyle.ts`, paint in watchOutlines/spcWatches/spcOutlook/stormReports/spcMesoscale | — |
+| [23](packages/WP-23-stream-snapshots.md) | Snapshot thumbnails + ▲ promote | 7 | kit StreamTile + `css/stream.css` + preview; `StreamsGrid.tsx`, `sources/streams/**` | — |
+| [24](packages/WP-24-tor-toasts.md) | New-TOR toasts | 7 | new kit Toast + `css/toast.css` + preview; `ToastRegion.tsx`, `newAlerts.ts` | `App.tsx` mount |
+| [25](packages/WP-25-layout-presets.md) | data-preset layouts + splitter grips | 7 | `App.tsx`, `index.css` layout, `layout.ts`, `Splitter.tsx`, `LayoutMenu.tsx` | — |
+
+Expected conflicts:
+- `App.tsx`: the WP-24 mount inside the WP-25 rewrite;
+- the `index.ts` / `styles.css` lines for the new Toast, added by the orchestrator.
+
+After merge: update the kit previews where builders didn't, then re-sync Claude Design.
+
 **Wave 7: INFLOW design implementation** (`docs/design/inflow-v1/HANDOFF.md` §9). D0 (tokens, fonts, brand) is done.
 - Orchestrator prep:
   - split `src/ui/styles.css` into per-component files, so builders can own kit components without conflicts (kit-css.mjs inlines them for the design sync);
