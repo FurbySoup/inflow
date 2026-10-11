@@ -12,7 +12,6 @@ function labelFormatter(timeZone: string): Intl.DateTimeFormat {
       hourCycle: 'h23',
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit',
       timeZoneName: 'short',
     })
     labelFormatters.set(timeZone, f)
@@ -38,11 +37,11 @@ function wallFormatter(timeZone: string): Intl.DateTimeFormat {
   return f
 }
 
-/** Wall-clock time in a zone with its short name, e.g. "14:02:11 EDT". */
+/** Wall-clock time in a zone with its short name, e.g. "14:02 EDT". Minutes only: UTC carries the seconds, and the top bar must fit one row. */
 export function zoneLabel(now: Date, timeZone: string): string {
   const parts = labelFormatter(timeZone).formatToParts(now)
   const get = (type: string) => parts.find((p) => p.type === type)?.value ?? ''
-  return `${get('hour')}:${get('minute')}:${get('second')} ${get('timeZoneName')}`
+  return `${get('hour')}:${get('minute')} ${get('timeZoneName')}`
 }
 
 /** UTC offset of a zone at `now`, in minutes (e.g. -240 for EDT). */

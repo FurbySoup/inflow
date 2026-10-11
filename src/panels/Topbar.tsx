@@ -44,8 +44,17 @@ export function Topbar() {
         </svg>
         <span className="brand-word">INFLOW</span>
       </span>
+      {/* One AOI item: the states and the time where the AOI is (WP-34), so the bar fits one row with a live threat. */}
       <span className="topbar-item">
         AOI <strong title={states.join(' · ')}>{states.length ? aoiLabel(states) : '—'}</strong>
+        {aoiZone && (
+          <>
+            {' · '}
+            <strong className="clock" title={aoiTitle}>
+              {zoneLabel(now, aoiZone)}
+            </strong>
+          </>
+        )}
       </span>
       <ThreatButton />
       <WarningsHiddenChip />
@@ -56,9 +65,6 @@ export function Topbar() {
       <LayoutMenu />
       <span className="topbar-item">
         UTC <strong className="clock">{fmtUtc(now)}Z</strong>
-      </span>
-      <span className="topbar-item">
-        AOI <strong className="clock" title={aoiTitle}>{aoiZone ? zoneLabel(now, aoiZone) : '—'}</strong>
       </span>
       {showLocal && (
         <span className="topbar-item topbar-local">

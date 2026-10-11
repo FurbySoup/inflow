@@ -6,16 +6,16 @@ const WINTER = new Date('2026-12-01T18:00:00Z')
 
 describe('zoneLabel', () => {
   it('shows CDT in summer and CST in winter for America/Chicago', () => {
-    expect(zoneLabel(SUMMER, 'America/Chicago')).toBe('13:00:00 CDT')
-    expect(zoneLabel(WINTER, 'America/Chicago')).toBe('12:00:00 CST')
+    expect(zoneLabel(SUMMER, 'America/Chicago')).toBe('13:00 CDT')
+    expect(zoneLabel(WINTER, 'America/Chicago')).toBe('12:00 CST')
   })
 
   it('shows MST year-round for Phoenix', () => {
-    expect(zoneLabel(SUMMER, 'America/Phoenix')).toBe('11:00:00 MST')
+    expect(zoneLabel(SUMMER, 'America/Phoenix')).toBe('11:00 MST')
   })
 
   it('uses 00 rather than 24 at midnight', () => {
-    expect(zoneLabel(new Date('2026-07-01T04:00:00Z'), 'America/New_York')).toBe('00:00:00 EDT')
+    expect(zoneLabel(new Date('2026-07-01T04:00:00Z'), 'America/New_York')).toBe('00:00 EDT')
   })
 })
 

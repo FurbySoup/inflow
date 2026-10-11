@@ -21,7 +21,7 @@ describe('statesInBbox', () => {
 
   it('covers the states the old 20-state table missed', () => {
     // Chicago to Columbus, the Twin Cities, central Pennsylvania, Seattle, Boston.
-    expect(statesInBbox({ west: -88.5, south: 39.5, east: -82.5, north: 41.5 })).toEqual(['IL', 'IN', 'OH'])
+    expect(statesInBbox({ west: -88.5, south: 39.5, east: -82.5, north: 41.5 }).sort()).toEqual(['IL', 'IN', 'OH'])
     expect(statesInBbox({ west: -93.6, south: 44.7, east: -92.9, north: 45.2 })).toEqual(['MN'])
     expect(statesInBbox({ west: -78.5, south: 40.2, east: -77, north: 41.2 })).toEqual(['PA'])
     expect(statesInBbox({ west: -122.6, south: 47.3, east: -122, north: 47.8 })).toEqual(['WA'])
@@ -52,5 +52,14 @@ describe('stateAt', () => {
     expect(stateAt(-73.21, 44.48)).toBe('VT') // Burlington
     expect(stateAt(-70.26, 43.66)).toBe('ME') // Portland
     expect(stateAt(-65, 40)).toBeNull()
+  })
+})
+
+describe('statesInBbox order', () => {
+  it('lists the states nearest the AOI centre first', () => {
+    // A wide view centred on Georgia reaches Delaware and Illinois; GA must still lead.
+    const states = statesInBbox({ west: -95, south: 26, east: -73, north: 39 })
+    expect(states[0]).toBe('GA')
+    expect(states.indexOf('GA')).toBeLessThan(states.indexOf('DE'))
   })
 })
