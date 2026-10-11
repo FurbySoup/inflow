@@ -11,11 +11,14 @@ Registry edit allowed: mount `<Shortcuts />` once in `App.tsx`.
 ## Forbidden
 Everything else. All actions go through store/registry APIs that prep P3 provides; don't reach into panels.
 
-## Prep contract (P3, done by the orchestrator after Wave 4 merges)
-- Primary-stream state moves from `StreamsGrid` local state into a small store (`src/state/streams.ts`: `primaryId`, `cyclePrimary(dir)`), with persistence unchanged.
-- `LayerControl` exposes a `toggleLayer(id)`/`layerIds()` API usable without the DOM control.
+## Prep contract (P3, done 2026-10-11, commit 1e02ca7)
+- `src/state/streams.ts`: `useStreams.getState().cyclePrimary(1 | -1)` steps the main feed through the display order, wrapping and persisting. Do nothing extra in StreamsGrid.
+- `src/map/LayerControl.ts`: `toggleLayer(id): boolean` and `layerIds(): string[]`. They act exactly like clicking the row (persistence + LED/aria feedback) and return false/[] before the map has loaded.
+- Overlay ids: `radar`, `satellite`, `spc-outlook`, `watch-outlines`, `spc-md`, `spc-watch`, `storm-reports`, `alerts`. **W** toggles both `watch-outlines` and `spc-watch`.
+- AOI presets: `AOI_PRESETS` (order plains, dixie, southeast) in `src/panels/aoiPresetData.ts`, applied with `useAoi.getState().requestAoi(preset.bbox)`.
+- Layout presets: `useLayout.getState().applyPreset('DEFAULT' | 'WALL' | 'CHASE')`.
 
-## Build (proposed keymap; the orchestrator confirms with the user before the wave)
+## Build (keymap confirmed by the user 2026-10-11)
 - `[` / `]` previous / next primary stream; `1`–`3` AOI presets (WP-16); `Shift+1`–`3` layout presets DEFAULT/WALL/CHASE; `R` radar, `S` satellite, `W` watches (layer toggles); `F` fullscreen (`requestFullscreen`); `?` toggle the help overlay; `Esc` closes it.
 - Ignore keys while focus is in an input/select/textarea/contenteditable or a YouTube iframe has focus (a known limit: iframes swallow keys, so document it in the overlay).
 - The help overlay is a read-only kit `Panel` listing the keys, using `--font-data` for key caps.

@@ -20,7 +20,7 @@ Basic resizing (feeds column + console row splitters, ADR-0011), shared types, a
   - Follow-ups:
     - back off when a GA/FL list walk keeps failing;
     - optional `status` slot on `StreamTile`, so ENDED/OFFLINE can sit in the caption (kit change + re-sync).
-- Wave 5 (WP-17) is next: do prep P3 first, then confirm the keymap with the user.
+- Wave 5 (WP-17): prep P3 done and keymap confirmed 2026-10-11; building.
 
 ## Wave 4 (v1.1 coverage polish)
 
