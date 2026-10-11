@@ -1,6 +1,6 @@
 import type { PresetName } from '../state/layout'
 
-// Pure keymap (WP-17): key event in, action out. Shortcuts.tsx performs the action.
+// Pure keymap (WP-17): key event in, action out. KeyboardShortcuts.tsx performs the action.
 
 /** The part of a KeyboardEvent the keymap reads. */
 export interface KeyLike {
@@ -48,9 +48,17 @@ function digitOf(input: KeyLike): number | null {
  * combinations always return null so browser and OS shortcuts keep working. Auto-repeat only
  * fires for the primary-stream cycle, so holding a key does not flicker fullscreen or the help.
  * Does not check where focus is: the caller applies the typing guard (isTypingTarget).
+ * While the help overlay is open only `?` and Escape act, so nothing changes behind the backdrop.
  */
-export function resolveShortcut(input: KeyLike): ShortcutAction | null {
+export function resolveShortcut(input: KeyLike, opts: { helpOpen?: boolean } = {}): ShortcutAction | null {
   if (input.ctrlKey || input.altKey || input.metaKey) return null
+
+  if (opts.helpOpen) {
+    if (input.repeat) return null
+    if (input.key === '?') return { type: 'toggle-help' }
+    if (input.key === 'Escape') return { type: 'close-help' }
+    return null
+  }
 
   const digit = digitOf(input)
   if (digit !== null) {

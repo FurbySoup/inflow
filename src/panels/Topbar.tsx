@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAoi } from '../state/aoi'
 import { LayoutMenu } from './LayoutMenu'
 import { AoiPresets } from './AoiPresets'
+import { KeysButton } from './KeyboardShortcuts'
 
 const fmt = (d: Date, timeZone?: string) =>
   d.toLocaleTimeString('en-US', { hour12: false, timeZone })
@@ -25,6 +26,7 @@ export function Topbar() {
       </span>
       <AoiPresets />
       <span className="spacer" />
+      <KeysButton />
       <LayoutMenu />
       <span className="topbar-item">
         UTC <strong className="clock">{fmt(now, 'UTC')}Z</strong>

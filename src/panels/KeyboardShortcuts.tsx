@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react'
 import { useAoi } from '../state/aoi'
 import { useLayout } from '../state/layout'
 import { useStreams } from '../state/streams'
@@ -7,18 +7,43 @@ import { ConsoleButton, Panel } from '../ui'
 import { AOI_PRESETS } from './aoiPresetData'
 import { isTypingTarget, resolveShortcut, type ShortcutAction } from './shortcuts'
 
-// Wall-display keyboard control (WP-17). Mounted once; the keymap itself is pure (shortcuts.ts).
+// Wall-display keyboard control (WP-17). The keymap itself is pure (shortcuts.ts). KeyboardShortcuts is
+// mounted once and handles keys; KeysButton sits in the top bar and opens the same help overlay.
 // Keys do not reach the page while a YouTube iframe has focus (the browser keeps them): the help says so.
 
+// Help-overlay open state, module-level so the top-bar button and the overlay share it without a store.
+let helpOpen = false
+const helpListeners = new Set<() => void>()
+
+function setHelpOpen(next: boolean): void {
+  if (next === helpOpen) return
+  helpOpen = next
+  for (const listener of helpListeners) listener()
+}
+
+function subscribeHelp(listener: () => void): () => void {
+  helpListeners.add(listener)
+  return () => {
+    helpListeners.delete(listener)
+  }
+}
+
+function useHelpOpen(): boolean {
+  return useSyncExternalStore(subscribeHelp, () => helpOpen)
+}
+
 function toggleFullscreen(): void {
+  // iOS Safari and older WebKit have no Fullscreen API: do nothing rather than throw from the keydown handler.
   if (document.fullscreenElement) {
-    void document.exitFullscreen().catch(() => undefined)
-  } else {
+    if (typeof document.exitFullscreen === 'function') void document.exitFullscreen().catch(() => undefined)
+    return
+  }
+  if (typeof document.documentElement.requestFullscreen === 'function') {
     void document.documentElement.requestFullscreen().catch(() => undefined)
   }
 }
 
-function perform(action: ShortcutAction, setHelp: (update: (open: boolean) => boolean) => void): void {
+function perform(action: ShortcutAction): void {
   switch (action.type) {
     case 'cycle-primary':
       useStreams.getState().cyclePrimary(action.dir)
@@ -38,17 +63,60 @@ function perform(action: ShortcutAction, setHelp: (update: (open: boolean) => bo
       toggleFullscreen()
       return
     case 'toggle-help':
-      setHelp((open) => !open)
+      setHelpOpen(!helpOpen)
       return
     case 'close-help':
-      setHelp(() => false)
+      setHelpOpen(false)
       return
+  }
+}
+
+const FOCUSABLE =
+  'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+/** Keeps Tab and Shift+Tab cycling inside the open dialog (it is aria-modal). */
+function trapTab(e: KeyboardEvent, dialog: HTMLElement | null): void {
+  if (!dialog) return
+  const items = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE))
+  const first = items[0]
+  const last = items[items.length - 1]
+  if (!first || !last) {
+    e.preventDefault()
+    return
+  }
+  const active = document.activeElement
+  const inside = active instanceof Node && dialog.contains(active)
+  if (e.shiftKey) {
+    if (!inside || active === first) {
+      e.preventDefault()
+      last.focus()
+    }
+  } else if (!inside || active === last) {
+    e.preventDefault()
+    first.focus()
   }
 }
 
 // Touch-only devices get no key hints (ADR-0014): nothing advertises keys they cannot press.
 function hasFinePointer(): boolean {
   return typeof window.matchMedia !== 'function' || !window.matchMedia('(pointer: coarse)').matches
+}
+
+/** Top-bar button that opens the keyboard help. Hidden on touch-only devices. */
+export function KeysButton() {
+  const open = useHelpOpen()
+  const [showButton] = useState(hasFinePointer)
+  if (!showButton) return null
+  return (
+    <ConsoleButton
+      aria-label="Keyboard shortcuts"
+      aria-expanded={open}
+      title="Keyboard shortcuts (?)"
+      onClick={() => setHelpOpen(!helpOpen)}
+    >
+      ? KEYS
+    </ConsoleButton>
+  )
 }
 
 const KEY_CAP: CSSProperties = {
@@ -74,96 +142,96 @@ const ROWS: readonly { keys: readonly string[]; label: ReactNode }[] = [
   { keys: ['Esc'], label: 'Close this help' },
 ]
 
-/** Keyboard shortcuts: global keydown handler, a "KEYS" hint button and the `?` help overlay. */
+/** Global keydown handler and the `?` help overlay. Mount once; the top-bar entry point is KeysButton. */
 export function KeyboardShortcuts() {
-  const [helpOpen, setHelpOpen] = useState(false)
-  const [showHint] = useState(hasFinePointer)
+  const open = useHelpOpen()
   const dialogRef = useRef<HTMLDivElement>(null)
+  // The element that had focus before the help opened, so closing returns the keyboard user there.
+  const returnFocusRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.defaultPrevented) return
+      if (helpOpen && e.key === 'Tab') {
+        trapTab(e, dialogRef.current)
+        return
+      }
       if (isTypingTarget(e.target instanceof HTMLElement ? e.target : null)) return
-      const action = resolveShortcut(e)
-      if (action) perform(action, setHelpOpen)
+      const action = resolveShortcut(e, { helpOpen })
+      if (action) perform(action)
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
 
-  // Moves focus into the dialog (its first button is the header close) so keyboard users land on it.
+  // Opening moves focus into the dialog (its first button is the header close). Closing, by any
+  // path, returns focus to whatever had it before.
   useEffect(() => {
-    if (helpOpen) dialogRef.current?.querySelector<HTMLButtonElement>('button')?.focus()
-  }, [helpOpen])
+    if (open) {
+      returnFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+      dialogRef.current?.querySelector<HTMLButtonElement>('button')?.focus()
+    } else if (returnFocusRef.current) {
+      returnFocusRef.current.focus()
+      returnFocusRef.current = null
+    }
+  }, [open])
 
+  if (!open) return null
+
+  // Status is a grey LED: this panel is not a feed, so no live/error state applies.
   return (
-    <>
-      {showHint && (
-        <ConsoleButton
-          aria-label="Keyboard shortcuts"
-          aria-expanded={helpOpen}
-          title="Keyboard shortcuts (?)"
-          onClick={() => setHelpOpen((open) => !open)}
-          style={{ position: 'fixed', right: 8, bottom: 8, zIndex: 900, background: 'var(--panel)' }}
+    <div
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) setHelpOpen(false)
+      }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 1000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 12,
+        background: 'color-mix(in srgb, var(--bg) 85%, transparent)',
+      }}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Keyboard shortcuts"
+        style={{ width: 'min(44rem, 100%)', maxHeight: '100%', overflow: 'auto' }}
+      >
+        <Panel
+          code="KBD-01"
+          title="Keyboard shortcuts"
+          status="offline"
+          meta={
+            <ConsoleButton aria-label="Close keyboard shortcuts" onClick={() => setHelpOpen(false)}>
+              ESC
+            </ConsoleButton>
+          }
         >
-          ? KEYS
-        </ConsoleButton>
-      )}
-      {helpOpen && (
-        <div
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) setHelpOpen(false)
-          }}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 12,
-            background: 'color-mix(in srgb, var(--bg) 85%, transparent)',
-          }}
-        >
-          <div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Keyboard shortcuts"
-            style={{ width: 'min(44rem, 100%)', maxHeight: '100%', overflow: 'auto' }}
-          >
-            <Panel
-              code="KBD-01"
-              title="Keyboard shortcuts"
-              status="live"
-              meta={
-                <ConsoleButton aria-label="Close keyboard shortcuts" onClick={() => setHelpOpen(false)}>
-                  ESC
-                </ConsoleButton>
-              }
-            >
-              <div style={{ display: 'grid', gridTemplateColumns: 'max-content 1fr', gap: '8px 16px', padding: 12, alignItems: 'center' }}>
-                {ROWS.map((row) => (
-                  <div key={row.keys.join(' ')} style={{ display: 'contents' }}>
-                    <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                      {row.keys.map((k) => (
-                        <kbd key={k} style={KEY_CAP}>
-                          {k}
-                        </kbd>
-                      ))}
-                    </span>
-                    <span>{row.label}</span>
-                  </div>
-                ))}
+          <div style={{ display: 'grid', gridTemplateColumns: 'max-content 1fr', gap: '8px 16px', padding: 12, alignItems: 'center' }}>
+            {ROWS.map((row) => (
+              <div key={row.keys.join(' ')} style={{ display: 'contents' }}>
+                <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                  {row.keys.map((k) => (
+                    <kbd key={k} style={KEY_CAP}>
+                      {k}
+                    </kbd>
+                  ))}
+                </span>
+                <span>{row.label}</span>
               </div>
-              <p style={{ margin: 0, padding: '0 12px 12px', color: 'var(--muted)', fontSize: '0.8rem' }}>
-                Keys are ignored while typing in a field. A focused YouTube player keeps the keyboard for itself:
-                click elsewhere on the page first.
-              </p>
-            </Panel>
+            ))}
           </div>
-        </div>
-      )}
-    </>
+          <p style={{ margin: 0, padding: '0 12px 12px', color: 'var(--muted)', fontSize: '0.8rem' }}>
+            Keys are ignored while typing in a field. A focused YouTube player keeps the keyboard for itself:
+            click elsewhere on the page first.
+          </p>
+        </Panel>
+      </div>
+    </div>
   )
 }

@@ -82,6 +82,26 @@ describe('resolveShortcut', () => {
     expect(resolveShortcut(key({ key: '!', code: 'Digit1', shiftKey: true, ctrlKey: true }))).toBeNull()
   })
 
+  it('while the help is open, only ? and Escape act', () => {
+    const open = { helpOpen: true }
+    expect(resolveShortcut(key({ key: '?' }), open)).toEqual({ type: 'toggle-help' })
+    expect(resolveShortcut(key({ key: 'Escape' }), open)).toEqual({ type: 'close-help' })
+    expect(resolveShortcut(key({ key: '[' }), open)).toBeNull()
+    expect(resolveShortcut(key({ key: ']' }), open)).toBeNull()
+    expect(resolveShortcut(key({ key: 'w' }), open)).toBeNull()
+    expect(resolveShortcut(key({ key: 'f' }), open)).toBeNull()
+    expect(resolveShortcut(key({ key: '2', code: 'Digit2' }), open)).toBeNull()
+    expect(resolveShortcut(key({ key: '!', code: 'Digit1', shiftKey: true }), open)).toBeNull()
+  })
+
+  it('with the help closed, layer keys work and Escape still resolves (the panel no-ops it)', () => {
+    expect(resolveShortcut(key({ key: 'w' }), { helpOpen: false })).toEqual({
+      type: 'toggle-layers',
+      ids: ['watch-outlines', 'spc-watch'],
+    })
+    expect(resolveShortcut(key({ key: 'Escape' }))).toEqual({ type: 'close-help' })
+  })
+
   it('returns null for unmapped keys', () => {
     expect(resolveShortcut(key({ key: 'x' }))).toBeNull()
     expect(resolveShortcut(key({ key: 'Enter' }))).toBeNull()
