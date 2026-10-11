@@ -1,46 +1,89 @@
-/* Panel */
+/* Panel (ADR-0015): header is LED · CODE · TITLE · …… meta · age · toggle. */
 .panel {
   display: flex;
   flex-direction: column;
   min-height: 0;
   flex: 1;
-  background: var(--panel);
-  border: 1px solid var(--border);
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
 }
 .panel-collapsed { flex: none; }
 .panel-head {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  background: var(--panel-head);
-  border-bottom: 1px solid var(--border);
-  font-family: var(--font-data);
+  gap: var(--sp-3);
+  box-sizing: border-box;
+  height: var(--panel-head-h);
+  padding: 0 var(--sp-3);
+  background: var(--surface-head);
+  border-bottom: 1px solid var(--border-default);
 }
 .panel-head h2 {
   margin: 0;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text);
-}
-.panel-code { white-space: nowrap; font-family: var(--font-data); font-size: 0.68rem; color: var(--accent); letter-spacing: 0.08em; }
-.panel-meta { margin-left: auto; font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
-.panel-toggle {
-  font-family: var(--font-data);
-  font-size: 0.75rem;
+  font-family: var(--font-ui);
+  font-size: var(--fs-ui-s);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tr-label);
   line-height: 1;
-  color: var(--accent);
+  text-transform: uppercase;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.panel-code {
+  white-space: nowrap;
+  font-family: var(--font-data);
+  font-size: var(--fs-data-xs);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tr-code);
+  color: var(--text-muted);
+}
+/* Right-hand group: pushed to the edge as one unit. */
+.panel-tail {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-left: auto;
+  min-width: 0;
+}
+.panel-meta {
+  font-family: var(--font-data);
+  font-size: var(--fs-data-xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.panel-age {
+  font-family: var(--font-data);
+  font-size: var(--fs-data-xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.panel-age-stale { color: var(--status-stale); }
+/* Bordered box = control: the border is the persistent signifier. */
+.panel-toggle {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  font-family: var(--font-data);
+  font-size: var(--fs-data-s);
+  line-height: 1;
+  color: var(--text-primary);
   background: transparent;
-  border: none;
-  padding: 2px 4px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
   cursor: pointer;
 }
-.panel-toggle:hover { background: var(--accent-fill); }
-.panel-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-/* Without meta, the toggle pushes itself to the right edge. */
-.panel-toggle-push { margin-left: auto; }
+.panel-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.panel-toggle:active { box-shadow: inset 0 0 0 1px var(--ink-dark); }
+.panel-toggle:focus-visible { outline: var(--focus-w) solid var(--focus-ring); outline-offset: var(--focus-offset); }
 .panel-collapsed .panel-head h2,
 .panel-collapsed .panel-meta { display: none; }
 .panel-body { flex: 1; min-height: 0; overflow-y: auto; padding: 10px; }
