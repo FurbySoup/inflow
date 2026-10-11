@@ -1,21 +1,42 @@
-// GOES-East infrared imagery. Primary: IEM tile cache (keyless XYZ). Fallback: nowCOAST WMS (EPSG:3857).
-export type GoesSource = 'iem' | 'nowcoast'
+import type { Bbox } from '../../types'
 
-export const GOES_ATTRIBUTION = 'GOES-East via IEM / NOAA'
+// GOES infrared imagery. Primary: IEM tile cache (keyless XYZ). Fallback: nowCOAST WMS (EPSG:3857).
+// Two CONUS sectors: GOES-East over most of the country, GOES-West west of 105°W where GOES-East is oblique.
+// Alaska and Hawaii fall outside both CONUS sectors and are not covered (out of scope for v1).
+export type GoesSource = 'iem' | 'nowcoast'
+export type GoesSector = 'east' | 'west'
+
+/** One credit for both sectors: MapLibre cannot change a source's attribution after it is added. */
+export const GOES_ATTRIBUTION = 'GOES-East/West via IEM / NOAA'
 
 export const GOES_REFRESH_MS = 10 * 60_000
 
-const IEM_GOES_TILES =
-  'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/goes_east_conus_ch13/{z}/{x}/{y}.png'
+/** Centre longitude west of this uses GOES-West. */
+const WEST_OF_LNG = -105
+
+const IEM_TILE_BASE = 'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/'
+
+const IEM_LAYERS: Record<GoesSector, string> = {
+  east: 'goes_east_conus_ch13',
+  west: 'goes_west_conus_ch13',
+}
 
 const NOWCOAST_WMS =
   'https://nowcoast.noaa.gov/geoserver/satellite/wms?service=WMS&version=1.1.1&request=GetMap' +
   '&layers=goes_longwave_imagery&styles=&format=image/png&transparent=true&srs=EPSG:3857' +
   '&width=256&height=256&bbox={bbox-epsg-3857}'
 
-/** Tile URL template for a source. `cacheBust` appends a timestamp to defeat tile caching. */
-export function goesTileUrl(source: GoesSource, cacheBust?: number): string {
-  const base = source === 'iem' ? IEM_GOES_TILES : NOWCOAST_WMS
-  if (cacheBust === undefined) return base
-  return `${base}${source === 'iem' ? '?' : '&'}t=${cacheBust}`
+/** Pure: the sector whose imagery suits the AOI, from its centre longitude. */
+export function goesSector(bbox: Bbox): GoesSector {
+  const centreLng = (bbox.west + bbox.east) / 2
+  return centreLng < WEST_OF_LNG ? 'west' : 'east'
+}
+
+/** Tile URL template for a source and sector. `cacheBust` appends a timestamp to defeat tile caching. */
+export function goesTileUrl(source: GoesSource, sector: GoesSector, cacheBust?: number): string {
+  if (source === 'nowcoast') {
+    return cacheBust === undefined ? NOWCOAST_WMS : `${NOWCOAST_WMS}&t=${cacheBust}`
+  }
+  const base = `${IEM_TILE_BASE}${IEM_LAYERS[sector]}/{z}/{x}/{y}.png`
+  return cacheBust === undefined ? base : `${base}?t=${cacheBust}`
 }
