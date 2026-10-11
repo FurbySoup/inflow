@@ -1,5 +1,6 @@
 import type { Alert } from '../types'
 import { hazardCode } from '../lib/hazards'
+import { alertInAoi, type AoiMatchTarget } from './aoiMatch'
 
 /** Toasts stacked at once; a new one past this drops the oldest. */
 export const MAX_TOASTS = 3
@@ -13,7 +14,7 @@ export const MAX_TOASTS = 3
 export function diffNewTornadoWarnings(
   seen: ReadonlySet<string> | null,
   alerts: Alert[],
-  aoiStates: readonly string[],
+  aoi: AoiMatchTarget,
 ): Alert[] {
   if (seen === null) return []
   return alerts.filter(
@@ -21,7 +22,7 @@ export function diffNewTornadoWarnings(
       hazardCode(a.event) === 'TOR' &&
       a.messageType !== 'Cancel' &&
       !seen.has(a.eventKey) &&
-      a.states.some((s) => aoiStates.includes(s)),
+      alertInAoi(a, aoi),
   )
 }
 

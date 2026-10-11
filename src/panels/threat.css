@@ -30,6 +30,8 @@
 .threat-btn .threat-next { font: 600 var(--fs-data-s) / 1 var(--font-data); font-variant-numeric: tabular-nums; }
 .threat-btn .threat-short { display: none; }
 .threat-none { font: 600 var(--fs-ui-xs) / 1 var(--font-ui); letter-spacing: var(--tr-label); color: var(--text-muted); }
+/* Zone-only press feedback (WP-26): shown for 3 s after the press, then the span empties. */
+.threat-note { font: 600 var(--fs-ui-xs) / 1 var(--font-ui); letter-spacing: var(--tr-label); color: var(--text-bright); white-space: nowrap; }
 
 .btn-console.warnings-chip {
   display: inline-flex;

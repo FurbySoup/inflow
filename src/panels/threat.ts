@@ -1,6 +1,7 @@
 import type { Alert } from '../types'
 import { hazardCode, isPds, mostSevereTornado } from '../lib/hazards'
 import { geometryBbox, remainingMs } from './alertGeometry'
+import { alertInAoi, type AoiMatchTarget } from './aoiMatch'
 
 export interface ThreatSummary {
   /** Active tornado warnings intersecting the AOI (expired ones are dropped, as in the alerts list). */
@@ -13,10 +14,10 @@ export interface ThreatSummary {
 }
 
 /** Summarises the tornado warnings the threat button shows. Pure: `now` is passed in, so it can be tested. */
-export function threatSummary(alerts: Alert[], aoiStates: string[], now: number): ThreatSummary {
+export function threatSummary(alerts: Alert[], aoi: AoiMatchTarget, now: number): ThreatSummary {
   const active = alerts.filter((a) => {
     if (hazardCode(a.event) !== 'TOR') return false
-    if (!a.states.some((s) => aoiStates.includes(s))) return false
+    if (!alertInAoi(a, aoi)) return false
     const left = remainingMs(a.expires, now)
     return left === null || left > 0
   })

@@ -29,7 +29,7 @@ const alert = (over: Partial<Alert>): Alert => ({
   ...over,
 })
 
-const AOI = ['GA', 'SC']
+const AOI = { bbox: { west: -85.6, south: 30.4, east: -78.5, north: 35.3 }, states: ['GA', 'SC'] }
 
 describe('threatSummary', () => {
   it('reports nothing when there are no tornado warnings', () => {
@@ -74,14 +74,27 @@ describe('threatSummary', () => {
     expect(threatSummary(alerts, AOI, NOW).nextExpiryMs).toBe(7 * 60_000)
   })
 
-  it('filters by AOI states', () => {
-    const outside = alert({ id: 'al', states: ['AL'], pds: true, expires: at(1) })
-    const inside = alert({ id: 'ga', states: ['GA', 'AL'], expires: at(20) })
+  it('filters zone-based warnings by AOI states', () => {
+    const outside = alert({ id: 'al', geometry: null, states: ['AL'], pds: true, expires: at(1) })
+    const inside = alert({ id: 'ga', geometry: null, states: ['GA', 'AL'], expires: at(20) })
     const s = threatSummary([outside, inside], AOI, NOW)
     expect(s.count).toBe(1)
     expect(s.pdsCount).toBe(0)
     expect(s.nextExpiryMs).toBe(20 * 60_000)
     expect(s.target?.id).toBe('ga')
+  })
+
+  it('excludes a polygon warning in the same state but outside the AOI bbox', () => {
+    // Southwest Georgia polygon: GA, but outside a tight Atlanta-only AOI.
+    const swGa = alert({
+      id: 'sw',
+      states: ['GA'],
+      pds: true,
+      geometry: { type: 'Polygon', coordinates: [[[-84.3, 30.5], [-84.1, 30.5], [-84.1, 30.6], [-84.3, 30.5]]] },
+    })
+    const tight = { ...AOI, bbox: { west: -84.6, south: 33.6, east: -84.2, north: 33.9 } }
+    expect(threatSummary([swGa], tight, NOW).count).toBe(0)
+    expect(threatSummary([swGa], AOI, NOW).count).toBe(1)
   })
 
   it('ignores expired warnings', () => {

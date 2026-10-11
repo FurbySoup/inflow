@@ -6,6 +6,7 @@ import { useAoi } from '../state/aoi'
 import type { Alert } from '../types'
 import { Panel } from './Panel'
 import { queryFeed } from '../lib/feedStatus'
+import { alertInAoi } from './aoiMatch'
 import {
   alertDurationMs,
   alertsView,
@@ -17,6 +18,7 @@ import {
 import { AlertList, AlertRow } from '../ui'
 
 export function AlertsList() {
+  const bbox = useAoi((s) => s.bbox)
   const states = useAoi((s) => s.states)
   const focus = useAoi((s) => s.focus)
   const setFocus = useAoi((s) => s.setFocus)
@@ -36,7 +38,7 @@ export function AlertsList() {
   }, [focus])
 
   const listed = (query.data ?? [])
-    .filter((a) => a.states.some((s) => states.includes(s)))
+    .filter((a) => alertInAoi(a, { bbox, states }))
     .sort(compareAlerts)
     .map((a) => ({ alert: a, left: remainingMs(a.expires, now) }))
     .filter((r) => isListed(r.left))
