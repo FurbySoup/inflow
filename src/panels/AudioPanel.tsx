@@ -159,7 +159,7 @@ function ScannerPlayer({ shortName }: { shortName: string }) {
 
   return (
     <>
-      {query.isError && <p className="error">OPENMHZ UNAVAILABLE</p>}
+      {query.isError && <p className="error">SCANNER CALLS UNAVAILABLE</p>}
       {!query.isError && query.isPending && <p className="muted">LOADING CALLS</p>}
       {query.data && calls.length === 0 && <p className="muted">NO RECENT CALLS</p>}
       {calls.length > 0 && (
