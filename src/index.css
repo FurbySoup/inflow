@@ -36,6 +36,10 @@
     'alerts cs1 radio cs2 cams vsplit feeds';
 }
 
+/* Grid items default to min-width:auto, so a long chip row or stream caption could widen a track past
+   the viewport (WALL at 1024 px overflowed by 45 px). Cells shrink; their panels scroll inside. */
+.workspace > * { min-width: 0; }
+
 /* WALL, CHASE and mobile use the preset tokens verbatim (ADR-0015): columns and areas come from
    --layout-cols / --layout-areas. Rows use the collapse-aware variables set by App.tsx, which equal
    the token rows when the panels are at their preset collapse state. Splitters are hidden here
@@ -56,7 +60,10 @@
 }
 /* CHASE: map left, alerts / feeds / radio / cams stacked right. The radio row keeps its 190 px token height. */
 .layout[data-preset='chase'] .workspace {
-  grid-template-rows: minmax(0, 1fr) auto var(--row-audio) var(--row-cams);
+  /* Deviation from the token's `auto` feeds row: on a 768 px-high screen it left alerts 74 px tall.
+     HANDOFF §5 hierarchy (active tornado warnings > streams) gives alerts the larger share; the single
+     stream scrolls inside its panel when short. */
+  grid-template-rows: minmax(0, 1.2fr) minmax(0, 1fr) var(--row-audio) var(--row-cams);
 }
 .layout[data-preset='mobile'] .workspace {
   grid-template-rows: var(--layout-rows);
@@ -115,10 +122,13 @@ body.resizing iframe { pointer-events: none; }
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   color: var(--muted);
-  /* Last resort when controls outgrow the bar: scroll it rather than overflow the page. */
+  /* Controls wrap to a second row rather than scroll out of sight behind a hidden scrollbar: a live
+     threat button (e.g. "4 TORNADO WARNINGS · NEXT EXP") can outgrow the bar at ≤1366 px, and hidden
+     overflow would leave the layout menu and clocks with no signifier (ADR-0012). */
   min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
+  flex-wrap: wrap;
+  row-gap: 6px;
+  padding-block: 6px;
 }
 .topbar > * { flex: none; }
 .aoi-presets { display: inline-flex; gap: 4px; }
@@ -130,7 +140,7 @@ body.resizing iframe { pointer-events: none; }
 .spacer { flex: 1; }
 
 /* Map */
-.map-area { grid-area: map; position: relative; min-height: 0; min-width: 0; }
+.map-area { grid-area: map; position: relative; min-height: 0; min-width: 0; overflow: hidden; }
 .map { width: 100%; height: 100%; }
 
 /* Feeds column (DEFAULT splitter track, or the token column in other presets). */

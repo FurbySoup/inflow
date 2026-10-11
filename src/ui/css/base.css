@@ -3,3 +3,20 @@
   color: var(--text);
 }
 
+
+* { box-sizing: border-box; }
+/* Background lives on body only, so hosts that restyle body (preview cards, embeds) don't get a dark html canvas. */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 24px 24px,
+    var(--bg);
+}
+
+/* Text helpers */
+.muted { color: var(--muted); font-family: var(--font-data); font-size: 0.75rem; }
+.error { color: var(--error); font-family: var(--font-data); font-size: 0.75rem; }
+.accent { color: var(--accent); }
+

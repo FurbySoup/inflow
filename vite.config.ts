@@ -58,10 +58,16 @@ export default defineConfig({
         rewrite: (p) => p.replace(/^\/api\/kiwisdr/, ''),
       },
       // YouTube watch and channel-embed pages for stream liveness (ADR-0013). No CORS; local only.
+      // A phone User-Agent makes YouTube 302 /watch to m.youtube.com, which the browser then fetches cross-origin
+      // and CORS blocks (seen 2026-10-11 from a mobile-emulated client). Always ask as desktop.
       '/api/youtube': {
         target: 'https://www.youtube.com',
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/api\/youtube/, ''),
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36',
+        },
       },
     },
   },

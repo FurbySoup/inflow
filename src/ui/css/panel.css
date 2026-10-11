@@ -19,6 +19,11 @@
   background: var(--surface-head);
   border-bottom: 1px solid var(--border-default);
 }
+/* In a narrow column the title and meta shrink (ellipsis); the LED, code and toggle never do. */
+.panel-head > * { flex: none; }
+.panel-head h2, .panel-head .panel-tail { flex: 0 1 auto; min-width: 0; }
+.panel-head h2 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panel-tail > .panel-toggle { flex: none; }
 .panel-head h2 {
   margin: 0;
   font-family: var(--font-ui);
@@ -55,6 +60,10 @@
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  /* Long meta ("4/13 LIVE · THUMBS ≈5 MIN") truncates rather than pushing the collapse toggle out of the panel. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .panel-age {
   font-family: var(--font-data);
