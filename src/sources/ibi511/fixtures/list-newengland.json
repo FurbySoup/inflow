@@ -1,0 +1,39 @@
+{
+  "_note": "Trimmed from the live first page of https://newengland511.org/List/GetData/Cameras (curl 2026-10-11). Fields the adapter never reads are dropped. Records 1 and 178 are Vermont, 220 is New Hampshire; all are real and none is disabled or blocked upstream.",
+  "recordsTotal": 408,
+  "data": [
+    {
+      "DT_RowId": "1",
+      "id": 1,
+      "roadway": "I-89",
+      "direction": "Northbound",
+      "location": "WATERBURY I-89 North",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-72.782259 44.352994)" } },
+      "areaId": "VT",
+      "state": "Vermont",
+      "images": [{ "id": 950, "cameraSiteId": 1, "imageUrl": "/map/Cctv/950", "disabled": false, "blocked": false }]
+    },
+    {
+      "DT_RowId": "178",
+      "id": 178,
+      "roadway": "VT-11",
+      "direction": "Westbound",
+      "location": "Springfield VT-11 NH Border CCTV",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-72.427604 43.261268)" } },
+      "areaId": "VT",
+      "state": "Vermont",
+      "images": [{ "id": 980, "cameraSiteId": 178, "imageUrl": "/map/Cctv/980", "disabled": false, "blocked": false }]
+    },
+    {
+      "DT_RowId": "220",
+      "id": 220,
+      "roadway": "NH-101",
+      "direction": "Westbound",
+      "location": "101 WW 85.6",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-70.946381 43.001822)" } },
+      "areaId": "NH",
+      "state": "New Hampshire",
+      "images": [{ "id": 875, "cameraSiteId": 220, "imageUrl": "/map/Cctv/875", "disabled": false, "blocked": false }]
+    }
+  ]
+}

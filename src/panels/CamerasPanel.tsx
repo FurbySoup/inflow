@@ -5,7 +5,18 @@ import type { SourceAdapter } from '../sources/types'
 import { kansasCameras, nebraskaCameras } from '../sources/cars/adapter'
 import { southCarolinaCameras } from '../sources/sc511/adapter'
 import { isTxdotFeed, txdotCameras } from '../sources/txdot/adapter'
-import { floridaCameras, georgiaCameras } from '../sources/ibi511/adapter'
+import {
+  alaskaCameras,
+  arizonaCameras,
+  connecticutCameras,
+  floridaCameras,
+  georgiaCameras,
+  idahoCameras,
+  louisianaCameras,
+  nevadaCameras,
+  newEnglandCameras,
+  pennsylvaniaCameras,
+} from '../sources/ibi511/adapter'
 import { fetchSnapshotDataUrl } from '../sources/txdot/snapshot'
 import { useAoi } from '../state/aoi'
 import { queryStatus, type FeedState, type FeedStatus } from '../lib/feedStatus'
@@ -29,6 +40,14 @@ export const CAMERA_SOURCES: CameraSource[] = [
   { adapter: georgiaCameras, states: ['GA'], attribution: '511GA' },
   { adapter: floridaCameras, states: ['FL'], attribution: 'FL511' },
   { adapter: southCarolinaCameras, states: ['SC'], attribution: '511SC' },
+  { adapter: arizonaCameras, states: ['AZ'], attribution: 'AZ511' },
+  { adapter: idahoCameras, states: ['ID'], attribution: '511 Idaho' },
+  { adapter: alaskaCameras, states: ['AK'], attribution: '511 Alaska' },
+  { adapter: louisianaCameras, states: ['LA'], attribution: '511LA' },
+  { adapter: connecticutCameras, states: ['CT'], attribution: 'CTroads' },
+  { adapter: nevadaCameras, states: ['NV'], attribution: 'NVroads' },
+  { adapter: pennsylvaniaCameras, states: ['PA'], attribution: '511PA' },
+  { adapter: newEnglandCameras, states: ['VT', 'NH', 'ME'], attribution: 'New England 511' },
 ]
 
 /** "NO DOT CAMERA COVERAGE IN AOI — COVERED: FL · GA · …" built from the source list. */
