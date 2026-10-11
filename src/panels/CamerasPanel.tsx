@@ -8,7 +8,7 @@ import { isTxdotFeed, txdotCameras } from '../sources/txdot/adapter'
 import { floridaCameras, georgiaCameras } from '../sources/ibi511/adapter'
 import { fetchSnapshotDataUrl } from '../sources/txdot/snapshot'
 import { useAoi } from '../state/aoi'
-import { queryStatus, type FeedStatus } from '../lib/feedStatus'
+import { queryStatus, type FeedState, type FeedStatus } from '../lib/feedStatus'
 import { Panel } from './Panel'
 import { CameraTile as UiCameraTile, ConsoleButton } from '../ui'
 
@@ -168,6 +168,9 @@ export function CamerasPanel() {
     isPending: covered.some((r) => r.query.isPending),
     isError: covered.every((r) => r.query.isError),
   })
+  // Header age (WP-20): newest successful camera-list fetch across the covering adapters.
+  const updatedAt = Math.max(0, ...covered.map((r) => r.query.dataUpdatedAt))
+  const feed: FeedState = { status, refreshMs: REFRESH_MS, ...(updatedAt > 0 ? { updatedAt } : {}) }
 
   const cameras = covered.flatMap((r) => r.query.data ?? [])
   // Nearest to the AOI centre first.
@@ -180,7 +183,7 @@ export function CamerasPanel() {
   const onOpen = (id: string) => setOpenId((cur) => (cur === id ? null : id))
 
   return (
-    <Panel collapsible code="CCTV-01" title="DOT Cameras" status={status} meta={tiles.length}>
+    <Panel collapsible code="CCTV-01" title="DOT Cameras" status={feed} meta={tiles.length}>
       {status === 'error' && <p className="error">Camera feeds unavailable</p>}
       {expanded && <ExpandedCamera cam={expanded} tick={tick} onClose={() => setOpenId(null)} />}
       {tiles.length > 0 ? (

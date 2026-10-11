@@ -4,7 +4,7 @@ import { kiwisdrDirectory, nearestCbReceivers, receiverFeeds } from '../sources/
 import { openmhzCalls, type ScannerCall } from '../sources/openmhz/calls'
 import { scannerSystemsFor, type ScannerSystem } from '../sources/openmhz/systems'
 import { useSource } from '../lib/useSource'
-import { queryStatus } from '../lib/feedStatus'
+import { queryFeed } from '../lib/feedStatus'
 import { useAoi } from '../state/aoi'
 import { ConsoleButton } from '../ui'
 import { Panel } from './Panel'
@@ -62,7 +62,7 @@ export function AudioPanel() {
       collapsible
       code="AUD-01"
       title="Radio / Scanner"
-      status={queryStatus(directory)}
+      status={queryFeed(directory, kiwisdrDirectory.refreshMs)}
       meta={directory.data ? `${near.length} RX NEAR` : undefined}
     >
       <p className="muted">SCANNER · OPENMHZ</p>
