@@ -19,10 +19,14 @@ import {
 } from '../sources/streams/snapshot'
 import { useLiveness } from '../sources/streams/useLiveness'
 import { useSnapshotClock } from '../sources/streams/useSnapshots'
+import { mergeRoster, rosterFeedId, rosterLive, spotterMapUrl } from '../sources/chasers/feeds'
+import { ROSTER } from '../sources/chasers/roster'
+import { useRoster } from '../sources/chasers/useRoster'
 import { useAoi } from '../state/aoi'
 import { useStreams } from '../state/streams'
 import { useLayout } from '../state/layout'
-import { StreamTile, type FeedStatus as LedStatus } from '../ui'
+import { Abbr, StreamTile, type FeedStatus as LedStatus } from '../ui'
+import { LiveNow, type LiveNowChip } from './LiveNow'
 import { Panel } from './Panel'
 
 // Browsers block autoplay-with-sound until the page has had a user gesture, so the main feed only
@@ -43,6 +47,7 @@ function useUserActivated() {
 }
 
 const NONE: string[] = []
+const COVERAGE_IDS = new Set(ROSTER.filter((c) => c.kind === 'coverage').map((c) => rosterFeedId(c.channelId)))
 
 /** Feed health as the LED shape: live ●, ended/offline ○, unknown check ◐, not checked yet ◌. */
 function ledFor(status: FeedStatus | undefined): LedStatus {
@@ -82,6 +87,8 @@ function FeedSlot({
 
 export function StreamsGrid() {
   const states = useAoi((s) => s.states)
+  const bbox = useAoi((s) => s.bbox)
+  const roster = useRoster()
   const primaryId = useStreams((s) => s.primaryId)
   const chosenThisSession = useStreams((s) => s.chosenThisSession)
   const singleStream = useLayout((s) => s.preset) === 'CHASE'
@@ -108,9 +115,14 @@ export function StreamsGrid() {
   // Liveness runs for the primary and on-screen tiles only (ADR-0013). The primary is included so a
   // default primary that turns out to be ENDED is checked once it is shown. Playing tiles count as on screen.
   const resolutions = useLiveness(curatedStreams, (id) => onScreen.has(id) || id === checkedPrimary || playing.includes(id))
-  const feeds: LiveFeed[] = curatedStreams.map((s) => applyResolution(s, resolutions.get(s.id)))
+  const curatedFeeds: LiveFeed[] = curatedStreams.map((s) => applyResolution(s, resolutions.get(s.id)))
+  // Verified roster channels that are live join the feeds (WP-36); a curated entry on the same channel is not duplicated.
+  const { feeds, videoIds: rosterVideoIds } = mergeRoster(curatedFeeds, rosterLive(ROSTER, roster.results))
   // Streams in the AOI first; others still shown so a chaser is never hidden by map panning.
   const sorted = sortStreams(feeds, states)
+  const chips: LiveNowChip[] = sorted
+    .filter((s) => s.status === 'live')
+    .map((s) => ({ id: s.id, name: s.title, inAoi: isInAoi(s, states), coverage: COVERAGE_IDS.has(s.id) }))
   const { primary, thumbs } = layoutStreams(sorted, primaryId, chosenThisSession)
   if ((primary?.id ?? null) !== checkedPrimary) setCheckedPrimary(primary?.id ?? null)
   // CHASE shows no thumbnails, so nothing plays there. Offline, primary and vanished feeds are dropped (render-time, like checkedPrimary).
@@ -141,9 +153,16 @@ export function StreamsGrid() {
       title="Chaser Feeds"
       status="live"
       // Header meta: live count and the still refresh cadence (HANDOFF §9.10).
-      meta={`${liveCount}/${sorted.length} LIVE · THUMBS ≈5 MIN`}
+      meta={
+        <>
+          {`${liveCount}/${sorted.length} LIVE · `}
+          <Abbr term="THUMBS" title="Thumbnails: still images, refreshed about every 5 minutes. WATCH plays one." />
+          {' ≈5 MIN'}
+        </>
+      }
       className="streams"
     >
+      <LiveNow chips={chips} shownId={primary?.id ?? null} checked={roster.results.size} total={ROSTER.length} />
       {primary && (
         <FeedSlot id={primary.id} onVisible={setVisible}>
           <StreamTile
@@ -170,7 +189,7 @@ export function StreamsGrid() {
       <div className="stream-grid">
         {thumbs.map((s) => {
           const at = refreshedAt[s.id]
-          const src = snapshotSource(resolutions.get(s.id)?.videoId, s.status, at)
+          const src = snapshotSource(resolutions.get(s.id)?.videoId ?? rosterVideoIds.get(s.id), s.status, at)
           const isPlaying = playingNow.includes(s.id)
           return (
             // Thumbnails mount an iframe only after the user's WATCH press (ADR-0017); otherwise stills only (ADR-0013).
@@ -204,6 +223,13 @@ export function StreamsGrid() {
         })}
       </div>
       )}
+      {/* Link-out only (WP-36): Spotter Network's positions may not be redisplayed, so nothing is fetched from it. */}
+      <p className="streams-footer">
+        <a className="btn-console" href={spotterMapUrl(bbox)} target="_blank" rel="noopener noreferrer">
+          <Abbr term="SN" title="Spotter Network: chasers' shared GPS positions" />
+          {' MAP ↗'}
+        </a>
+      </p>
     </Panel>
   )
 }

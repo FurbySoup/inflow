@@ -10,6 +10,10 @@ import { StreamsGrid } from './StreamsGrid'
 vi.mock('../sources/streams/useLiveness', () => ({
   useLiveness: vi.fn((): Map<string, FeedResolution> => new Map()),
 }))
+// The roster scheduler would poll the network; the grid only needs its results (WP-36).
+vi.mock('../sources/chasers/useRoster', () => ({
+  useRoster: () => ({ results: new Map(), passes: 0 }),
+}))
 vi.mock('../sources/streams/useSnapshots', () => ({
   useSnapshotClock: () => ({ now: 0, refreshedAt: {} }),
 }))
