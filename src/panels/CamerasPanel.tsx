@@ -4,6 +4,7 @@ import type { CameraFeed } from '../types'
 import type { SourceAdapter } from '../sources/types'
 import { kansasCameras, nebraskaCameras } from '../sources/cars/adapter'
 import { isTxdotFeed, txdotCameras } from '../sources/txdot/adapter'
+import { floridaCameras, georgiaCameras } from '../sources/ibi511/adapter'
 import { fetchSnapshotDataUrl } from '../sources/txdot/snapshot'
 import { useAoi } from '../state/aoi'
 import { queryStatus, type FeedStatus } from '../lib/feedStatus'
@@ -14,7 +15,13 @@ type CameraAdapter = SourceAdapter<unknown, CameraFeed> & { state: string }
 
 // Append a new DOT camera adapter here.
 // eslint-disable-next-line react-refresh/only-export-components -- adapters are appended to this list
-export const CAMERA_ADAPTERS: CameraAdapter[] = [kansasCameras, nebraskaCameras, txdotCameras]
+export const CAMERA_ADAPTERS: CameraAdapter[] = [
+  kansasCameras,
+  nebraskaCameras,
+  txdotCameras,
+  georgiaCameras,
+  floridaCameras,
+]
 
 const MAX_TILES = 12
 const REFRESH_MS = 60_000

@@ -1,0 +1,95 @@
+{
+  "draw": 0,
+  "recordsTotal": 4331,
+  "recordsFiltered": 4331,
+  "data": [
+    {
+      "DT_RowId": "11148",
+      "id": 11148,
+      "areaId": "GA",
+      "roadway": "SR 13",
+      "direction": "Northbound",
+      "location": "ATL-0602: SR 13 at Lenox Rd / Cheshire Bridge Rd (Atlanta)",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-84.35284 33.8258)" } },
+      "state": "Georgia",
+      "images": [
+        {
+          "id": 18558,
+          "cameraSiteId": 11148,
+          "description": "ATL-0602: SR 13 at Lenox Rd / Cheshire Bridge Rd (Atlanta)",
+          "imageUrl": "/map/Cctv/18558",
+          "videoUrl": "https://sfs-msc-pub-lq-01.navigator.dot.ga.gov:443/rtplive/ATL-CCTV-0602/playlist.m3u8",
+          "isVideoAuthRequired": true,
+          "disabled": false,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "DT_RowId": "11226",
+      "id": 11226,
+      "areaId": "GA",
+      "roadway": "SR 10/Freedom Pkwy",
+      "direction": "Eastbound",
+      "location": "ATL-0608: SR 10/Freedom Pkwy at Boulevard (Atlanta)",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-84.372085571289 33.760177612305)" } },
+      "state": "Georgia",
+      "images": [
+        {
+          "id": 18636,
+          "cameraSiteId": 11226,
+          "description": "ATL-0608: SR 10/Freedom Pkwy at Boulevard (Atlanta)",
+          "imageUrl": "/map/Cctv/18636",
+          "videoUrl": "https://sfs-msc-pub-lq-01.navigator.dot.ga.gov:443/rtplive/ATL-CCTV-0608/playlist.m3u8",
+          "isVideoAuthRequired": true,
+          "disabled": false,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "DT_RowId": "11227",
+      "id": 11227,
+      "areaId": "GA",
+      "roadway": "Clifton Rd",
+      "direction": "Southbound",
+      "location": "ATL-0612: Clifton Rd at Houston Mill Rd (Atlanta)",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-84.323791503906 33.798572540283)" } },
+      "state": "Georgia",
+      "images": [
+        {
+          "id": 18637,
+          "cameraSiteId": 11227,
+          "description": "ATL-0612: Clifton Rd at Houston Mill Rd (Atlanta)",
+          "imageUrl": "/map/Cctv/18637",
+          "videoUrl": "https://sfs-msc-pub-lq-01.navigator.dot.ga.gov:443/rtplive/ATL-CCTV-0612/playlist.m3u8",
+          "isVideoAuthRequired": true,
+          "disabled": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "DT_RowId": "11228",
+      "id": 11228,
+      "areaId": "GA",
+      "roadway": "SR 3 / Central Ave",
+      "direction": "Northbound",
+      "location": "ATL-0804: SR 3 / Central Ave at Browns Mill Rd (Atlanta)",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-84.39425 33.651833)" } },
+      "state": "Georgia",
+      "images": [
+        {
+          "id": 18638,
+          "cameraSiteId": 11228,
+          "description": "ATL-0804: SR 3 / Central Ave at Browns Mill Rd (Atlanta)",
+          "imageUrl": "/map/Cctv/18638",
+          "videoUrl": "https://sfs-msc-pub-lq-01.navigator.dot.ga.gov:443/rtplive/ATL-CCTV-0804/playlist.m3u8",
+          "isVideoAuthRequired": true,
+          "disabled": false,
+          "blocked": false
+        }
+      ]
+    }
+  ]
+}
