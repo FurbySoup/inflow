@@ -18,6 +18,13 @@ export function highestCategory(features: GeoJSON.Feature[], bbox: Bbox): RiskCa
   return best < 0 ? null : RISK_ORDER[best]
 }
 
+/** Highest categorical LABEL over the whole outlook, ignoring the AOI, or null when no feature carries one. */
+export function highestLabel(features: GeoJSON.Feature[]): RiskCategory | null {
+  let best = -1
+  for (const f of features) best = Math.max(best, rankOf(f.properties?.LABEL))
+  return best < 0 ? null : RISK_ORDER[best]
+}
+
 export interface RiskDay {
   day: 1 | 2 | 3
   label: RiskCategory | null

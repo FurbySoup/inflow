@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Bbox } from '../types'
-import { highestCategory, riskSummary } from './spcRisk'
+import { highestCategory, highestLabel, riskSummary } from './spcRisk'
 
 const AOI: Bbox = { west: -85, south: 30, east: -80, north: 35 }
 
@@ -22,6 +22,19 @@ function feature(label: string, ring: number[][]): GeoJSON.Feature {
     geometry: { type: 'Polygon', coordinates: [ring] },
   }
 }
+
+describe('highestLabel', () => {
+  it('reports the highest LABEL anywhere in the outlook, ignoring the AOI', () => {
+    const far = feature('HIGH', square(-120, 40))
+    const near = feature('SLGT', square(-82.5, 32.5, 2))
+    expect(highestLabel([near, far])).toBe('HIGH')
+  })
+
+  it('is null when no feature carries a known LABEL', () => {
+    expect(highestLabel([])).toBeNull()
+    expect(highestLabel([{ type: 'Feature', properties: { LABEL: 'Other' }, geometry: { type: 'Point', coordinates: [0, 0] } }])).toBeNull()
+  })
+})
 
 describe('highestCategory', () => {
   it('ignores a polygon that lies outside the bbox', () => {

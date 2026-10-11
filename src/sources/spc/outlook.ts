@@ -23,7 +23,53 @@ function isEmptyFeature(f: GeoJSON.Feature): boolean {
   return f.properties?.DN === 0
 }
 
+/** LABEL of an empty placeholder, e.g. `Predictability Too Low`, or null when the raw day has polygons. */
+export function emptyDayLabel(raw: GeoJSON.FeatureCollection): string | null {
+  const label = raw.features.find(isEmptyFeature)?.properties?.LABEL
+  return typeof label === 'string' && label !== '' ? label : null
+}
+
 const adapters = new Map<OutlookDay, SourceAdapter<GeoJSON.FeatureCollection, GeoJSON.Feature>>()
+
+function refreshMsFor(day: OutlookDay): number {
+  return day <= 3 ? 120_000 : 30 * 60_000
+}
+
+// OutlookRisk keys its query on the bbox, so every pan would refetch the same file. One request per day is shared
+// for a refresh window. A failed request is dropped so the next call tries again.
+interface Memo {
+  at: number
+  load: Promise<GeoJSON.FeatureCollection>
+}
+const memos = new Map<OutlookDay, Memo>()
+
+async function fetchDay(day: OutlookDay): Promise<GeoJSON.FeatureCollection> {
+  const res = await fetch(outlookUrl(day))
+  if (!res.ok) throw new Error(`SPC outlook D${day} ${res.status}`)
+  return res.json()
+}
+
+function memoizedDay(day: OutlookDay): Promise<GeoJSON.FeatureCollection> {
+  const hit = memos.get(day)
+  if (hit && Date.now() - hit.at < refreshMsFor(day)) return hit.load
+  const entry: Memo = { at: Date.now(), load: fetchDay(day) }
+  memos.set(day, entry)
+  entry.load.catch(() => {
+    if (memos.get(day) === entry) memos.delete(day)
+  })
+  return entry.load
+}
+
+// The shared request ignores each caller's signal, so one aborted caller cannot fail the others.
+function untilAborted<T>(p: Promise<T>, signal?: AbortSignal): Promise<T> {
+  if (!signal) return p
+  if (signal.aborted) return Promise.reject(signal.reason)
+  return new Promise<T>((resolve, reject) => {
+    const onAbort = () => reject(signal.reason)
+    signal.addEventListener('abort', onAbort, { once: true })
+    p.then(resolve, reject).finally(() => signal.removeEventListener('abort', onAbort))
+  })
+}
 
 /** One memoized adapter per outlook day. Days 1–3 refresh every 2 min; Days 4–8 every 30 min (SPC reissues them rarely). */
 export function spcOutlookDay(day: OutlookDay): SourceAdapter<GeoJSON.FeatureCollection, GeoJSON.Feature> {
@@ -31,11 +77,9 @@ export function spcOutlookDay(day: OutlookDay): SourceAdapter<GeoJSON.FeatureCol
   if (existing) return existing
   const adapter: SourceAdapter<GeoJSON.FeatureCollection, GeoJSON.Feature> = {
     id: `spc-outlook-d${day}`,
-    refreshMs: day <= 3 ? 120_000 : 30 * 60_000,
-    async fetch(_aoi, signal) {
-      const res = await fetch(outlookUrl(day), { signal })
-      if (!res.ok) throw new Error(`SPC outlook D${day} ${res.status}`)
-      return res.json()
+    refreshMs: refreshMsFor(day),
+    fetch(_aoi, signal) {
+      return untilAborted(memoizedDay(day), signal)
     },
     normalize(raw) {
       return raw.features.filter((f) => !isEmptyFeature(f))
@@ -45,7 +89,7 @@ export function spcOutlookDay(day: OutlookDay): SourceAdapter<GeoJSON.FeatureCol
   return adapter
 }
 
-/** Validity window of the first feature, or null when the day has no outlook polygons. */
+/** Validity window of the first feature, or null when the day has no VALID stamp. Pass raw features, not normalized ones. */
 export function outlookWindow(features: GeoJSON.Feature[]): OutlookWindow | null {
   const p = features[0]?.properties
   if (typeof p?.VALID !== 'string' || typeof p.EXPIRE !== 'string') return null

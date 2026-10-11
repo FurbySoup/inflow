@@ -1,7 +1,16 @@
 import type maplibregl from 'maplibre-gl'
 import type { OutlookDay } from '../sources/spc/outlook'
+import { expand } from '../ui'
 import { isLayerOn, subscribeLayers } from './LayerControl'
-import { getOutlookDay, getOutlookLoaded, outlookCaption, setOutlookDay, subscribeOutlookDay } from './outlookDay'
+import {
+  expectedDayLabel,
+  getOutlookDay,
+  getOutlookLoaded,
+  getOutlookLoading,
+  outlookCaption,
+  setOutlookDay,
+  subscribeOutlookDay,
+} from './outlookDay'
 
 const LAYER_ID = 'spc-outlook'
 const DAYS: OutlookDay[] = [1, 2, 3, 4, 5, 6, 7, 8]
@@ -14,9 +23,10 @@ function startCollapsed(): boolean {
 }
 
 /**
- * Day selector for the SPC outlook layer (D1–D8). Affordance: the 1…8 buttons; signifier: the ▸/▾ head and the
- * solid accent on the selected day; feedback: the layer repaints, and the caption shows the loaded validity window.
- * Hidden while the SPC Outlook layer is off. Look is inline tokens, like LayerControl.
+ * Day selector for the SPC outlook layer (D1–D8). Affordance: the D1…D8 buttons; signifier: the ▸/▾ head and the
+ * solid accent on the selected day; feedback: the layer moves and repaints, and the caption says what is on the map
+ * (the validity date, the highest category, or why a Day 4–8 outlook is empty). Hidden while the SPC Outlook layer
+ * is off. Look is inline tokens, like LayerControl.
  */
 export class OutlookDayControl implements maplibregl.IControl {
   private root: HTMLDivElement | null = null
@@ -53,24 +63,30 @@ export class OutlookDayControl implements maplibregl.IControl {
       gap: '4px',
       padding: '0 8px',
     })
+    // Titles use today's UTC date until a day's data arrives, so a press says which day it means before the map repaints.
+    const now = new Date()
     for (const day of DAYS) {
       const btn = document.createElement('button')
       btn.type = 'button'
       btn.className = 'btn-console'
-      btn.textContent = String(day)
-      btn.setAttribute('aria-label', `Day ${day}`)
+      btn.textContent = `D${day}`
+      const date = expectedDayLabel(day, now)
+      btn.title = `Day ${day} outlook: ${date}`
+      btn.setAttribute('aria-label', `D${day} outlook: ${date}`)
       btn.addEventListener('click', () => setOutlookDay(day))
       this.buttons.set(day, btn)
       body.append(btn)
     }
+    // Its own line under the buttons, so a long caption wraps inside the control instead of widening it.
     const caption = document.createElement('span')
-    Object.assign(caption.style, { padding: '0 4px' })
+    Object.assign(caption.style, { flexBasis: '100%', padding: '2px 4px 0' })
     body.append(caption)
 
     const head = document.createElement('button')
     head.type = 'button'
     // Same head as the Layers control: its class carries the hover and :focus-visible signifiers (ADR-0012).
     head.className = 'layer-ctrl-head'
+    head.title = expand('SPC') ?? ''
     head.setAttribute('aria-controls', body.id)
     head.addEventListener('click', () => this.setOpen(!this.open))
 
@@ -107,10 +123,32 @@ export class OutlookDayControl implements maplibregl.IControl {
   private refresh(): void {
     if (!this.root) return
     const day = getOutlookDay()
+    const loading = getOutlookLoading()
     // The layer switch owns visibility: a hidden layer has no day to pick.
     this.root.hidden = !isLayerOn(LAYER_ID)
-    for (const [n, btn] of this.buttons) btn.setAttribute('aria-pressed', String(n === day))
+    for (const [n, btn] of this.buttons) {
+      btn.setAttribute('aria-pressed', String(n === day))
+      if (n === loading) btn.setAttribute('aria-busy', 'true')
+      else btn.removeAttribute('aria-busy')
+    }
     if (this.head) this.head.textContent = `${this.open ? '▾' : '▸'} SPC D${day}`
-    if (this.caption) this.caption.textContent = outlookCaption(day, getOutlookLoaded())
+    if (this.caption) this.renderCaption(outlookCaption(day, getOutlookLoaded(), loading))
+  }
+
+  private renderCaption(c: { before: string; term: string | null }): void {
+    if (!this.caption) return
+    this.caption.textContent = c.before
+    if (!c.term) return
+    // Category words get the same acronym tip as the panel (ADR-0018); unknown words stay plain text.
+    const tip = expand(c.term)
+    if (!tip) {
+      this.caption.append(c.term)
+      return
+    }
+    const abbr = document.createElement('abbr')
+    abbr.className = 'abbr'
+    abbr.title = tip
+    abbr.textContent = c.term
+    this.caption.append(abbr)
   }
 }
