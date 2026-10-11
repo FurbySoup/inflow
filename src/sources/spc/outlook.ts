@@ -79,6 +79,8 @@ export function spcOutlookDay(day: OutlookDay): SourceAdapter<GeoJSON.FeatureCol
     id: `spc-outlook-d${day}`,
     refreshMs: refreshMsFor(day),
     fetch(_aoi, signal) {
+      // An already-aborted caller must not start (and memoize) a shared request.
+      if (signal?.aborted) return Promise.reject(signal.reason)
       return untilAborted(memoizedDay(day), signal)
     },
     normalize(raw) {

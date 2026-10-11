@@ -50,7 +50,7 @@ export function HwoStrip() {
     >
       <ConsoleButton
         aria-expanded={open}
-        aria-controls={id}
+        aria-controls={open ? id : undefined}
         onClick={() => setOpen((o) => !o)}
         style={toggleStyle}
       >

@@ -42,7 +42,8 @@ function askPermission(): void {
   if (typeof Notification === 'undefined') return
   try {
     void Promise.resolve(Notification.requestPermission()).then(
-      (result) => updatePrefs({ permission: result }),
+      // Old callback-style implementations resolve undefined: treat that as not decided.
+      (result) => updatePrefs({ permission: result ?? 'default' }),
       () => updatePrefs({ permission: 'default' }),
     )
   } catch {
