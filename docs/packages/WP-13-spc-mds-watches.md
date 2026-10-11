@@ -1,5 +1,5 @@
 # WP-13 — SPC mesoscale discussions + watch boxes
-Wave 4 · ADRs: 0002, 0004, 0008
+Wave 4 · ADRs: 0002, 0004, 0008, 0014
 
 ## Goal
 Two map overlays: active SPC **mesoscale discussions** (MD polygons) and active **watch boxes** (the SPC parallelograms, e.g. Tornado Watch 679), each labelled with its number.
@@ -25,6 +25,10 @@ Everything else (no MapPanel, no panels, no proxy; none is needed).
   - Watches: solid outline, colour by type (TOR red, SVR yellow; MapLibre paint values may be literal colours per CLAUDE.md), label `TOR 679` / `SVR 680`, PDS gets a thicker line.
 - Layer `id`s prefixed `spc-md` / `spc-watch` so the LayerControl toggles every sub-layer.
 - Commit trimmed real fixtures for both endpoints.
+
+## Responsive (ADR-0014)
+- Labels use `text-allow-overlap: false` and a size that stays legible at 390 px wide (≈11–12 px) without cluttering 3840 px. The map's own zoom handles scale, so no media queries are needed.
+- Orchestrator checks: labels readable at 390×844 and 3840×2160; no label pile-ups at zoom ≤ 5.
 
 ## Acceptance
 - [ ] Tests: normalize for both (expiry filter with injected `now`, label building, TOR/SVR mapping).

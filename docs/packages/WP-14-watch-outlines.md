@@ -1,5 +1,5 @@
 # WP-14 — Watch outlines (zone shapes for zone-based alerts)
-Wave 4 · Depends on orchestrator prep P1 (`Alert.zones`) · ADRs: 0002, 0004, 0008
+Wave 4 · Depends on orchestrator prep P1 (`Alert.zones`) · ADRs: 0002, 0004, 0008, 0014
 
 ## Goal
 Zone-based alerts (`geometry: null`, e.g. most watches and flood watches) get drawn on the map as dashed county/zone outlines, coloured like their list severity, so the map no longer hides 9 of GA's 12 alerts.
@@ -29,6 +29,10 @@ Everything else. Don't touch `MapPanel.tsx` (storm-based alert polygons stay the
   - Keep those with `geometry === null`, resolve their zone shapes, and emit features `{ alertId, event, severity }`.
   - Draw a dashed line (`line-dasharray`) coloured by severity (literal paint colours matching the `--extreme/--severe/--moderate` token values), with a faint fill. Layer ids are prefixed `watch-outlines`.
 - Test IndexedDB with `fake-indexeddb` **only if** it's already a dependency. Otherwise inject the store interface and test with an in-memory fake. Don't add packages.
+
+## Responsive (ADR-0014)
+- Dashed outlines must stay distinguishable from WP-13 watch boxes at phone size. Use line width ≥ 1.5 and a dash pattern that reads at 390 px.
+- Orchestrator checks: outlines visible at 390×844 and 844×390.
 
 ## Acceptance
 - [ ] Tests: proxy URL rewrite, zone normalize (trimmed real county + forecast fixtures), cache hit avoids fetch, failed zone skipped.

@@ -1,5 +1,5 @@
 # WP-12 — DOT cameras: South Carolina (511SC, Iteris)
-Wave 4 · Depends on orchestrator prep P0 · ADRs: 0002, 0004, 0005
+Wave 4 · Depends on orchestrator prep P0 · ADRs: 0002, 0004, 0005, 0014
 
 ## Goal
 Add SC cameras to `CCTV-01`. This closes the camera gap in the default GA/SC live-proofing AOI together with WP-11.
@@ -25,6 +25,10 @@ Everything else, including the `NO_COVERAGE` text (the orchestrator updates it a
 - `southCarolinaCameras` adapter: query only when AOI `states` includes `SC`. `refreshMs` 60 s is fine for snapshots, but cache the list in module memory for **15 min** (695 KB).
 - `normalize(raw, bbox)` (pure): keep `active` features inside bbox → `CameraFeed` with `id` `sc511:<id>`, `title` `description` (fall back to `route direction`), `snapshotUrl` `image_url`, `streamUrl` null (HLS isn't wired in the panel), `state: 'SC'`.
 - Commit a trimmed real fixture (3–5 features incl. one `active: false`).
+
+## Responsive (ADR-0014)
+- New tiles go through the existing `cam-grid`/`CameraTile`, so they stay fluid. Don't add fixed widths.
+- Orchestrator checks the ADR-0014 matrix: at 390×844 and 844×390 the SC tiles fit the panel without horizontal scroll.
 
 ## Acceptance
 - [ ] Tests: bbox filter, inactive skip, title fallback.

@@ -1,5 +1,5 @@
 # WP-15 — Stream lifecycle (live check, channel fallback, visible-only autoplay)
-Wave 4 · ADRs: 0009, **0013** (supersedes part of 0009), 0012
+Wave 4 · ADRs: 0009, **0013** (supersedes part of 0009), 0012, 0014
 
 ## Goal
 Pinned broadcasts go dark mid-event (verified: Brandon Copic's `Syyvt9aidlQ` ended at 20:00Z and restarted as `6nTCsMwGwoY` at 20:06Z). The grid should know which feeds are live, fall back to the chaser's channel when a pinned video ends, show ENDED/OFFLINE honestly, and only run the iframes you can see.
@@ -35,6 +35,11 @@ Everything else, including `src/ui/*`. Show status with the existing `Badge` (e.
 - Sorting: live in AOI → live elsewhere → ENDED/OFFLINE → context feeds (extend `layoutStreams`; keep its tests green).
 - **Autoplay only primary + visible tiles:** off-screen tiles drop `autoplay=1` (or unmount the iframe and keep the caption), so 10+ feeds don't all decode.
 - ENDED/OFFLINE tiles keep the link-out and the ⇱ MAIN button (ADR-0012 signifiers unchanged).
+
+## Responsive (ADR-0014)
+- The visibility gate must use an `IntersectionObserver` with `root: null` (the viewport), not the panel. On desktop the feeds panel scrolls; on the Narrow tier the whole page scrolls instead (ADR-0014). Both must stop off-screen autoplay.
+- ENDED/OFFLINE badges sit in the caption, which already `flex-wrap`s; don't add fixed widths.
+- Orchestrator checks at 390×844 (page scroll) and 1366×768 (panel scroll): only on-screen tiles play.
 
 ## Acceptance
 - [ ] Tests: both parsers against fixtures (live / ended / removed / offline), resolution table, sort order.

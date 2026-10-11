@@ -1,5 +1,5 @@
 # WP-11 — DOT cameras: Georgia + Florida (IBI 511 platform)
-Wave 4 · Depends on orchestrator prep P0 · ADRs: 0002, 0004, 0005
+Wave 4 · Depends on orchestrator prep P0 · ADRs: 0002, 0004, 0005, 0014
 
 ## Goal
 Add GA (511GA) and FL (FL511) cameras to `CCTV-01`. Both run the same IBI/Arcadis "511" platform, so one adapter factory serves both.
@@ -29,6 +29,10 @@ Everything else, including the `NO_COVERAGE` text (the orchestrator updates it a
 - Optional optimisation: if the DataTables query accepts a `search`/geo filter that cuts the walk, use it. Only use it if you verify it by curl, and record what you found in the adapter comment.
 - `normalize(raw, bbox)` (pure): parse WKT, drop records whose first image is `disabled`/`blocked` or missing, keep those in bbox, map to `CameraFeed` with `id` `511ga:<id>` / `fl511:<id>`, `snapshotUrl` = `base host + imageUrl`, `title` = `location`, `state`.
 - Commit a **trimmed real response** (3–5 records incl. one disabled image) per state as fixtures.
+
+## Responsive (ADR-0014)
+- New tiles go through the existing `cam-grid`/`CameraTile`, so they stay fluid. Don't add fixed widths.
+- Orchestrator checks the ADR-0014 matrix: at 390×844 and 844×390 the GA/FL tiles fit the panel without horizontal scroll.
 
 ## Acceptance
 - [ ] Tests: WKT parsing, bbox filter, disabled/blocked skip, page-walk stops at `recordsTotal` (mocked fetch).

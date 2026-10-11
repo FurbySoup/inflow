@@ -15,17 +15,23 @@ Basic resizing (feeds column + console row splitters, ADR-0011), shared types, a
 
 Sources were curl-verified on 2026-10-10 (endpoints, CORS for the real method, keys). Facts are in each package.
 
-**Orchestrator prep, before launch** (shared files, one commit each, then `git push origin main`):
+**Orchestrator prep, before launch** (shared files, one commit each, then `git push origin main`). All done 2026-10-11:
 - **P0 tech debt (candidate I):**
   - `Splitter.tsx`/`ConsoleSplitter`: clear `body.resizing` on unmount mid-drag and handle `lostpointercapture`.
   - Throttle layout `localStorage` writes during a drag (`src/state/layout.ts`).
   - AudioPanel inline-styled buttons → `ConsoleButton`.
 - **P1:** `Alert.zones: string[]` (NWS `affectedZones` URLs) in `src/types/index.ts`, plus the `src/sources/nws/alerts.ts` normalize and its test (for WP-14).
 - **P2:** `useAoi` gains `aoiRequest: { bbox, seq } | null`, `requestAoi(bbox)` and `clearAoiRequest()` (for WP-16).
+- **P4, responsive tiers (ADR-0014):**
+  - viewport-capped tracks, `100dvh`, safe areas;
+  - mid-width, short-landscape and wall tiers;
+  - touch targets;
+  - layer control collapsed by default on small screens.
 - ADR-0013 (stream liveness) accepted 2026-10-11.
+- After the merge, re-sync Claude Design: P0/P4 changed `src/ui/styles.css` (link-out buttons, touch targets).
 
 ```
-Prep P0–P2 (orchestrator) → push main
+Prep P0–P2, P4 (orchestrator) → push main
         ▼
 Wave 4 (6 builders in parallel, + 1 verifier each)
   WP-11 GA + FL cameras (IBI 511)     ── src/sources/ibi511, proxy /api/511ga + /api/fl511
@@ -104,6 +110,10 @@ Wave 3
 3. As each returns, launch a `wp-verifier` on its branch. FAIL → resume the builder (SendMessage) with the verifier's findings.
 4. Merge PASS branches into `main` one at a time; resolve registry one-liners; re-run checks after each merge.
 5. Run the app (`.claude/launch.json` → `dev`) and check every panel against live data for the current AOI.
+   Then check the **viewport matrix** (ADR-0014) with the browser pane's `resize_window`: 1920×1080, 1366×768, 1024×768, 768×1024, 390×844, 844×390, 3840×2160. At each size:
+   - no horizontal page scroll;
+   - the map is visible on the first screen;
+   - every control is reachable without hover.
 6. Apply any "requested shared changes" builders reported, then start the next wave.
 
 Builders that need a shared-file change (types, store, tokens, package.json) **stop and report** it; they do not make it.

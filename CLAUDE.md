@@ -29,6 +29,14 @@ In the desktop app, `.claude/launch.json` defines the `dev` server for live chec
   - **Styling rules:** no hardcoded colours except MapLibre paint values. Data values use `--font-data`.
   - **App wiring:** `src/panels/` composes the kit with data. `src/panels/Panel.tsx` is a thin wrapper that binds collapse state to the layout store. Status comes from `queryStatus()` (`src/lib/feedStatus.ts`).
 - **Layout state:** `useLayout` (`src/state/layout.ts`, ADR-0011) holds feed/console sizes, console split, collapsed panel codes and the DEFAULT/WALL/CHASE presets. It persists to localStorage (`storm-chasers.layout.v2`).
+- **Responsive (ADR-0014):** tiers live in `src/index.css`:
+  - desktop;
+  - mid-width (≤ 1280);
+  - narrow (≤ 900, stacked);
+  - short landscape (height ≤ 500);
+  - wall (≥ 2560).
+
+  Touch targets are under `pointer: coarse` in the kit. Check UI changes at the viewport matrix in `docs/work-plan.md`. No fixed widths in panels.
 - **Interaction (ADR-0012, Norman):**
   - Every interactive element needs a persistent signifier, plus hover, `:focus-visible` and visible feedback.
   - Read-only elements must not look clickable.
@@ -46,7 +54,7 @@ In the desktop app, `.claude/launch.json` defines the `dev` server for live chec
 - The desktop browser pane runs `requestAnimationFrame` at 0/s when unfocused: a black MapLibre map there is the environment, not a bug (inspect via dev-only `window.__map`).
 
 ## Parallel work (ADR-0010)
-Features are specified as self-contained work packages in `docs/packages/`, scheduled in waves in `docs/work-plan.md`. Waves 1–3 (WP-01…10) are merged.
+Features are specified as self-contained work packages in `docs/packages/`, scheduled in waves in `docs/work-plan.md`. Waves 1–3 (WP-01…10) are merged; Wave 4 (WP-11…16) is in progress and Wave 5 (WP-17) is planned.
 - **Agents:** packages are built by the `wp-builder` agent (Haiku, one per package, `isolation: "worktree"`) and checked by `wp-verifier`. Both are custom agent types in `.claude/agents/`.
 - **Shared files:** `src/types/index.ts`, `src/state/*`, `src/lib/*`, `src/ui/*`, `src/index.css`, `vite.config.ts` and `package.json` are changed only by the orchestrating session. Builders report needed changes instead.
 - **Wave hygiene:**
@@ -54,7 +62,7 @@ Features are specified as self-contained work packages in `docs/packages/`, sche
   - Builders must not start dev servers or use the browser pane.
   - Merge only after a verifier PASS.
   - Run checks with `set -o pipefail`.
-- **Next steps:** Wave 4 planning is in `docs/next-session-wave4.md`. The post-v1 hosting plan is in `docs/roadmap.md`.
+- **Next steps:** Wave 4/5 schedule and prep are in `docs/work-plan.md`. The post-v1 hosting plan is in `docs/roadmap.md`.
 
 ## Adding things
 - New source: folder in `src/sources/`, adapter + trimmed real-response fixture + `normalize` test. Add a proxy route only if CORS/headers require it. Verify CORS for the *actual* request (JSON POSTs preflight; CARS failed that).
