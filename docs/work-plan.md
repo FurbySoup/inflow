@@ -25,6 +25,63 @@ Basic resizing (feeds column + console row splitters, ADR-0011), shared types, a
   - Live checks caught: `[`/`]` ignored ENDED/OFFLINE feeds; cycling flipped between two feeds; the help rows were cramped at 390 px.
   - The "? KEYS" hint moved into the top bar (orchestrator call).
 
+## Wave 6 (single-site radar) — planned 2026-10-11
+Prep P6 (done): `MapLayer.defaultVisible` + LayerControl honours it (a layer can start off).
+
+| WP | Title | Wave | Owns (exclusive) | Registry edits allowed |
+|---|---|---|---|---|
+| [18](packages/WP-18-single-site-velocity.md) | SRV velocity (nearest radar) + Open in WeatherWise | 6 | `src/sources/nexrad/**`, `src/map/velocity.ts` | `layers.ts`, `shortcuts.ts` V key + help row |
+
+WeatherWise research (2026-10-11):
+- It complements MapLibre; it doesn't replace it.
+- There's no public API, its iframe is blocked by CSP, and its EULA restricts commercial use, so integration is a link-out only.
+- The free gap we fill ourselves is SRV from IEM RIDGE.
+
+## Waves 7–9 — outline (from the user's recurring-use brief and the INFLOW design handoff, 2026-10-11)
+Live proofing used one area and one known event. These waves make INFLOW work for **any area, every day**. Packages are written when each wave is approved; research is in this session's reports, summarised here.
+
+**Wave 7: INFLOW design implementation** (`docs/design/inflow-v1/HANDOFF.md` §9). D0 (tokens, fonts, brand) is done.
+- Orchestrator prep:
+  - split `src/ui/styles.css` into per-component files, so builders can own kit components without conflicts (kit-css.mjs inlines them for the design sync);
+  - `data-preset` layout grid driven by the layout store;
+  - update ADR-0010 to allow per-component kit ownership in design waves.
+- Packages:
+  - **AlertRow:** hazard chip, PDS badge, remaining-time bar, 60 s expired state, PDS → TOR → SVR… sort order.
+  - **StatusLed:** shape-coded LEDs plus data age in every panel header.
+  - **Top bar:** threat button, "WARNINGS HIDDEN" chip, and the NWS feed-error banner.
+  - **Map styling:** a separate watches layer, a casing pass, the hazard palette (FFW needs its light casing), the focus reticle, labels above radar.
+  - **Stream thumbnails:** snapshot images refreshed every 15 s with ▲ promote; only the primary plays live. This also cuts CPU.
+  - **Toast region:** NWS TOR/TOR-E only; Wave 9 reuses it.
+- Re-sync Claude Design after.
+
+**Wave 8: any area.**
+- Prep:
+  - 50-state + DC + PR table (today 20 states, so over IL/OH/MN/PA/the West the AOI has no states and alerts/cameras go blank);
+  - `useSource` background-polling flag.
+- Packages:
+  - **AOI filtering:** alerts also match by polygon/bbox, not only by state.
+  - **OpenMHz for any area:** fetch `api.openmhz.com/systems` from the browser (463 systems, 41 states) and drop the curated map. GA/SC currently has none, although 12 exist.
+  - **DOT cameras A:** CARS IA/MN/IN through the existing factory + proxies.
+  - **DOT cameras B:** IBI AZ/ID/LA/PA/NV/CT/New England/AK through the `ibi511` factory; WA and CA are direct.
+  - **SPC Day 1–3 (+4–8) outlooks:** a layer with a day selector, plus an AOI-risk badge.
+  - **GOES-West** for AOIs west of about 105°W.
+
+**Wave 9: notifications and chasers.**
+- **Notification engine:**
+  - browser Notification API, permission asked only from a click;
+  - pure diff with de-dupe by id, seeded on load, a severity/event threshold, a rate cap, and `tag` replacement;
+  - triggers: new NWS alert in the AOI, new SPC watch or MD, and an SPC risk upgrade for the AOI ("upcoming storms").
+- **Chaser roster + LIVE NOW:**
+  - about 40–60 regular chasers by channelId, each with a home region;
+  - slow round-robin liveness (ADR-0013), a live-first sort, and a "chaser went live" trigger.
+- **Hazardous Weather Outlook** for the AOI's forecast office (NWS `/points` → CWA → HWO).
+- **Chaser positions on the map** (user idea): pending research. Sources such as Spotter Network likely need an account or agreement.
+
+**Needs the v2 Worker:**
+- push notifications while the tab is closed (cron poller + Web Push);
+- YouTube Data API live discovery (replaces the `/api/youtube` scraping, ADR-0013);
+- shared upstream caching.
+
 ## Wave 4 (v1.1 coverage polish)
 
 Sources were curl-verified on 2026-10-10 (endpoints, CORS for the real method, keys). Facts are in each package.

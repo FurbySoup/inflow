@@ -3,7 +3,7 @@
 v1 = local-only, keyless, client-only (ADR-0001). This plans the path to a hosted product. Each phase gets its own ADRs when started.
 
 ## v1.1 — Coverage polish (still local)
-Scheduled as Wave 4 (WP-11…16) and Wave 5 (WP-17); see `work-plan.md`. Not scheduled:
+Waves 4–5 (WP-11…17) are merged. Wave 6 (WP-18: SRV velocity from IEM RIDGE, keyless, plus a WeatherWise link-out) is planned. Waves 7–9 (INFLOW design, any-area, notifications + chaser roster) are outlined in `work-plan.md`. Not scheduled:
 - AL cameras: ALGO is behind a bot wall.
 - OK cameras.
 - Twitch/Kick streams.
@@ -42,7 +42,7 @@ Each needs an agreement or paid licence; evaluate once there are users:
 - Spotter Network live chaser positions.
 - Lightning (Blitzortung terms, or a commercial feed).
 - Broadcastify scanner audio (paid API/embed licence) — supersedes ADR-0006.
-- Higher-res radar (single-site Level II/III, velocity/CC for debris signatures).
+- Higher-res radar: sub-30 s Level II, CC for debris signatures, cross sections. (Single-site SRV moved to v1.1 Wave 6: it is free and keyless from IEM RIDGE.)
 - mPING crowd reports.
 
 ## Open questions

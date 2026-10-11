@@ -5,6 +5,8 @@ const STORAGE_KEY = 'storm-chasers.layers'
 interface Toggleable {
   id: string
   label: string
+  /** Visibility when the user has no stored preference. Default true. */
+  defaultVisible?: boolean
 }
 
 /** Drawn by MapPanel above the registry, so it is not in `mapLayers`. Both its style layers start with `alerts`. */
@@ -157,7 +159,9 @@ export class LayerControl implements maplibregl.IControl {
   }
 
   private isOn(id: string): boolean {
-    return this.visibility[id] !== false
+    const stored = this.visibility[id]
+    if (stored !== undefined) return stored
+    return this.rows.find((r) => r.id === id)?.defaultVisible !== false
   }
 
   private toggle(id: string): void {

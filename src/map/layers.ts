@@ -16,6 +16,8 @@ export interface MapLayer {
   label: string
   /** Add sources/layers. Called once after the style loads. */
   add(map: maplibregl.Map): void
+  /** Start hidden until the user turns it on (e.g. velocity over the reflectivity mosaic). Default true. */
+  defaultVisible?: boolean
   /** Optional periodic refresh (e.g. tile cache busting). */
   refreshMs?: number
   refresh?(map: maplibregl.Map): void
