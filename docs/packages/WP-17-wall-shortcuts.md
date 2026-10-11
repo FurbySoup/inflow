@@ -5,8 +5,9 @@ Wave 5 · Depends on Wave 4 merged + orchestrator prep P3 · ADRs: 0007, 0011, 0
 Run the dashboard on a wall display from the keyboard: cycle the primary stream, toggle map layers, apply AOI presets and layout presets, go fullscreen, and see the key map on demand.
 
 ## Owns
-`src/panels/Shortcuts.tsx` (global key handler + `?` help overlay), `src/panels/shortcuts.ts` (pure keymap → action), `src/panels/shortcuts.test.ts`.
-Registry edit allowed: mount `<Shortcuts />` once in `App.tsx`.
+`src/panels/KeyboardShortcuts.tsx` (global key handler + `?` help overlay; not `Shortcuts.tsx`, which clashes by case with `shortcuts.ts`), `src/panels/shortcuts.ts` (pure keymap → action), `src/panels/shortcuts.test.ts`.
+Registry edit allowed: mount `<KeyboardShortcuts />` once in `App.tsx`.
+Orchestrator-approved during review: `Topbar.tsx` renders `<KeysButton />` (the "? KEYS" hint), replacing a fixed bottom-right button that covered the cameras panel.
 
 ## Forbidden
 Everything else. All actions go through store/registry APIs that prep P3 provides; don't reach into panels.

@@ -20,7 +20,10 @@ Basic resizing (feeds column + console row splitters, ADR-0011), shared types, a
   - Follow-ups:
     - back off when a GA/FL list walk keeps failing;
     - optional `status` slot on `StreamTile`, so ENDED/OFFLINE can sit in the caption (kit change + re-sync).
-- Wave 5 (WP-17): prep P3 done and keymap confirmed 2026-10-11; building.
+- Wave 5 (WP-17): **merged** 2026-10-11.
+  - The verifier caught an unguarded Fullscreen API and focus that was never restored when the help closed.
+  - Live checks caught: `[`/`]` ignored ENDED/OFFLINE feeds; cycling flipped between two feeds; the help rows were cramped at 390 px.
+  - The "? KEYS" hint moved into the top bar (orchestrator call).
 
 ## Wave 4 (v1.1 coverage polish)
 
@@ -67,7 +70,7 @@ Wave 5
 | [14](packages/WP-14-watch-outlines.md) | Watch outlines | 4 | `src/sources/nwszones/**`, `src/map/watchOutlines.ts` | `src/map/layers.ts` |
 | [15](packages/WP-15-stream-lifecycle.md) | Stream lifecycle | 4 | `src/sources/streams/**`, `src/panels/StreamsGrid.tsx`, `config/streams.json` | `vite.config.ts` proxy entry |
 | [16](packages/WP-16-aoi-presets.md) | AOI presets | 4 | `src/panels/AoiPresets.tsx`, `src/panels/aoiPresetData.ts` (+test) | `Topbar.tsx` one line, `MapPanel.tsx` one effect |
-| [17](packages/WP-17-wall-shortcuts.md) | Wall-display shortcuts | 5 | `src/panels/Shortcuts.tsx`, `src/panels/shortcuts.ts` (+test) | `App.tsx` mount |
+| [17](packages/WP-17-wall-shortcuts.md) | Wall-display shortcuts | 5 | `src/panels/KeyboardShortcuts.tsx`, `src/panels/shortcuts.ts` (+test) | `App.tsx` mount |
 
 **Expected merge conflicts (trivial):**
 - `CAMERA_ADAPTERS` (WP-11, WP-12);

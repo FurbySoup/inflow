@@ -21,12 +21,29 @@ describe('stepPrimary', () => {
 })
 
 describe('useStreams.cyclePrimary', () => {
-  beforeEach(() => useStreams.setState({ primaryId: null, order: [] }))
+  beforeEach(() => useStreams.setState({ primaryId: null, order: [], shownId: null, chosenThisSession: false }))
 
-  it('cycles from the primary actually shown (order[0])', () => {
-    useStreams.getState().setOrder(['b', 'a', 'c'])
+  it('marks a pick as made this session', () => {
+    useStreams.getState().setPrimary('a')
+    expect(useStreams.getState().chosenThisSession).toBe(true)
+  })
+
+  it('cycles from the feed actually shown, through the sorted order', () => {
+    useStreams.getState().setOrder(['a', 'b', 'c'], 'b')
     useStreams.getState().cyclePrimary(1)
-    expect(useStreams.getState().primaryId).toBe('a')
+    expect(useStreams.getState().primaryId).toBe('c')
+  })
+
+  it('walks every feed instead of flipping between two', () => {
+    const seen: (string | null)[] = []
+    useStreams.getState().setOrder(['a', 'b', 'c'], 'a')
+    for (let i = 0; i < 3; i++) {
+      useStreams.getState().cyclePrimary(1)
+      const id = useStreams.getState().primaryId
+      seen.push(id)
+      useStreams.getState().setOrder(['a', 'b', 'c'], id) // the grid republishes after each pick
+    }
+    expect(seen).toEqual(['b', 'c', 'a'])
   })
 
   it('does nothing before the grid has published an order', () => {
@@ -35,9 +52,9 @@ describe('useStreams.cyclePrimary', () => {
   })
 
   it('ignores a republished identical order', () => {
-    useStreams.getState().setOrder(['a', 'b'])
+    useStreams.getState().setOrder(['a', 'b'], 'a')
     const before = useStreams.getState().order
-    useStreams.getState().setOrder(['a', 'b'])
+    useStreams.getState().setOrder(['a', 'b'], 'a')
     expect(useStreams.getState().order).toBe(before)
   })
 })

@@ -108,8 +108,8 @@ export function KeysButton() {
   const [showButton] = useState(hasFinePointer)
   if (!showButton) return null
   return (
+    // No aria-label: the visible "? KEYS" is the accessible name (WCAG 2.5.3 label in name); the title describes it.
     <ConsoleButton
-      aria-label="Keyboard shortcuts"
       aria-expanded={open}
       title="Keyboard shortcuts (?)"
       onClick={() => setHelpOpen(!helpOpen)}
@@ -212,17 +212,18 @@ export function KeyboardShortcuts() {
             </ConsoleButton>
           }
         >
-          <div style={{ display: 'grid', gridTemplateColumns: 'max-content 1fr', gap: '8px 16px', padding: 12, alignItems: 'center' }}>
+          {/* Each row wraps: on a phone the description drops under its keys instead of a one-word column (ADR-0014). */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: 12 }}>
             {ROWS.map((row) => (
-              <div key={row.keys.join(' ')} style={{ display: 'contents' }}>
-                <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+              <div key={row.keys.join(' ')} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 16px' }}>
+                <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap', minWidth: '13em' }}>
                   {row.keys.map((k) => (
                     <kbd key={k} style={KEY_CAP}>
                       {k}
                     </kbd>
                   ))}
                 </span>
-                <span>{row.label}</span>
+                <span style={{ flex: '1 1 14em' }}>{row.label}</span>
               </div>
             ))}
           </div>

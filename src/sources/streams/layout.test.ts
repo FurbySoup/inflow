@@ -117,6 +117,11 @@ describe('layoutStreams', () => {
     expect(layoutStreams(offline, 'tx').primary?.id).toBe('ga')
   })
 
+  it('honours a choice made this session even when that feed is ENDED/OFFLINE', () => {
+    const ended = sorted.map((s) => (s.id === 'tx' ? { ...s, status: 'ended' as const } : s))
+    expect(layoutStreams(ended, 'tx', true).primary?.id).toBe('tx')
+  })
+
   it('keeps a stored primary that is live or not checked yet', () => {
     const live = sorted.map((s) => (s.id === 'tx' ? { ...s, status: 'live' as const } : s))
     expect(layoutStreams(live, 'tx').primary?.id).toBe('tx')

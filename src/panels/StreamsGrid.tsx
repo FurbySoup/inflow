@@ -71,6 +71,7 @@ function StatusBadge({ status }: { status?: FeedStatus }) {
 export function StreamsGrid() {
   const states = useAoi((s) => s.states)
   const primaryId = useStreams((s) => s.primaryId)
+  const chosenThisSession = useStreams((s) => s.chosenThisSession)
   const setPrimary = useStreams((s) => s.setPrimary)
   const setOrder = useStreams((s) => s.setOrder)
   const [soundOn, setSoundOn] = useState(() => loadMainSound())
@@ -93,14 +94,15 @@ export function StreamsGrid() {
   const feeds: LiveFeed[] = curatedStreams.map((s) => applyResolution(s, resolutions.get(s.id)))
   // Streams in the AOI first; others still shown so a chaser is never hidden by map panning.
   const sorted = sortStreams(feeds, states)
-  const { primary, thumbs } = layoutStreams(sorted, primaryId)
+  const { primary, thumbs } = layoutStreams(sorted, primaryId, chosenThisSession)
   if ((primary?.id ?? null) !== checkedPrimary) setCheckedPrimary(primary?.id ?? null)
 
-  // Publish display order (primary first) so shortcuts can cycle the main feed.
-  const orderKey = [primary, ...thumbs].map((s) => s?.id ?? '').join('|')
+  // Publish the sorted order and the feed in the main slot so shortcuts can cycle it.
+  const orderKey = sorted.map((s) => s.id).join('|')
+  const shownId = primary?.id ?? null
   useEffect(() => {
-    setOrder(orderKey ? orderKey.split('|').filter(Boolean) : [])
-  }, [orderKey, setOrder])
+    setOrder(orderKey ? orderKey.split('|') : [], shownId)
+  }, [orderKey, shownId, setOrder])
 
   const choose = setPrimary
 

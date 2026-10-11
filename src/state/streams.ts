@@ -6,10 +6,14 @@ import { loadPrimaryId, savePrimaryId } from '../sources/streams/layout'
 interface StreamsState {
   /** The user's stored choice (persisted). May be a feed that is currently not live. */
   primaryId: string | null
-  /** Feed ids in display order, primary first, as last rendered by StreamsGrid. */
+  /** True once the user picks a feed in this session; a remembered pick from an earlier session is false. */
+  chosenThisSession: boolean
+  /** Feed ids in sorted order (live first), as last rendered by StreamsGrid. Stable while cycling. */
   order: string[]
+  /** The feed actually in the main slot (may differ from primaryId when a remembered pick has ended). */
+  shownId: string | null
   setPrimary: (id: string) => void
-  setOrder: (ids: string[]) => void
+  setOrder: (ids: string[], shownId: string | null) => void
   /** Makes the next (1) or previous (-1) feed in display order the primary, wrapping around. */
   cyclePrimary: (dir: 1 | -1) => void
 }
@@ -24,20 +28,23 @@ export function stepPrimary(order: string[], current: string | null, dir: 1 | -1
 
 export const useStreams = create<StreamsState>((set, get) => ({
   primaryId: loadPrimaryId(),
+  chosenThisSession: false,
   order: [],
+  shownId: null,
   setPrimary: (id) => {
     savePrimaryId(id)
-    set({ primaryId: id })
+    set({ primaryId: id, chosenThisSession: true })
   },
-  setOrder: (ids) => {
-    const prev = get().order
-    if (prev.length === ids.length && prev.every((id, i) => id === ids[i])) return
-    set({ order: ids })
+  setOrder: (ids, shownId) => {
+    const prev = get()
+    const same = prev.order.length === ids.length && prev.order.every((id, i) => id === ids[i])
+    if (same && prev.shownId === shownId) return
+    set(same ? { shownId } : { order: ids, shownId })
   },
   cyclePrimary: (dir) => {
-    const { order } = get()
-    // order[0] is the primary actually shown (the stored id may be ENDED and not in the main slot).
-    const next = stepPrimary(order, order[0] ?? null, dir)
+    const { order, shownId } = get()
+    // Step through the sorted order (not primary-first display order, which would flip between two feeds).
+    const next = stepPrimary(order, shownId, dir)
     if (next !== null) get().setPrimary(next)
   },
 }))
