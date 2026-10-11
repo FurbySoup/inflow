@@ -1,7 +1,7 @@
-@import './tokens.css';
 /*
  * INFLOW UI kit: component classes (ADR-0007, ADR-0015).
- * Tokens come from tokens.css (INFLOW v1 design handoff). Legacy names (--bg, --panel, --accent…)
+ * Tokens come from tokens.css (INFLOW v1 design handoff), loaded before this file by src/index.css
+ * and shipped to Claude Design via cfg.tokensGlob. Legacy names (--bg, --panel, --accent…)
  * are aliases there; new code uses the semantic names (--surface-*, --text-*, --status-*, --hz-*).
  * Shared by the app (imported from src/index.css) and the Claude Design system. Components never hardcode colours.
  */

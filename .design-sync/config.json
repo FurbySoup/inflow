@@ -5,14 +5,27 @@
   "globalName": "StormChasersUI",
   "buildCmd": "npm run build:ui",
   "srcDir": "src/ui",
-  "cssEntry": "src/ui/styles.css",
+  "cssEntry": "dist/ui/kit.css",
   "readmeHeader": ".design-sync/conventions.md",
-  "guidelinesGlob": ["docs/adr/0007-mission-control-ui.md", "docs/adr/0012-affordances-and-signifiers.md"],
+  "guidelinesGlob": [
+    "docs/adr/0007-mission-control-ui.md",
+    "docs/adr/0012-affordances-and-signifiers.md"
+  ],
   "overrides": {
-    "AlertList": { "cardMode": "column" },
-    "AlertRow": { "cardMode": "column" },
-    "CameraTile": { "cardMode": "column" },
-    "Panel": { "cardMode": "column" },
-    "StreamTile": { "cardMode": "column" }
+    "AlertList": {
+      "cardMode": "column"
+    },
+    "AlertRow": {
+      "cardMode": "column"
+    },
+    "CameraTile": {
+      "cardMode": "column"
+    },
+    "Panel": {
+      "cardMode": "column"
+    },
+    "StreamTile": {
+      "cardMode": "column"
+    }
   }
 }

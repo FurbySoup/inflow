@@ -12,7 +12,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc -b",
     "format": "prettier --write .",
-    "build:ui": "vite build --config vite.lib.config.ts && tsc -p tsconfig.ui.json"
+    "build:ui": "vite build --config vite.lib.config.ts && tsc -p tsconfig.ui.json && node scripts/kit-css.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.1",

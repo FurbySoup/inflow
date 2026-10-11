@@ -1,4 +1,5 @@
 /* App layout. Tokens + component classes live in the UI kit (src/ui/styles.css, ADR-0007). */
+@import './ui/tokens.css';
 @import './ui/styles.css';
 
 .layout {
