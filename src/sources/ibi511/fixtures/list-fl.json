@@ -1,8 +1,31 @@
 {
+  "_note": "SYNTHETIC: record 9999 is hand-made with images[0].disabled set to true. Records 675, 677 and 1 are real; the upstream list had no disabled image at capture time (2026-10-11).",
   "draw": 0,
   "recordsTotal": 4965,
   "recordsFiltered": 4965,
   "data": [
+    {
+      "DT_RowId": "9999",
+      "id": 9999,
+      "areaId": "OSC",
+      "roadway": "I-4",
+      "direction": "Eastbound",
+      "location": "SYNTHETIC disabled I-4 camera",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-81.5 28.4)" } },
+      "state": "Florida",
+      "images": [
+        {
+          "id": 9999,
+          "cameraSiteId": 9999,
+          "description": "SYNTHETIC",
+          "imageUrl": "/map/Cctv/9999",
+          "videoUrl": "",
+          "isVideoAuthRequired": true,
+          "disabled": true,
+          "blocked": false
+        }
+      ]
+    },
     {
       "DT_RowId": "675",
       "id": 675,

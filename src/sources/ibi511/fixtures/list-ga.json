@@ -1,4 +1,5 @@
 {
+  "_note": "SYNTHETIC: record 11227 has images[0].disabled hand-set to true. The upstream list had no disabled image at capture time (2026-10-11).",
   "draw": 0,
   "recordsTotal": 4331,
   "recordsFiltered": 4331,

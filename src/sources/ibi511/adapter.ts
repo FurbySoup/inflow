@@ -9,6 +9,7 @@ import type { SourceAdapter } from '../types'
 const PAGE = 100
 const CONCURRENCY = 4
 const WALK_TTL_MS = 12 * 60 * 60_000
+const PAGE_TIMEOUT_MS = 30_000
 
 export interface Ibi511Image {
   id: number
@@ -56,24 +57,54 @@ function inBbox(lng: number, lat: number, b: Bbox): boolean {
   return lng >= b.west && lng <= b.east && lat >= b.south && lat <= b.north
 }
 
+// A stuck connection must fail the page, not pin the cached walk for the whole TTL.
 async function fetchPage(proxy: string, start: number): Promise<Ibi511ListResponse> {
   const query = encodeURIComponent(JSON.stringify({ columns: [], start, length: PAGE }))
-  const res = await fetch(`${proxy}/List/GetData/Cameras?query=${query}&lang=en`)
-  if (!res.ok) throw new Error(`511 camera list ${proxy} ${res.status}`)
-  return (await res.json()) as Ibi511ListResponse
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(new Error(`511 camera list ${proxy} timed out at ${start}`)), PAGE_TIMEOUT_MS)
+  try {
+    const res = await fetch(`${proxy}/List/GetData/Cameras?query=${query}&lang=en`, { signal: ctrl.signal })
+    if (!res.ok) throw new Error(`511 camera list ${proxy} ${res.status}`)
+    const json = (await res.json()) as Partial<Ibi511ListResponse>
+    if (!Array.isArray(json.data) || typeof json.recordsTotal !== 'number') {
+      throw new Error(`511 camera list ${proxy}: unexpected response at ${start}`)
+    }
+    return json as Ibi511ListResponse
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+// A 200 with a short or empty page must never be cached as a complete walk.
+function checkPage(proxy: string, start: number, page: Ibi511ListResponse, total: number) {
+  const expected = Math.min(PAGE, Math.max(0, total - start))
+  if (page.data.length !== expected) {
+    throw new Error(`511 camera list ${proxy}: page at ${start} had ${page.data.length} rows, expected ${expected}`)
+  }
 }
 
 // Reads page 0 for recordsTotal, then the remaining pages with at most CONCURRENCY in flight.
+// After one page fails, no further pages are started.
 async function walkList(proxy: string): Promise<Ibi511Record[]> {
   const first = await fetchPage(proxy, 0)
+  const total = first.recordsTotal
+  checkPage(proxy, 0, first, total)
   const starts: number[] = []
-  for (let s = PAGE; s < first.recordsTotal; s += PAGE) starts.push(s)
+  for (let s = PAGE; s < total; s += PAGE) starts.push(s)
   const pages: Ibi511Record[][] = new Array<Ibi511Record[]>(starts.length)
   let next = 0
+  let failed = false
   const worker = async () => {
-    while (next < starts.length) {
+    while (!failed && next < starts.length) {
       const i = next++
-      pages[i] = (await fetchPage(proxy, starts[i])).data
+      try {
+        const page = await fetchPage(proxy, starts[i])
+        checkPage(proxy, starts[i], page, total)
+        pages[i] = page.data
+      } catch (err) {
+        failed = true
+        throw err
+      }
     }
   }
   await Promise.all(Array.from({ length: Math.min(CONCURRENCY, starts.length) }, worker))
@@ -131,7 +162,7 @@ export function ibi511Adapter({
       const cameras: CameraFeed[] = []
       for (const r of raw.records) {
         // The first image is the one the panel shows. Disabled, blocked or missing images are dropped.
-        const img = r.images[0]
+        const img = r.images?.[0]
         if (!img || img.disabled || img.blocked || !img.imageUrl) continue
         const point = parseWkt(r.latLng?.geography?.wellKnownText)
         if (!point || !inBbox(point[0], point[1], raw.aoi)) continue

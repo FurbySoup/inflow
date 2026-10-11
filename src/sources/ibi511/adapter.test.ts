@@ -58,7 +58,7 @@ describe('ibi511 normalize', () => {
   })
 
   it('drops disabled and blocked first images', () => {
-    // 11227 is marked disabled in the fixture (no real disabled image was in the list when captured).
+    // SYNTHETIC: 11227 is hand-set to disabled in the fixture. The upstream had no disabled image at capture time.
     const cams = georgiaCameras.normalize({ aoi: ATLANTA, records: gaList.data })
     expect(cams.map((c) => c.id)).not.toContain('511ga:11227')
     const blocked = [{ ...record(1, -84.4, 33.7), images: [{ id: 1, imageUrl: '/map/Cctv/1', disabled: false, blocked: true }] }]
@@ -89,6 +89,8 @@ describe('ibi511 normalize', () => {
     const cams = floridaCameras.normalize({ aoi: florida, records: flList.data })
     expect(cams).toHaveLength(3)
     expect(cams.map((c) => c.id)).toEqual(['fl511:675', 'fl511:677', 'fl511:1'])
+    // SYNTHETIC: fixture record 9999 is hand-set to disabled, so the FL disabled path is skipped.
+    expect(cams.map((c) => c.id)).not.toContain('fl511:9999')
     expect(cams.every((c) => c.id.startsWith('fl511:') && c.state === 'FL')).toBe(true)
     expect(cams[0].snapshotUrl).toBe('https://fl511.com/map/Cctv/675')
   })
@@ -132,6 +134,65 @@ describe('ibi511 fetch and walk', () => {
     const raw = await adapter.fetch(ATLANTA)
     expect(raw.records).toHaveLength(1)
     expect(spy).toHaveBeenCalledTimes(2)
+  })
+
+  it('does not cache a 200 with a non-JSON body', async () => {
+    const all = [record(1, -84.4, 33.7)]
+    const spy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response('<html>', { status: 200 }))
+      .mockImplementation(async (input) => listPage(String(input), 1, all))
+    const adapter = ibi511Adapter({ id: 't5', state: 'GA', proxy: '/api/t', host: 'https://t.example', idPrefix: 't:' })
+    await expect(adapter.fetch(ATLANTA)).rejects.toThrow()
+    const raw = await adapter.fetch(ATLANTA)
+    expect(raw.records).toHaveLength(1)
+    expect(spy).toHaveBeenCalledTimes(2)
+  })
+
+  it('treats a short page as a failed walk and does not cache it', async () => {
+    const all = Array.from({ length: 150 }, (_, i) => record(i + 1, -84.4, 33.7))
+    // The second page returns 10 rows where 50 are expected.
+    const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const start = JSON.parse(new URL(String(input), 'http://localhost').searchParams.get('query') ?? '{}').start as number
+      if (start === 100) return new Response(JSON.stringify({ recordsTotal: 150, data: all.slice(100, 110) }), { status: 200 })
+      return listPage(String(input), 150, all)
+    })
+    const adapter = ibi511Adapter({ id: 't6', state: 'GA', proxy: '/api/t', host: 'https://t.example', idPrefix: 't:' })
+    await expect(adapter.fetch(ATLANTA)).rejects.toThrow(/expected 50/)
+    spy.mockClear()
+    spy.mockImplementation(async (input) => listPage(String(input), 150, all))
+    const raw = await adapter.fetch(ATLANTA)
+    expect(raw.records).toHaveLength(150)
+    expect(spy).toHaveBeenCalledTimes(2)
+  })
+
+  it('stops starting new pages after one page fails', async () => {
+    const all = Array.from({ length: 1000 }, (_, i) => record(i + 1, -84.4, 33.7))
+    const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const start = JSON.parse(new URL(String(input), 'http://localhost').searchParams.get('query') ?? '{}').start as number
+      if (start === 100) return new Response('boom', { status: 500 })
+      return listPage(String(input), 1000, all)
+    })
+    const adapter = ibi511Adapter({ id: 't7', state: 'GA', proxy: '/api/t', host: 'https://t.example', idPrefix: 't:' })
+    await expect(adapter.fetch(ATLANTA)).rejects.toThrow(/500/)
+    // Page 0 plus at most the pages already in flight (CONCURRENCY 4); pages 500..900 are never requested.
+    expect(spy.mock.calls.length).toBeLessThanOrEqual(5)
+  })
+
+  it('fails a hung page after the timeout instead of pinning the walk', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    // A connection that never answers, but rejects when its signal aborts, as real fetch does.
+    vi.spyOn(globalThis, 'fetch').mockImplementation(
+      (_input, init) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () => reject(init.signal?.reason))
+        }),
+    )
+    const adapter = ibi511Adapter({ id: 't8', state: 'GA', proxy: '/api/t', host: 'https://t.example', idPrefix: 't:' })
+    const pending = adapter.fetch(ATLANTA)
+    const assertion = expect(pending).rejects.toThrow(/timed out/)
+    await vi.advanceTimersByTimeAsync(30_000)
+    await assertion
   })
 
   it('honours the caller signal', async () => {
