@@ -55,6 +55,42 @@ describe('sortStreams', () => {
   })
 })
 
+describe('sortStreams with liveness', () => {
+  it('ranks live AOI, live elsewhere, ENDED/OFFLINE, then context', () => {
+    const feeds = [
+      { ...fixtures[0]!, id: 'ctx', status: 'live' as const },
+      { ...fixtures[1]!, id: 'ok-off', status: 'offline' as const },
+      { ...fixtures[2]!, id: 'ga-ended', status: 'ended' as const },
+      { ...fixtures[3]!, id: 'tx-live', status: 'live' as const },
+      { ...fixtures[4]!, id: 'sc-live', status: 'live' as const },
+    ]
+    expect(sortStreams(feeds, ['GA', 'SC']).map((s) => s.id)).toEqual([
+      'sc-live',
+      'tx-live',
+      'ok-off',
+      'ga-ended',
+      'ctx',
+    ])
+  })
+
+  it('keeps an unchecked AOI feed in the AOI tier', () => {
+    const feeds = [
+      { ...fixtures[1]!, id: 'ok-unknown', status: 'unknown' as const },
+      { ...fixtures[2]!, id: 'ga-unchecked' },
+    ]
+    expect(sortStreams(feeds, ['GA']).map((s) => s.id)).toEqual(['ga-unchecked', 'ok-unknown'])
+  })
+
+  it('ranks a checked-but-unknown AOI feed below live AOI feeds, with live elsewhere', () => {
+    const feeds = [
+      { ...fixtures[1]!, id: 'ok-live', status: 'live' as const },
+      { ...fixtures[2]!, id: 'ga-unknown', status: 'unknown' as const },
+      { ...fixtures[2]!, id: 'ga-live', status: 'live' as const },
+    ]
+    expect(sortStreams(feeds, ['GA']).map((s) => s.id)).toEqual(['ga-live', 'ok-live', 'ga-unknown'])
+  })
+})
+
 describe('layoutStreams', () => {
   const sorted = sortStreams(fixtures, ['GA', 'SC'])
 

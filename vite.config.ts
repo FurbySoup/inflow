@@ -57,6 +57,12 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/api\/kiwisdr/, ''),
       },
+      // YouTube watch and channel-embed pages for stream liveness (ADR-0013). No CORS; local only.
+      '/api/youtube': {
+        target: 'https://www.youtube.com',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/youtube/, ''),
+      },
     },
   },
   test: {

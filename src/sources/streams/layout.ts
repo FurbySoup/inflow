@@ -1,4 +1,5 @@
 import type { ChaserStream } from './curated'
+import type { FeedStatus } from './resolve'
 
 export const PRIMARY_STORAGE_KEY = 'storm-chasers.streams.primary'
 export const SOUND_STORAGE_KEY = 'storm-chasers.streams.mainSound'
@@ -26,10 +27,17 @@ export function saveMainSound(on: boolean): void {
   }
 }
 
-/** AOI-relevant feeds first, other chasers next, context feeds last. Stable within each tier. */
-export function sortStreams(streams: ChaserStream[], aoiStates: string[]): ChaserStream[] {
-  const tier = (s: ChaserStream) =>
-    s.context ? 2 : s.states.some((st) => aoiStates.includes(st)) ? 0 : 1
+/**
+ * Live AOI feeds, live elsewhere and checked-but-unknown feeds, ENDED/OFFLINE, then context feeds.
+ * Stable within each tier. A feed with no status (not checked yet) keeps its AOI rank.
+ */
+export function sortStreams<T extends ChaserStream & { status?: FeedStatus }>(streams: T[], aoiStates: string[]): T[] {
+  const tier = (s: T) => {
+    if (s.context) return 3
+    if (s.status === 'ended' || s.status === 'offline') return 2
+    if (s.status === 'unknown') return 1
+    return s.states.some((st) => aoiStates.includes(st)) ? 0 : 1
+  }
   return [...streams].sort((a, b) => tier(a) - tier(b))
 }
 
@@ -38,10 +46,10 @@ export function isInAoi(stream: ChaserStream, aoiStates: string[]): boolean {
 }
 
 /** Primary is the stored id if still present, otherwise the first feed in sorted order. */
-export function layoutStreams(
-  sorted: ChaserStream[],
+export function layoutStreams<T extends ChaserStream>(
+  sorted: T[],
   primaryId: string | null,
-): { primary: ChaserStream | undefined; thumbs: ChaserStream[] } {
+): { primary: T | undefined; thumbs: T[] } {
   const primary = sorted.find((s) => s.id === primaryId) ?? sorted[0]
   return { primary, thumbs: sorted.filter((s) => s !== primary) }
 }
