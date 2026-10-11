@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { normalizeStreams } from './curated'
-import { applyResolution, resolveFeed, withAutoplay } from './resolve'
+import { applyResolution, mergeLiveness, resolveFeed, withAutoplay } from './resolve'
 
 const pinnedWithChannel = { videoId: 'Syyvt9aidlQ', channelId: 'UCPqLI_AohMn1jnFg8ocMyHA' }
 const pinnedOnly = { videoId: 'vGA' }
@@ -55,10 +55,49 @@ describe('resolveFeed', () => {
   })
 })
 
+describe('mergeLiveness', () => {
+  const fallback = { videoId: '6nTCsMwGwoY' }
+
+  it('starts from the first result', () => {
+    expect(mergeLiveness(undefined, { watch: 'ended', channel: fallback })).toEqual({ watch: 'ended', channel: fallback })
+  })
+
+  it('keeps a fallback when one refresh fails transiently', () => {
+    const merged = mergeLiveness(
+      { watch: 'ended', channel: fallback },
+      { watch: 'unknown' },
+    )
+    expect(resolveFeed(pinnedWithChannel, merged)).toEqual({ status: 'live', fallbackVideoId: '6nTCsMwGwoY' })
+  })
+
+  it('keeps the previous channel answer when only the channel check fails', () => {
+    expect(mergeLiveness({ watch: 'ended', channel: 'offline' }, { watch: 'ended', channel: 'unknown' })).toEqual({
+      watch: 'ended',
+      channel: 'offline',
+    })
+  })
+
+  it('takes fresh known answers over the previous ones', () => {
+    expect(mergeLiveness({ watch: 'ended', channel: fallback }, { watch: 'live' })).toEqual({ watch: 'live', channel: fallback })
+    expect(mergeLiveness({ watch: 'ended', channel: fallback }, { watch: 'ended', channel: 'offline' })).toEqual({
+      watch: 'ended',
+      channel: 'offline',
+    })
+  })
+
+  it('does not invent an answer when there was none before', () => {
+    expect(mergeLiveness({ watch: 'unknown' }, { watch: 'unknown' })).toEqual({ watch: 'unknown', channel: undefined })
+  })
+})
+
 describe('applyResolution', () => {
   const [stream] = normalizeStreams([
     { id: 'b', title: 'Brandon', youtube: pinnedWithChannel, states: ['GA'] },
   ])
+
+  it('returns the stream untouched when it has not been checked', () => {
+    expect(applyResolution(stream!, undefined)).toEqual(stream)
+  })
 
   it('swaps embed and link-out to the fallback video', () => {
     const feed = applyResolution(stream!, { status: 'live', fallbackVideoId: '6nTCsMwGwoY' })

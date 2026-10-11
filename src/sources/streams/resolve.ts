@@ -15,7 +15,24 @@ export interface FeedResolution {
   fallbackVideoId?: string
 }
 
-export type LiveFeed = ChaserStream & { status: FeedStatus }
+/** `status` is absent until the feed has been checked; `unknown` means checked and the check failed. */
+export type LiveFeed = ChaserStream & { status?: FeedStatus }
+
+/**
+ * Keeps the last known answer when a refresh comes back unknown (a transient fetch or parse failure),
+ * so a pin that fell back to its channel does not revert to the dead video for a whole poll interval.
+ */
+export function mergeLiveness(prev: LivenessResult | undefined, next: LivenessResult): LivenessResult {
+  if (!prev) return next
+  const watchUnknown = next.watch === undefined || next.watch === 'unknown'
+  const channelUnknown = next.channel === undefined || next.channel === 'unknown'
+  const prevWatchKnown = prev.watch !== undefined && prev.watch !== 'unknown'
+  const prevChannelKnown = prev.channel !== undefined && prev.channel !== 'unknown'
+  return {
+    watch: watchUnknown && prevWatchKnown ? prev.watch : next.watch,
+    channel: channelUnknown && prevChannelKnown ? prev.channel : next.channel,
+  }
+}
 
 /**
  * Resolution table (ADR-0013):
@@ -40,8 +57,9 @@ export function resolveFeed(youtube: YoutubeRef, result: LivenessResult | undefi
   return { status: 'live' }
 }
 
-/** Applies a resolution: a fallback swaps the embed and link-out to the channel's current video. */
-export function applyResolution(stream: ChaserStream, resolution: FeedResolution): LiveFeed {
+/** Applies a resolution: a fallback swaps the embed and link-out to the channel's current video. No resolution = not checked yet. */
+export function applyResolution(stream: ChaserStream, resolution: FeedResolution | undefined): LiveFeed {
+  if (!resolution) return stream
   const fallback = resolution.fallbackVideoId
   if (fallback === undefined) return { ...stream, status: resolution.status }
   return {

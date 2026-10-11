@@ -73,12 +73,21 @@ describe('sortStreams with liveness', () => {
     ])
   })
 
-  it('ranks unchecked and unknown feeds as live', () => {
+  it('keeps an unchecked AOI feed in the AOI tier', () => {
     const feeds = [
       { ...fixtures[1]!, id: 'ok-unknown', status: 'unknown' as const },
       { ...fixtures[2]!, id: 'ga-unchecked' },
     ]
     expect(sortStreams(feeds, ['GA']).map((s) => s.id)).toEqual(['ga-unchecked', 'ok-unknown'])
+  })
+
+  it('ranks a checked-but-unknown AOI feed below live AOI feeds, with live elsewhere', () => {
+    const feeds = [
+      { ...fixtures[1]!, id: 'ok-live', status: 'live' as const },
+      { ...fixtures[2]!, id: 'ga-unknown', status: 'unknown' as const },
+      { ...fixtures[2]!, id: 'ga-live', status: 'live' as const },
+    ]
+    expect(sortStreams(feeds, ['GA']).map((s) => s.id)).toEqual(['ga-live', 'ok-live', 'ga-unknown'])
   })
 })
 

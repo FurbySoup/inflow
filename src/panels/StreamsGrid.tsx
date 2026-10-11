@@ -11,7 +11,7 @@ import {
   sortStreams,
   withSound,
 } from '../sources/streams/layout'
-import { applyResolution, withAutoplay, type FeedResolution, type FeedStatus, type LiveFeed } from '../sources/streams/resolve'
+import { applyResolution, withAutoplay, type FeedStatus, type LiveFeed } from '../sources/streams/resolve'
 import { useLiveness } from '../sources/streams/useLiveness'
 import { useAoi } from '../state/aoi'
 import { Badge, StreamTile } from '../ui'
@@ -35,7 +35,6 @@ function useUserActivated() {
 }
 
 const STATUS_LABEL: Partial<Record<FeedStatus, string>> = { ended: 'ENDED', offline: 'OFFLINE' }
-const UNKNOWN: FeedResolution = { status: 'unknown' }
 
 /** Wraps a tile to report whether it is on screen. root: null is the viewport, so a tile clipped by a scrolling feeds panel (desktop) or the page (narrow) counts as off. */
 function FeedSlot({
@@ -65,8 +64,8 @@ function FeedSlot({
   return <div ref={ref}>{children}</div>
 }
 
-function StatusBadge({ status }: { status: FeedStatus }) {
-  const label = STATUS_LABEL[status]
+function StatusBadge({ status }: { status?: FeedStatus }) {
+  const label = status ? STATUS_LABEL[status] : undefined
   return label ? <Badge variant="ctx">{label}</Badge> : null
 }
 
@@ -90,9 +89,7 @@ export function StreamsGrid() {
   // Liveness runs for the primary and on-screen tiles only (ADR-0013). The primary is included so a
   // default primary that turns out to be ENDED is checked once it is shown.
   const resolutions = useLiveness(curatedStreams, (id) => onScreen.has(id) || id === checkedPrimary)
-  const feeds: LiveFeed[] = curatedStreams.map((s) =>
-    applyResolution(s, resolutions.get(s.id) ?? UNKNOWN),
-  )
+  const feeds: LiveFeed[] = curatedStreams.map((s) => applyResolution(s, resolutions.get(s.id)))
   // Streams in the AOI first; others still shown so a chaser is never hidden by map panning.
   const sorted = sortStreams(feeds, states)
   const { primary, thumbs } = layoutStreams(sorted, primaryId)

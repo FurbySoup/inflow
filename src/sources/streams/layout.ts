@@ -28,13 +28,14 @@ export function saveMainSound(on: boolean): void {
 }
 
 /**
- * Live AOI feeds, live elsewhere, ENDED/OFFLINE, then context feeds. Stable within each tier.
- * Feeds without a status (not checked, or unknown) rank as live.
+ * Live AOI feeds, live elsewhere and checked-but-unknown feeds, ENDED/OFFLINE, then context feeds.
+ * Stable within each tier. A feed with no status (not checked yet) keeps its AOI rank.
  */
 export function sortStreams<T extends ChaserStream & { status?: FeedStatus }>(streams: T[], aoiStates: string[]): T[] {
   const tier = (s: T) => {
     if (s.context) return 3
     if (s.status === 'ended' || s.status === 'offline') return 2
+    if (s.status === 'unknown') return 1
     return s.states.some((st) => aoiStates.includes(st)) ? 0 : 1
   }
   return [...streams].sort((a, b) => tier(a) - tier(b))
