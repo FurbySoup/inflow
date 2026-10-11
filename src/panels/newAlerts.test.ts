@@ -29,12 +29,23 @@ function alert(over: Partial<Alert> & Pick<Alert, 'id'>): Alert {
   }
 }
 
-const AOI = ['GA', 'SC']
+const AOI = { bbox: { west: -85.6, south: 30.4, east: -78.5, north: 35.3 }, states: ['GA', 'SC'] }
 
 describe('diffNewTornadoWarnings', () => {
   it('seeds on the first call and never toasts existing warnings', () => {
     const feed = [alert({ id: 'a' }), alert({ id: 'b' })]
     expect(diffNewTornadoWarnings(null, feed, AOI)).toEqual([])
+  })
+
+  it('does not toast a same-state polygon warning outside the AOI', () => {
+    // Southwest Georgia polygon, outside a tight Atlanta-only AOI.
+    const swGa = alert({
+      id: 'sw',
+      geometry: { type: 'Polygon', coordinates: [[[-84.3, 30.5], [-84.1, 30.5], [-84.1, 30.6], [-84.3, 30.5]]] },
+    })
+    const tight = { ...AOI, bbox: { west: -84.6, south: 33.6, east: -84.2, north: 33.9 } }
+    expect(diffNewTornadoWarnings(new Set(), [swGa], tight)).toEqual([])
+    expect(diffNewTornadoWarnings(new Set(), [swGa], AOI)).toEqual([swGa])
   })
 
   it('returns one new tornado warning in the AOI', () => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { nwsAlerts } from '../sources/nws/alerts'
 import { useSource } from '../lib/useSource'
 import { isEmergency, isPds } from '../lib/hazards'
@@ -30,7 +30,9 @@ const isTyping = () => {
 export function ToastRegion() {
   const query = useSource(nwsAlerts)
   const alerts = query.data
+  const bbox = useAoi((s) => s.bbox)
   const states = useAoi((s) => s.states)
+  const aoi = useMemo(() => ({ bbox, states }), [bbox, states])
   const setFocus = useAoi((s) => s.setFocus)
   const seenRef = useRef<Set<string> | null>(null)
   const newestRef = useRef<HTMLButtonElement | null>(null)
@@ -49,7 +51,7 @@ export function ToastRegion() {
   useEffect(() => {
     if (!alerts) return
     const t = Date.now()
-    const fresh = diffNewTornadoWarnings(seenRef.current, alerts, states).filter((a) => isLive(a, t))
+    const fresh = diffNewTornadoWarnings(seenRef.current, alerts, aoi).filter((a) => isLive(a, t))
     seenRef.current = rememberTornadoWarnings(seenRef.current, alerts)
     if (fresh.length === 0) return
     setKeys((prev) =>
@@ -62,7 +64,7 @@ export function ToastRegion() {
       ]),
     )
     setFocusKey(fresh[fresh.length - 1].eventKey)
-  }, [alerts, states])
+  }, [alerts, aoi])
 
   useEffect(() => {
     if (focusKey && !isTyping()) newestRef.current?.focus({ preventScroll: true })
