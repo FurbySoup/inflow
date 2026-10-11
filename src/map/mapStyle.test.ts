@@ -34,6 +34,7 @@ describe('mapStyle constants match tokens.css', () => {
     ['HAZARD.FFW', HAZARD.FFW, 'p-nws-ffw'],
     ['HAZARD.TOA', HAZARD.TOA, 'p-nws-toa'],
     ['HAZARD.SVA', HAZARD.SVA, 'p-nws-sva'],
+    ['HAZARD.SPS', HAZARD.SPS, 'p-nws-sps'],
     ['HAZARD.OTHER', HAZARD.OTHER, 'p-graphite-300'],
     ['SPC TSTM', SPC_CATEGORY.TSTM, 'p-spc-tstm'],
     ['SPC MRGL', SPC_CATEGORY.MRGL, 'p-spc-mrgl'],

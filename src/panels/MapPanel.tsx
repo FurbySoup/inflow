@@ -46,6 +46,8 @@ const WARNING_COLOR: maplibregl.ExpressionSpecification = [
   HAZARD.SVR,
   'FFW',
   HAZARD.FFW,
+  'SPS',
+  HAZARD.SPS,
   HAZARD.OTHER,
 ]
 const CASING_COLOR: maplibregl.ExpressionSpecification = ['match', ['get', 'hazard'], 'FFW', FFW_CASING, CASING]
@@ -162,12 +164,14 @@ export function MapPanel() {
           'line-opacity': DIM,
         },
       })
-      // Labels sit above radar and warnings (INFLOW §7): move every symbol layer to the top, keeping their order.
-      const symbolLayers = m
+      // Spec order: warnings → focused → reports → labels. Reports are a symbol layer, so they are excluded from the label pass.
+      m.moveLayer('storm-reports')
+      // Labels sit above radar, warnings and reports (INFLOW §7): move every other symbol layer to the top, keeping their order.
+      const labelLayers = m
         .getStyle()
-        .layers.filter((l) => l.type === 'symbol')
+        .layers.filter((l) => l.type === 'symbol' && l.id !== 'storm-reports')
         .map((l) => l.id)
-      for (const id of symbolLayers) m.moveLayer(id)
+      for (const id of labelLayers) m.moveLayer(id)
       m.on('click', 'alerts-fill', (e) => {
         const id = e.features?.[0]?.properties.id
         // Use the full alert geometry, not the tile-clipped rendered feature.

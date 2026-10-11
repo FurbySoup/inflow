@@ -11,6 +11,7 @@ export const HAZARD = {
   FFW: '#8B0000', // --p-nws-ffw
   TOA: '#FFFF00', // --p-nws-toa
   SVA: '#DB7093', // --p-nws-sva
+  SPS: '#FFE4B5', // --p-nws-sps
   OTHER: '#8E9AA5', // --p-graphite-300
 } as const
 
