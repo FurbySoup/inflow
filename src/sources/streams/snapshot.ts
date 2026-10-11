@@ -1,33 +1,27 @@
 import type { FeedStatus } from './resolve'
 
-/** Thumbnails are stills, re-fetched this often while on screen (HANDOFF §9.10). */
-export const SNAPSHOT_INTERVAL_MS = 15_000
-/** A still older than this shows its SNAP age in sand. */
-export const SNAPSHOT_STALE_MS = 60_000
+// Verified 2026-10-11 on a live video (11Alive, isLiveNow:true): hqdefault_live.jpg and hqdefault.jpg
+// return byte-identical images, both send Cache-Control: public, max-age=300, and ?t= returns the same
+// bytes. YouTube refreshes a live thumbnail at most about every 5 min, so stills are re-fetched every
+// 60 s to catch each update within a minute, and the label never claims a fresher frame than that.
 
-export interface SnapshotSource {
-  src: string
-  /** Tried once if `src` fails to load (live thumbs fall back to the default still). */
-  fallbackSrc?: string
-}
+/** Stills are re-fetched this often while on screen. */
+export const SNAPSHOT_INTERVAL_MS = 60_000
+/** A still not re-fetched for longer than this (e.g. scrolled off screen) is stale: sand label, ◐ prefix. */
+export const SNAPSHOT_STALE_MS = 3 * 60_000
 
 /**
- * YouTube still for a video, cache-busted with the refresh time. Checked 2026-10-11: for ended videos
- * `hqdefault_live.jpg` returns the same bytes as `hqdefault.jpg`, so either path is safe for those. A live
- * stream is expected to serve its live frame at `hqdefault_live.jpg` (not checkable while none is live).
- * Only live and ended feeds get a still; anything else gets a placeholder (see snapshotPlaceholder).
+ * YouTube still for a video, cache-busted with the fetch time. Only live and ended feeds get a still;
+ * anything else gets a placeholder (see snapshotPlaceholder).
  */
 export function snapshotSource(
   videoId: string | undefined,
   status: FeedStatus | undefined,
   refreshedAt: number | undefined,
-): SnapshotSource | null {
+): string | null {
   if (!videoId || refreshedAt === undefined) return null
   if (status !== 'live' && status !== 'ended') return null
-  const base = `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/`
-  const cacheBust = `?t=${refreshedAt}`
-  if (status === 'ended') return { src: `${base}hqdefault.jpg${cacheBust}` }
-  return { src: `${base}hqdefault_live.jpg${cacheBust}`, fallbackSrc: `${base}hqdefault.jpg${cacheBust}` }
+  return `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg?t=${refreshedAt}`
 }
 
 /** Copy shown in place of a still (HANDOFF §9.10 placeholders). */
@@ -38,17 +32,20 @@ export function snapshotPlaceholder(status: FeedStatus | undefined): string {
   return 'connecting…'
 }
 
-/** `SNAP 12s`, then whole minutes once it passes two minutes. */
+/**
+ * Read-only age label. It measures time since we fetched the still, not the age of the frame: fresh
+ * stills read `THUMB ≤5m` (YouTube's own refresh ceiling); older ones read `◐ THUMB 4m`.
+ */
 export function snapshotAgeLabel(ageMs: number): string {
-  const seconds = Math.max(0, Math.floor(ageMs / 1000))
-  return seconds < 120 ? `SNAP ${seconds}s` : `SNAP ${Math.floor(seconds / 60)}m`
+  if (!isSnapshotStale(ageMs)) return 'THUMB ≤5m'
+  return `◐ THUMB ${Math.floor(ageMs / 60_000)}m`
 }
 
 export function isSnapshotStale(ageMs: number): boolean {
   return ageMs > SNAPSHOT_STALE_MS
 }
 
-/** Feeds on screen whose still has never been taken or is at least one interval old. Off-screen feeds are never due. */
+/** On-screen feeds whose still has never been fetched or is at least one interval old. Off-screen feeds are never due. */
 export function snapshotsDue(
   onScreen: Iterable<string>,
   refreshedAt: Readonly<Record<string, number>>,

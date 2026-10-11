@@ -7,27 +7,23 @@ import {
   snapshotSource,
   snapshotsDue,
   SNAPSHOT_INTERVAL_MS,
+  SNAPSHOT_STALE_MS,
 } from './snapshot'
 
 const T = 1_000_000
 
 describe('snapshotSource', () => {
-  it('uses the live frame with the default still as fallback for a live video', () => {
-    expect(snapshotSource('7kQACmPd6Io', 'live', T)).toEqual({
-      src: `https://i.ytimg.com/vi/7kQACmPd6Io/hqdefault_live.jpg?t=${T}`,
-      fallbackSrc: `https://i.ytimg.com/vi/7kQACmPd6Io/hqdefault.jpg?t=${T}`,
-    })
+  it('uses hqdefault.jpg, cache-busted with the fetch time, for a live video', () => {
+    expect(snapshotSource('7kQACmPd6Io', 'live', T)).toBe(`https://i.ytimg.com/vi/7kQACmPd6Io/hqdefault.jpg?t=${T}`)
   })
 
-  it('uses the default still for an ended video', () => {
-    expect(snapshotSource('Syyvt9aidlQ', 'ended', T)).toEqual({
-      src: `https://i.ytimg.com/vi/Syyvt9aidlQ/hqdefault.jpg?t=${T}`,
-    })
+  it('uses the same still for an ended video', () => {
+    expect(snapshotSource('Syyvt9aidlQ', 'ended', T)).toBe(`https://i.ytimg.com/vi/Syyvt9aidlQ/hqdefault.jpg?t=${T}`)
   })
 
   it('treats a channel with a resolved live video the same as a pinned video', () => {
     const resolved = currentVideoId({ channelId: 'UCok' }, { channel: { videoId: 'abcdefghijk' } })
-    expect(snapshotSource(resolved, 'live', T)?.src).toBe(`https://i.ytimg.com/vi/abcdefghijk/hqdefault_live.jpg?t=${T}`)
+    expect(snapshotSource(resolved, 'live', T)).toBe(`https://i.ytimg.com/vi/abcdefghijk/hqdefault.jpg?t=${T}`)
   })
 
   it('has no still for a channel whose live video is unknown', () => {
@@ -35,7 +31,7 @@ describe('snapshotSource', () => {
     expect(snapshotSource(unknown, 'unknown', T)).toBeNull()
   })
 
-  it('has no still before the first refresh, without a video id, or for offline/unknown feeds', () => {
+  it('has no still before the first fetch, without a video id, or for offline/unknown feeds', () => {
     expect(snapshotSource('7kQACmPd6Io', 'live', undefined)).toBeNull()
     expect(snapshotSource(undefined, 'live', T)).toBeNull()
     expect(snapshotSource('7kQACmPd6Io', 'offline', T)).toBeNull()
@@ -53,25 +49,30 @@ describe('snapshotPlaceholder', () => {
 })
 
 describe('snapshotAgeLabel and isSnapshotStale', () => {
-  it('shows whole seconds, then minutes after two minutes', () => {
-    expect(snapshotAgeLabel(0)).toBe('SNAP 0s')
-    expect(snapshotAgeLabel(12_900)).toBe('SNAP 12s')
-    expect(snapshotAgeLabel(119_000)).toBe('SNAP 119s')
-    expect(snapshotAgeLabel(125_000)).toBe('SNAP 2m')
+  it('reads THUMB ≤5m while the still was fetched within 3 min, with no ticking seconds', () => {
+    expect(snapshotAgeLabel(0)).toBe('THUMB ≤5m')
+    expect(snapshotAgeLabel(60_000)).toBe('THUMB ≤5m')
+    expect(snapshotAgeLabel(SNAPSHOT_STALE_MS)).toBe('THUMB ≤5m')
   })
 
-  it('turns sand only after 60 s', () => {
-    expect(isSnapshotStale(60_000)).toBe(false)
-    expect(isSnapshotStale(60_001)).toBe(true)
+  it('reads ◐ THUMB with whole minutes once the still is older than 3 min', () => {
+    expect(snapshotAgeLabel(SNAPSHOT_STALE_MS + 1)).toBe('◐ THUMB 3m')
+    expect(snapshotAgeLabel(4 * 60_000 + 30_000)).toBe('◐ THUMB 4m')
+  })
+
+  it('is stale only after 3 min without a re-fetch', () => {
+    expect(isSnapshotStale(SNAPSHOT_STALE_MS)).toBe(false)
+    expect(isSnapshotStale(SNAPSHOT_STALE_MS + 1)).toBe(true)
   })
 })
 
 describe('snapshotsDue', () => {
-  it('refreshes on-screen feeds that were never stamped', () => {
+  it('refreshes on-screen feeds that were never fetched', () => {
     expect(snapshotsDue(['a'], {}, T)).toEqual(['a'])
   })
 
-  it('refreshes an on-screen feed once a full interval has passed, and not before', () => {
+  it('refreshes an on-screen feed once a full 60 s interval has passed, and not before', () => {
+    expect(SNAPSHOT_INTERVAL_MS).toBe(60_000)
     expect(snapshotsDue(['a'], { a: T }, T + SNAPSHOT_INTERVAL_MS - 1)).toEqual([])
     expect(snapshotsDue(['a'], { a: T }, T + SNAPSHOT_INTERVAL_MS)).toEqual(['a'])
   })

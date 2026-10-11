@@ -41,7 +41,7 @@ export const PrimarySoundOn = () => (
   </div>
 )
 
-/** Live thumbnail: a still with a SNAP age label (read-only), a persistent ▲ MAIN promote button, live LED. */
+/** Live thumbnail: a still with a muted THUMB ≤5m label (read-only), a persistent ▲ MAIN promote button, live LED. */
 export const SnapshotLive = () => (
   <div style={{ width: 380, padding: 10, background: 'var(--surface-panel)' }}>
     <StreamTile
@@ -51,12 +51,12 @@ export const SnapshotLive = () => (
       inAoi
       ledStatus="live"
       onSelect={() => {}}
-      snapshot={{ src: still('Syyvt9aidlQ'), placeholder: 'connecting…', ageLabel: 'SNAP 12s' }}
+      snapshot={{ src: still('Syyvt9aidlQ'), placeholder: 'connecting…', ageLabel: 'THUMB ≤5m' }}
     />
   </div>
 )
 
-/** Stale still (older than 60 s): the SNAP label turns sand. Unknown check shows the ◐ STALE placeholder. */
+/** Stale still (not re-fetched for over 3 min, e.g. off screen): the label turns sand with a ◐ prefix. Unknown check shows the ◐ STALE placeholder. */
 export const SnapshotStale = () => (
   <div style={{ width: 380, padding: 10, background: 'var(--surface-panel)' }}>
     <div className="stream-grid">
@@ -67,7 +67,7 @@ export const SnapshotStale = () => (
         inAoi
         ledStatus="live"
         onSelect={() => {}}
-        snapshot={{ src: still('hvn71J7v1-0'), placeholder: 'connecting…', ageLabel: 'SNAP 74s', stale: true }}
+        snapshot={{ src: still('hvn71J7v1-0'), placeholder: 'connecting…', ageLabel: '◐ THUMB 4m', stale: true }}
       />
       <StreamTile
         title="Mikes Weather Page: chasing Isaias"
@@ -82,7 +82,7 @@ export const SnapshotStale = () => (
   </div>
 )
 
-/** Offline and ended thumbnails: ○ OFFLINE placeholder with its badge, and an ENDED still with its SNAP label. */
+/** Offline and ended thumbnails: ○ OFFLINE placeholder with its badge, and an ENDED still with its THUMB label. */
 export const OfflineAndEnded = () => (
   <div style={{ width: 380, padding: 10, background: 'var(--surface-panel)' }}>
     <div className="stream-grid">
@@ -104,7 +104,7 @@ export const OfflineAndEnded = () => (
         ledStatus="offline"
         statusLabel="ENDED"
         onSelect={() => {}}
-        snapshot={{ src: still('4cS5_IGsNnY'), placeholder: 'connecting…', ageLabel: 'SNAP 15s' }}
+        snapshot={{ src: still('4cS5_IGsNnY'), placeholder: 'connecting…', ageLabel: 'THUMB ≤5m' }}
       />
     </div>
   </div>

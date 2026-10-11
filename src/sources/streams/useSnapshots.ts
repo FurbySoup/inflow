@@ -2,17 +2,20 @@ import { useEffect, useState } from 'react'
 
 import { snapshotsDue } from './snapshot'
 
+/** How often due stills are checked; a still lands at most this long after its 60 s interval. */
+const CHECK_MS = 5_000
+
 export interface SnapshotClock {
-  /** Current time, updated every second for the SNAP age labels. */
+  /** Current time, updated every check for the THUMB age labels. */
   now: number
-  /** When each feed's still was last taken (ms). Absent until the feed has been on screen. */
+  /** When each feed's still was last fetched (ms). Absent until the feed has been on screen. */
   refreshedAt: Readonly<Record<string, number>>
 }
 
 /**
- * Ticks once a second. Stamps a fresh still for every on-screen feed that is due (every 15 s, and at
- * once when a feed first comes on screen, within a second). Off-screen feeds keep their last still,
- * so their age keeps growing. Refreshes only happen for feeds in `onScreen` (ADR-0013 budget).
+ * Checks every 5 s and stamps a fresh still for each on-screen feed that is due (every 60 s; a feed
+ * that has just come on screen is due at once). Off-screen feeds keep their last still, so their
+ * label turns stale. Refreshes only happen for feeds in `onScreen`.
  */
 export function useSnapshotClock(onScreen: ReadonlySet<string>): SnapshotClock {
   const [now, setNow] = useState(() => Date.now())
@@ -29,7 +32,7 @@ export function useSnapshotClock(onScreen: ReadonlySet<string>): SnapshotClock {
         for (const id of due) next[id] = t
         return next
       })
-    }, 1000)
+    }, CHECK_MS)
     return () => window.clearInterval(timer)
   }, [onScreen])
 

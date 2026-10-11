@@ -6,7 +6,7 @@
 .stream-still { position: relative; aspect-ratio: 16 / 9; border: 1px solid var(--border-default); background: var(--surface-inset); display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .stream-still-img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .stream-still-empty { padding: 4px; font-family: var(--font-data); font-size: 0.7rem; line-height: 1.3; color: var(--text-muted); text-align: center; }
-/* Read-only SNAP age: scrim plate, no border, no pointer. Sand once the still is older than 60 s. */
+/* Read-only THUMB age: muted scrim plate, no border, no pointer. Sand once not re-fetched for over 3 min. */
 .stream-age {
   position: absolute;
   left: 4px;
@@ -16,7 +16,7 @@
   font-size: 0.65rem;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   background: var(--surface-scrim);
   pointer-events: none;
 }

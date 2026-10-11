@@ -5,15 +5,13 @@ import { StatusLed, type FeedStatus } from './StatusLed'
 
 /** A thumbnail's still image and its age label. Only the primary feed plays video (HANDOFF §9.10). */
 export interface StreamSnapshot {
-  /** Still image URL, or null to show `placeholder` instead. */
+  /** Still image URL, or null to show `placeholder` instead. A URL that fails to load also shows `placeholder`. */
   src: string | null
-  /** Tried once when `src` fails to load. */
-  fallbackSrc?: string
   /** Copy shown in place of a still, e.g. `◐ STALE`, `○ OFFLINE`, `connecting…`. */
   placeholder: string
-  /** Read-only age label, e.g. `SNAP 12s`. Omit when there is no still. */
+  /** Read-only age label, e.g. `THUMB ≤5m`. Omit when there is no still. */
   ageLabel?: string
-  /** Turns the age label sand (a still older than 60 s). */
+  /** Stale label (still not re-fetched for over 3 min): sand, with a ◐ prefix in the label text. */
   stale?: boolean
 }
 
@@ -52,7 +50,7 @@ export interface StreamTileProps {
  * Lay several out in `.stream-grid`.
  * Affordance: become the main feed. Signifier: a persistent "▲ MAIN" button on the frame corner of
  * thumbnails (the video itself only plays/pauses inside the player). Feedback: the primary tile shows a
- * read-only MAIN tag and an accent caption. The SNAP age is read-only: no border, no pointer.
+ * read-only MAIN tag and an accent caption. The THUMB age is read-only: no border, no pointer.
  */
 export function StreamTile({
   title,
@@ -69,8 +67,9 @@ export function StreamTile({
   onToggleSound,
   snapshot,
 }: StreamTileProps) {
-  const [failed, setFailed] = useState<readonly string[]>([])
-  const still = snapshot ? pickStill(snapshot, failed) : null
+  // A still that fails to load (e.g. 404 for an unknown id) gives way to the placeholder until the next fetch changes its URL.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null)
+  const still = snapshot?.src && snapshot.src !== failedSrc ? snapshot.src : null
 
   return (
     <figure className="stream-tile">
@@ -92,7 +91,7 @@ export function StreamTile({
                 src={still}
                 alt={title}
                 decoding="async"
-                onError={() => setFailed((prev) => [...prev.slice(-3), still])}
+                onError={() => setFailedSrc(still)}
               />
             ) : (
               <span className="stream-still-empty">{snapshot?.placeholder ?? 'connecting…'}</span>
@@ -146,10 +145,4 @@ export function StreamTile({
       </figcaption>
     </figure>
   )
-}
-
-/** The still to show now: the primary URL, then the fallback, skipping any that already failed. */
-function pickStill(snapshot: StreamSnapshot, failed: readonly string[]): string | null {
-  const candidates = [snapshot.src, snapshot.fallbackSrc]
-  return candidates.find((c): c is string => typeof c === 'string' && !failed.includes(c)) ?? null
 }

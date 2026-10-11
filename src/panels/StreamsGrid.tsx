@@ -15,7 +15,6 @@ import {
   snapshotAgeLabel,
   snapshotPlaceholder,
   snapshotSource,
-  SNAPSHOT_INTERVAL_MS,
 } from '../sources/streams/snapshot'
 import { useLiveness } from '../sources/streams/useLiveness'
 import { useSnapshotClock } from '../sources/streams/useSnapshots'
@@ -103,7 +102,7 @@ export function StreamsGrid() {
       return next
     })
   }, [])
-  // Stills refresh every 15 s for on-screen tiles only; `now` drives the SNAP age labels.
+  // Stills re-fetch every 60 s for on-screen tiles only; `now` drives the THUMB age labels.
   const { now, refreshedAt } = useSnapshotClock(onScreen)
 
   // Liveness runs for the primary and on-screen tiles only (ADR-0013). The primary is included so a
@@ -139,7 +138,7 @@ export function StreamsGrid() {
       title="Chaser Feeds"
       status="live"
       // Header meta: live count and the still refresh cadence (HANDOFF §9.10).
-      meta={`${liveCount}/${sorted.length} LIVE · THUMBS SNAPSHOT ${SNAPSHOT_INTERVAL_MS / 1000}s`}
+      meta={`${liveCount}/${sorted.length} LIVE · THUMBS ≈5 MIN`}
       className="streams"
     >
       {primary && (
@@ -164,7 +163,7 @@ export function StreamsGrid() {
       <div className="stream-grid">
         {thumbs.map((s) => {
           const at = refreshedAt[s.id]
-          const still = snapshotSource(resolutions.get(s.id)?.videoId, s.status, at)
+          const src = snapshotSource(resolutions.get(s.id)?.videoId, s.status, at)
           return (
             // Thumbnails never mount an iframe: stills only, so 10+ feeds cost no player decode (ADR-0013).
             <FeedSlot key={s.id} id={s.id} onVisible={setVisible}>
@@ -178,10 +177,9 @@ export function StreamsGrid() {
                 statusLabel={statusLabelFor(s.status)}
                 onSelect={() => choose(s.id)}
                 snapshot={{
-                  src: still?.src ?? null,
-                  fallbackSrc: still?.fallbackSrc,
+                  src,
                   placeholder: snapshotPlaceholder(s.status),
-                  ageLabel: still && at !== undefined ? snapshotAgeLabel(now - at) : undefined,
+                  ageLabel: src && at !== undefined ? snapshotAgeLabel(now - at) : undefined,
                   stale: at !== undefined && isSnapshotStale(now - at),
                 }}
               />
