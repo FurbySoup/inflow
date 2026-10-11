@@ -14,7 +14,7 @@ export const AOI_PRESETS: readonly AoiPreset[] = [
   {
     id: 'plains',
     label: 'PLAINS',
-    title: 'Plains: TX panhandle to Nebraska',
+    title: 'Plains: Texas to Nebraska',
     bbox: { west: -104, south: 31, east: -94, north: 43 },
   },
   {

@@ -60,10 +60,12 @@ export const GLOSSARY: Readonly<Record<string, string>> = {
   EXP: 'Expires: time left until the soonest tornado warning ends',
   SN: 'Spotter Network: a service where chasers share live GPS positions. Opens their map.',
   THUMBS: 'Thumbnails: still images refreshed about every 5 minutes. ▶ WATCH plays one.',
+  V2: 'Version 2: the planned hosted release with a server (push notifications when the tab is closed)',
+  D1: 'SPC outlook Day 1: today and tonight',
   // AOI presets (src/panels/aoiPresetData.ts)
-  PLAINS: 'Preset: the Great Plains, Texas to the Dakotas border (104°–94° W)',
-  DIXIE: 'Preset: Dixie Alley, the tornado-prone Deep South from Louisiana to Tennessee',
-  SE: 'Preset: the Southeast, Georgia and South Carolina (the default area)',
+  PLAINS: 'Plains preset: the Great Plains, from Texas to Nebraska',
+  DIXIE: 'Dixie Alley preset: the tornado-prone Deep South, Louisiana to Tennessee',
+  SE: 'Southeast preset: Georgia and South Carolina (the default area)',
 }
 
 /** Console panel designators (the code before a panel title, e.g. `WX-02`). */
