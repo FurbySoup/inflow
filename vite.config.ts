@@ -35,6 +35,12 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/api\/txdot/, ''),
       },
+      // 511SC (SC cameras): Iteris GeoJSON list, no CORS.
+      '/api/511sc': {
+        target: 'https://sc.cdn.iteris-atis.com',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/511sc/, ''),
+      },
       '/api/kiwisdr': {
         target: 'http://rx.linkfanel.net',
         changeOrigin: true,
