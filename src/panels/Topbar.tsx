@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAoi } from '../state/aoi'
 import { LayoutMenu } from './LayoutMenu'
+import { AoiPresets } from './AoiPresets'
 
 const fmt = (d: Date, timeZone?: string) =>
   d.toLocaleTimeString('en-US', { hour12: false, timeZone })
@@ -22,6 +23,7 @@ export function Topbar() {
       <span className="topbar-item">
         AOI <strong>{states.length ? states.join(' · ') : '—'}</strong>
       </span>
+      <AoiPresets />
       <span className="spacer" />
       <LayoutMenu />
       <span className="topbar-item">
