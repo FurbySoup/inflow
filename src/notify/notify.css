@@ -1,0 +1,98 @@
+/* Top-bar notification control and its popover (WP-35). Tokens only. */
+.notify {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.notify-pop {
+  position: fixed;
+  top: calc(var(--topbar-h) + var(--sp-2));
+  right: var(--sp-4);
+  z-index: 50;
+  width: min(320px, calc(100vw - 2 * var(--sp-4)));
+  box-sizing: border-box;
+  padding: var(--sp-4);
+  display: grid;
+  gap: var(--sp-3);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-control);
+  color: var(--text-primary);
+  font: 400 var(--fs-ui-s) / 1.35 var(--font-ui);
+}
+
+.notify-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  cursor: pointer;
+}
+
+.notify-row input {
+  margin-top: 2px;
+  accent-color: var(--accent);
+}
+
+.notify-row:hover { color: var(--text-bright); }
+
+.notify-row input:focus-visible,
+.notify-allow:focus-visible,
+.notify-btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.notify-fieldset {
+  margin: 0;
+  padding: var(--sp-3);
+  display: grid;
+  gap: var(--sp-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-control);
+}
+
+.notify-fieldset legend {
+  padding: 0 var(--sp-2);
+  font: 600 var(--fs-ui-xs) / 1 var(--font-ui);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.notify-status {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  color: var(--status-stale);
+}
+
+.notify-allow.btn-console {
+  height: var(--hit-min);
+  min-height: 28px;
+  padding: 0 var(--sp-4);
+}
+
+.notify-count {
+  margin: 0;
+  font: 400 var(--fs-data-s) / 1 var(--font-data);
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.notify-count strong {
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+.notify-note {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+@media (pointer: coarse) {
+  .notify-row { min-height: var(--hit-min); }
+  .notify-row input { width: 20px; height: 20px; }
+}
