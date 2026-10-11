@@ -1,3 +1,5 @@
+> **Superseded** by `docs/next-session-wave8.md` (Waves 4–7 are merged).
+
 # Next session: plan Wave 4
 
 Handoff from the 2026-10-10 session. Waves 1–3 (WP-01…10), the UI kit (`src/ui/`) and the Claude Design sync are done and pushed. This session's job is to **plan** Wave 4, not build it: research, write the work packages, update the work plan, then hand back for approval before launching builders.
