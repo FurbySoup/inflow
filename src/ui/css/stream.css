@@ -1,0 +1,67 @@
+/* Stream tile */
+.stream-tile { margin: 0 0 10px; }
+.stream-tile iframe { width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--border); background: var(--surface-inset); display: block; }
+.stream-frame { position: relative; }
+/* Swap affordance (ADR-0012): always visible — no hover dependency — and sits outside the player's own controls. */
+.stream-swap {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  padding: 1px 6px;
+  color: var(--accent);
+  background: var(--surface-scrim);
+  border: 1px solid var(--accent);
+  cursor: pointer;
+}
+.stream-swap:hover { background: var(--accent); color: var(--bg); }
+.stream-swap:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Main-feed sound toggle: outlined when muted, solid accent when sound is on (feedback via aria-pressed). */
+.stream-sound {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  padding: 1px 6px;
+  color: var(--accent);
+  background: var(--surface-scrim);
+  border: 1px solid var(--accent);
+  cursor: pointer;
+}
+.stream-sound[aria-pressed='true'] { background: var(--accent); color: var(--bg); }
+.stream-sound:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Read-only state tag: filled, no border-button look, no pointer. */
+.stream-main-tag {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  padding: 1px 6px;
+  color: var(--bg);
+  background: var(--accent);
+  pointer-events: none;
+}
+.stream-tile figcaption { font-size: 0.75rem; color: var(--muted); padding-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.stream-select { background: none; border: none; padding: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+/* Signifier: the caption is a control (make primary), so it underlines/brightens like one; feedback: the primary feed's caption stays accent. */
+.stream-select:hover { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
+.stream-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.stream-select[aria-current='true'] { color: var(--accent); }
+.stream-link { color: var(--accent); text-decoration: none; }
+.stream-link:hover, .stream-link:focus-visible { text-decoration: underline; }
+.stream-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+
+/* Touch (ADR-0014): controls grow to a usable target; hover-only cues never carry meaning (ADR-0012). */
+@media (pointer: coarse) {
+  .stream-swap, .stream-sound { min-height: 28px; padding: 4px 10px; }
+  .stream-select { min-height: 28px; }
+}

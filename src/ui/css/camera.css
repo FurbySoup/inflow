@@ -1,0 +1,26 @@
+/* Camera tile */
+.cam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.cam-tile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text);
+  background: var(--panel-head);
+  border: 1px solid var(--border);
+}
+.cam-tile:hover { border-color: var(--accent); }
+.cam-tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cam-tile-img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--bg); }
+.cam-tile-caption {
+  padding: 3px 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  color: var(--muted);
+}

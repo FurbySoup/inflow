@@ -1,0 +1,11 @@
+/* Status LED */
+.led { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--offline); flex: none; }
+.led-live { background: var(--live); box-shadow: 0 0 6px var(--live); animation: sc-pulse 2s ease-in-out infinite; }
+.led-loading { background: var(--accent); animation: sc-pulse 0.8s ease-in-out infinite; }
+.led-stale { background: var(--stale); box-shadow: 0 0 6px var(--stale); }
+.led-error { background: var(--error); box-shadow: 0 0 6px var(--error); }
+@keyframes sc-pulse { 50% { opacity: 0.35; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .led { animation: none !important; }
+}

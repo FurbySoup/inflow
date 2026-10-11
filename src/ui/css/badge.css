@@ -1,0 +1,16 @@
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 0 4px;
+  border: 1px solid currentColor;
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.badge-aoi { color: var(--accent); }
+.badge-ctx { color: var(--muted); }
+.badge-zone { color: var(--muted); }
+.badge-pds { color: var(--extreme); }
