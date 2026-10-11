@@ -1,10 +1,11 @@
 import type maplibregl from 'maplibre-gl'
 import { spcMesoscale } from '../sources/iemspc/mesoscale'
 import { DEFAULT_AOI } from '../state/aoi'
+import { LABEL_HALO, MESOSCALE } from './mapStyle'
 import type { MapLayer } from './layers'
 
 const SOURCE_ID = 'spc-md'
-const COLOR = '#b9c6d6'
+const COLOR = MESOSCALE
 
 const EMPTY: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] }
 
@@ -49,7 +50,7 @@ export const spcMesoscaleLayer: MapLayer = {
       },
       paint: {
         'text-color': COLOR,
-        'text-halo-color': '#0b0f14',
+        'text-halo-color': LABEL_HALO,
         'text-halo-width': 1.5,
       },
     })

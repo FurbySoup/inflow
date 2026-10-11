@@ -3,7 +3,9 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { nwsAlerts } from '../sources/nws/alerts'
 import { mapLayers } from '../map/layers'
+import { CASING, FFW_CASING, FLY_EASING, FLY_MS, FOCUS, HAZARD, LABEL, LABEL_HALO, OPACITY, PDS_MARK } from '../map/mapStyle'
 import { LayerControl } from '../map/LayerControl'
+import { hazardCode, isPds, isWatch } from '../lib/hazards'
 import { useSource } from '../lib/useSource'
 import { statesInBbox } from '../lib/states'
 import { DEFAULT_AOI, useAoi } from '../state/aoi'
@@ -12,25 +14,46 @@ import { geometryBbox, remainingMs } from './alertGeometry'
 
 const BASEMAP = 'https://tiles.openfreemap.org/styles/dark'
 
-const ALERT_COLORS: Record<string, string> = {
-  'Tornado Warning': '#ff3b3b',
-  'Severe Thunderstorm Warning': '#ff8c1a',
-  'Flash Flood Warning': '#3ddc84',
-}
-
 const EMPTY_FC: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] }
 
-function alertsToGeoJson(alerts: Alert[]): GeoJSON.FeatureCollection {
+// Warnings only: watches are drawn by the watch layers (zone outlines and SPC boxes), which have no geometry here.
+// Each feature carries its hazard code, PDS flag and dim opacity so one set of expressions styles them all.
+function alertsToGeoJson(alerts: Alert[], focusId: string | null): GeoJSON.FeatureCollection {
   return {
     type: 'FeatureCollection',
     features: alerts
-      .filter((a) => a.geometry)
+      .filter((a) => a.geometry && !isWatch(a.event))
       .map((a) => ({
         type: 'Feature',
         geometry: a.geometry!,
-        properties: { id: a.id, event: a.event, color: ALERT_COLORS[a.event] ?? '#8DC5EE' },
+        properties: {
+          id: a.id,
+          hazard: hazardCode(a.event),
+          pds: isPds(a),
+          opacity: focusId && a.id !== focusId ? OPACITY.dim : 1,
+        },
       })),
   }
+}
+
+// Literal paint values (MapLibre can't read CSS vars); see src/map/mapStyle.ts for the token parity.
+const WARNING_COLOR: maplibregl.ExpressionSpecification = [
+  'match',
+  ['get', 'hazard'],
+  'TOR',
+  HAZARD.TOR,
+  'SVR',
+  HAZARD.SVR,
+  'FFW',
+  HAZARD.FFW,
+  HAZARD.OTHER,
+]
+const CASING_COLOR: maplibregl.ExpressionSpecification = ['match', ['get', 'hazard'], 'FFW', FFW_CASING, CASING]
+const IS_PDS: maplibregl.ExpressionSpecification = ['==', ['get', 'pds'], true]
+const DIM: maplibregl.ExpressionSpecification = ['get', 'opacity']
+
+function prefersReducedMotion(): boolean {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 export function MapPanel() {
@@ -44,7 +67,10 @@ export function MapPanel() {
   const aoiRequest = useAoi((s) => s.aoiRequest)
   const clearAoiRequest = useAoi((s) => s.clearAoiRequest)
   const { data: alerts } = useSource(nwsAlerts)
-  const focusGeometry = (focus && alerts?.find((a) => a.id === focus.id)?.geometry) || null
+  const focusId = focus?.id ?? null
+  const focusAlert = focus ? (alerts?.find((a) => a.id === focus.id) ?? null) : null
+  const focusGeometry = focusAlert?.geometry ?? null
+  const focusHazard = focusAlert ? hazardCode(focusAlert.event) : null
 
   useEffect(() => {
     alertsRef.current = alerts ?? []
@@ -71,34 +97,77 @@ export function MapPanel() {
     const timers: ReturnType<typeof setInterval>[] = []
 
     m.on('load', () => {
+      // Basemap labels: INFLOW label paint, moved above the overlays below.
+      const basemapLabels = m
+        .getStyle()
+        .layers.filter((l) => l.type === 'symbol')
+        .map((l) => l.id)
+      for (const id of basemapLabels) {
+        m.setPaintProperty(id, 'text-color', LABEL)
+        m.setPaintProperty(id, 'text-halo-color', LABEL_HALO)
+        m.setPaintProperty(id, 'text-halo-width', 2)
+      }
       for (const layer of mapLayers) {
         layer.add(m)
         if (layer.refresh && layer.refreshMs) {
           timers.push(setInterval(() => layer.refresh!(m), layer.refreshMs))
         }
       }
-      // Alerts stay on top of all registered overlays.
-      m.addSource('alerts', { type: 'geojson', data: alertsToGeoJson([]) })
+      // Alerts stay on top of all registered overlays. Draw order: focus fill and halo, casing, PDS mark, stroke.
+      m.addSource('alerts', { type: 'geojson', data: alertsToGeoJson([], null) })
+      // No fill (INFLOW §7); transparent so it stays the click target for the alert.
       m.addLayer({
         id: 'alerts-fill',
         type: 'fill',
         source: 'alerts',
-        paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.15 },
+        paint: { 'fill-color': WARNING_COLOR, 'fill-opacity': 0 },
+      })
+      m.addSource('alerts-focus', { type: 'geojson', data: EMPTY_FC })
+      m.addLayer({
+        id: 'alerts-focus-fill',
+        type: 'fill',
+        source: 'alerts-focus',
+        paint: { 'fill-color': WARNING_COLOR, 'fill-opacity': OPACITY.focusFill },
+      })
+      m.addLayer({
+        id: 'alerts-focus-halo',
+        type: 'line',
+        source: 'alerts-focus',
+        paint: { 'line-color': FOCUS, 'line-width': 9, 'line-opacity': OPACITY.focusHalo },
+      })
+      m.addLayer({
+        id: 'alerts-casing',
+        type: 'line',
+        source: 'alerts',
+        paint: {
+          'line-color': CASING_COLOR,
+          'line-width': ['case', IS_PDS, 7, 4.5],
+          'line-opacity': DIM,
+        },
+      })
+      m.addLayer({
+        id: 'alerts-pds',
+        type: 'line',
+        source: 'alerts',
+        filter: IS_PDS,
+        paint: { 'line-color': PDS_MARK, 'line-width': 4.5, 'line-opacity': DIM },
       })
       m.addLayer({
         id: 'alerts-line',
         type: 'line',
         source: 'alerts',
-        paint: { 'line-color': ['get', 'color'], 'line-width': 2 },
+        paint: {
+          'line-color': WARNING_COLOR,
+          'line-width': ['case', IS_PDS, 2.5, 2],
+          'line-opacity': DIM,
+        },
       })
-      m.addSource('alerts-focus', { type: 'geojson', data: EMPTY_FC })
-      m.addLayer({
-        id: 'alerts-focus',
-        type: 'line',
-        source: 'alerts-focus',
-        // INFLOW --map-focus (ice-200); MapLibre paint needs a literal.
-        paint: { 'line-color': '#CFE6F8', 'line-width': 4 },
-      })
+      // Labels sit above radar and warnings (INFLOW §7): move every symbol layer to the top, keeping their order.
+      const symbolLayers = m
+        .getStyle()
+        .layers.filter((l) => l.type === 'symbol')
+        .map((l) => l.id)
+      for (const id of symbolLayers) m.moveLayer(id)
       m.on('click', 'alerts-fill', (e) => {
         const id = e.features?.[0]?.properties.id
         // Use the full alert geometry, not the tile-clipped rendered feature.
@@ -135,19 +204,22 @@ export function MapPanel() {
 
   useEffect(() => {
     const src = map.current?.getSource('alerts') as maplibregl.GeoJSONSource | undefined
-    if (src && alerts) src.setData(alertsToGeoJson(alerts))
-  }, [alerts, ready])
+    if (src && alerts) src.setData(alertsToGeoJson(alerts, focusId))
+  }, [alerts, ready, focusId])
 
   useEffect(() => {
     const m = map.current
     if (!m || !ready || !focus) return
     const { west, south, east, north } = focus.bbox
+    // Fly to the bbox plus 15% (7.5% each side); a jump-cut under reduced motion.
+    const padLng = (east - west) * 0.075
+    const padLat = (north - south) * 0.075
     m.fitBounds(
       [
-        [west, south],
-        [east, north],
+        [west - padLng, south - padLat],
+        [east + padLng, north + padLat],
       ],
-      { padding: 80, maxZoom: 11 },
+      { maxZoom: 11, duration: prefersReducedMotion() ? 0 : FLY_MS, easing: FLY_EASING },
     )
   }, [focus, ready])
 
@@ -170,9 +242,11 @@ export function MapPanel() {
     const src = map.current?.getSource('alerts-focus') as maplibregl.GeoJSONSource | undefined
     if (!src) return
     src.setData(
-      focusGeometry ? { type: 'Feature', properties: {}, geometry: focusGeometry } : EMPTY_FC,
+      focusGeometry && focusHazard
+        ? { type: 'Feature', properties: { hazard: focusHazard }, geometry: focusGeometry }
+        : EMPTY_FC,
     )
-  }, [focusGeometry, ready])
+  }, [focusGeometry, focusHazard, ready])
 
   return <div ref={container} className="map" />
 }

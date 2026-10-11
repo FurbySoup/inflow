@@ -1,9 +1,29 @@
 import type maplibregl from 'maplibre-gl'
 import { spcOutlook } from '../sources/spc/outlook'
 import { DEFAULT_AOI } from '../state/aoi'
+import { OPACITY, SPC_CATEGORY } from './mapStyle'
 import type { MapLayer } from './layers'
 
 const SOURCE_ID = 'spc-outlook'
+
+// Categorical colour by LABEL from the SPC palette; upstream `fill` only as a fallback for unknown labels.
+const CATEGORY_COLOR: maplibregl.ExpressionSpecification = [
+  'match',
+  ['get', 'LABEL'],
+  'TSTM',
+  SPC_CATEGORY.TSTM,
+  'MRGL',
+  SPC_CATEGORY.MRGL,
+  'SLGT',
+  SPC_CATEGORY.SLGT,
+  'ENH',
+  SPC_CATEGORY.ENH,
+  'MDT',
+  SPC_CATEGORY.MDT,
+  'HIGH',
+  SPC_CATEGORY.HIGH,
+  ['get', 'fill'],
+]
 
 const EMPTY: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] }
 
@@ -28,13 +48,13 @@ export const spcOutlookLayer: MapLayer = {
       id: SOURCE_ID,
       type: 'fill',
       source: SOURCE_ID,
-      paint: { 'fill-color': ['get', 'fill'], 'fill-opacity': 0.18 },
+      paint: { 'fill-color': CATEGORY_COLOR, 'fill-opacity': OPACITY.spcFill },
     })
     map.addLayer({
       id: `${SOURCE_ID}-line`,
       type: 'line',
       source: SOURCE_ID,
-      paint: { 'line-color': ['get', 'stroke'], 'line-width': 1 },
+      paint: { 'line-color': CATEGORY_COLOR, 'line-width': 1 },
     })
     void load(map)
   },

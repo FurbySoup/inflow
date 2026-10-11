@@ -1,26 +1,35 @@
 import type maplibregl from 'maplibre-gl'
+import { hazardCode } from '../lib/hazards'
 import { nwsAlerts } from '../sources/nws/alerts'
 import { allOutlineZoneUrls, buildOutlineFeatures, zoneBasedAlerts } from '../sources/nwszones/outlines'
 import { getZoneShapes } from '../sources/nwszones/shapes'
 import { useAoi } from '../state/aoi'
+import { CASING, HAZARD, watchDash } from './mapStyle'
 import type { MapLayer } from './layers'
 
 const SOURCE_ID = 'watch-outlines'
 const REFRESH_MS = 120_000
-// Literal paint values matching the --extreme / --severe / --moderate / --offline tokens (MapLibre can't read CSS vars).
-const SEVERITY_COLOR: maplibregl.ExpressionSpecification = [
-  'match',
-  ['get', 'severity'],
-  'Extreme',
-  '#ff3b3b',
-  'Severe',
-  '#ff8c1a',
-  'Moderate',
-  '#ffd23f',
-  '#3a4a5a',
-]
+const WATCH_WIDTH = 2
+const CASING_WIDTH = 4.5
 
 const EMPTY: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] }
+
+// Literal paint values by hazard (MapLibre can't read CSS vars). Watches map to TOA yellow and SVA pink.
+const HAZARD_COLOR: maplibregl.ExpressionSpecification = [
+  'match',
+  ['get', 'hazard'],
+  'TOR',
+  HAZARD.TOR,
+  'SVR',
+  HAZARD.SVR,
+  'FFW',
+  HAZARD.FFW,
+  'TOA',
+  HAZARD.TOA,
+  'SVA',
+  HAZARD.SVA,
+  HAZARD.OTHER,
+]
 
 async function load(map: maplibregl.Map) {
   const src = map.getSource(SOURCE_ID) as maplibregl.GeoJSONSource | undefined
@@ -30,7 +39,11 @@ async function load(map: maplibregl.Map) {
     const { bbox, states } = useAoi.getState()
     const alerts = zoneBasedAlerts(nwsAlerts.normalize(await nwsAlerts.fetch(bbox)), states)
     const shapes = await getZoneShapes(allOutlineZoneUrls(alerts))
-    src.setData({ type: 'FeatureCollection', features: buildOutlineFeatures(alerts, shapes) })
+    const features = buildOutlineFeatures(alerts, shapes).map((f) => {
+      const event = typeof f.properties?.event === 'string' ? f.properties.event : ''
+      return { ...f, properties: { ...f.properties, hazard: hazardCode(event) } }
+    })
+    src.setData({ type: 'FeatureCollection', features })
   } catch {
     // keep previous data
   }
@@ -45,14 +58,20 @@ export const watchOutlinesLayer: MapLayer = {
       id: `${SOURCE_ID}-fill`,
       type: 'fill',
       source: SOURCE_ID,
-      paint: { 'fill-color': SEVERITY_COLOR, 'fill-opacity': 0.12 },
+      paint: { 'fill-color': HAZARD_COLOR, 'fill-opacity': 0.12 },
     })
-    // Dash length is in line-width units: 3 × 2 px dashes read at phone size and differ from WP-13's solid watch boxes.
+    // Watch styling: 2 px dashed hazard stroke over a dashed casing (INFLOW §7).
+    map.addLayer({
+      id: `${SOURCE_ID}-casing`,
+      type: 'line',
+      source: SOURCE_ID,
+      paint: { 'line-color': CASING, 'line-width': CASING_WIDTH, 'line-dasharray': watchDash(CASING_WIDTH) },
+    })
     map.addLayer({
       id: `${SOURCE_ID}-line`,
       type: 'line',
       source: SOURCE_ID,
-      paint: { 'line-color': SEVERITY_COLOR, 'line-width': 2, 'line-dasharray': [3, 2] },
+      paint: { 'line-color': HAZARD_COLOR, 'line-width': WATCH_WIDTH, 'line-dasharray': watchDash(WATCH_WIDTH) },
     })
     void load(map)
   },
