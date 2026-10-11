@@ -30,6 +30,11 @@ const fixture: NwsAlertsResponse = {
         onset: null,
         expires: null,
         geocode: { UGC: ['GAC033', 'SCC009', 'SCC011'] },
+        affectedZones: [
+          'https://api.weather.gov/zones/county/GAC033',
+          'https://api.weather.gov/zones/county/SCC009',
+          'https://api.weather.gov/zones/county/SCC011',
+        ],
       },
     },
   ],
@@ -48,5 +53,15 @@ describe('nwsAlerts.normalize', () => {
     expect(watch.severity).toBe('Unknown')
     expect(watch.headline).toBe('Tornado Watch')
     expect(watch.states).toEqual(['GA', 'SC'])
+    expect(watch.zones).toEqual([
+      'https://api.weather.gov/zones/county/GAC033',
+      'https://api.weather.gov/zones/county/SCC009',
+      'https://api.weather.gov/zones/county/SCC011',
+    ])
+  })
+
+  it('defaults zones to an empty list when affectedZones is absent', () => {
+    const [tor] = nwsAlerts.normalize(fixture)
+    expect(tor.zones).toEqual([])
   })
 })

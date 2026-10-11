@@ -15,6 +15,7 @@ interface NwsFeature {
     onset: string | null
     expires: string | null
     geocode?: { UGC?: string[] }
+    affectedZones?: string[]
   }
 }
 
@@ -51,6 +52,7 @@ export const nwsAlerts: SourceAdapter<NwsAlertsResponse, Alert> = {
         expires: p.expires,
         geometry: f.geometry,
         states: [...new Set(ugc.map((z) => z.slice(0, 2)))],
+        zones: p.affectedZones ?? [],
       }
     })
   },

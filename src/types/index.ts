@@ -23,6 +23,8 @@ export interface Alert {
   geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon | null
   /** Two-letter state codes parsed from affected UGC zones, used for AOI filtering when geometry is null. */
   states: string[]
+  /** NWS `affectedZones` URLs (e.g. https://api.weather.gov/zones/county/GAC029); resolves zone-based alerts to shapes. */
+  zones: string[]
 }
 
 export interface LiveStream {
