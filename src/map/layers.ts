@@ -1,7 +1,9 @@
 import type maplibregl from 'maplibre-gl'
 import { radarLayer } from './radar'
 import { satelliteLayer } from './satellite'
+import { spcMesoscaleLayer } from './spcMesoscale'
 import { spcOutlookLayer } from './spcOutlook'
+import { spcWatchesLayer } from './spcWatches'
 import { stormReportsLayer } from './stormReports'
 
 /**
@@ -19,4 +21,4 @@ export interface MapLayer {
 }
 
 // Order = draw order (first is bottom-most).
-export const mapLayers: MapLayer[] = [satelliteLayer, spcOutlookLayer, radarLayer, stormReportsLayer]
+export const mapLayers: MapLayer[] = [satelliteLayer, spcOutlookLayer, radarLayer, spcMesoscaleLayer, spcWatchesLayer, stormReportsLayer]
