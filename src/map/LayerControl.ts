@@ -61,6 +61,26 @@ export function toggleLayer(id: string): boolean {
   return current()?.toggleById(id) ?? false
 }
 
+const layerListeners = new Set<() => void>()
+const notifyLayers = (): void => {
+  for (const listener of layerListeners) listener()
+}
+
+/** Current visibility of an overlay. Without a mounted control it falls back to the stored preference (default on). */
+export function isLayerOn(id: string): boolean {
+  const control = current()
+  if (control) return control.isOn(id)
+  return readVisibility()[id] ?? true
+}
+
+/** Calls `listener` after every overlay visibility change (row click, keyboard toggle, mount, unmount). Returns the unsubscribe. */
+export function subscribeLayers(listener: () => void): () => void {
+  layerListeners.add(listener)
+  return () => {
+    layerListeners.delete(listener)
+  }
+}
+
 /** Console-style layer switchboard. Each row toggles every style layer its overlay id prefixes. */
 export class LayerControl implements maplibregl.IControl {
   private readonly rows: Toggleable[]
@@ -112,11 +132,18 @@ export class LayerControl implements maplibregl.IControl {
 
     this.container = root
     this.applyAll()
+    notifyLayers()
     return root
   }
 
   ids(): string[] {
     return this.rows.map((r) => r.id)
+  }
+
+  isOn(id: string): boolean {
+    const stored = this.visibility[id]
+    if (stored !== undefined) return stored
+    return this.rows.find((r) => r.id === id)?.defaultVisible !== false
   }
 
   toggleById(id: string): boolean {
@@ -130,6 +157,7 @@ export class LayerControl implements maplibregl.IControl {
     this.container?.remove()
     this.container = null
     this.map = null
+    notifyLayers()
   }
 
   private buildRow(row: Toggleable): HTMLButtonElement {
@@ -158,16 +186,11 @@ export class LayerControl implements maplibregl.IControl {
     return btn
   }
 
-  private isOn(id: string): boolean {
-    const stored = this.visibility[id]
-    if (stored !== undefined) return stored
-    return this.rows.find((r) => r.id === id)?.defaultVisible !== false
-  }
-
   private toggle(id: string): void {
     this.visibility = { ...this.visibility, [id]: !this.isOn(id) }
     writeVisibility(this.visibility)
     this.applyRow(id)
+    notifyLayers()
   }
 
   private applyAll(): void {
