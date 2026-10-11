@@ -1,11 +1,12 @@
 import type maplibregl from 'maplibre-gl'
 import { spcWatchBoxes } from '../sources/iemspc/watches'
 import { DEFAULT_AOI } from '../state/aoi'
+import { CASING, HAZARD, LABEL_HALO, watchDash } from './mapStyle'
 import type { MapLayer } from './layers'
 
 const SOURCE_ID = 'spc-watch'
-const TOR_COLOR = '#ff3b3b'
-const SVR_COLOR = '#ffd23f'
+const WATCH_WIDTH = 2
+const CASING_WIDTH = 4.5
 
 const EMPTY: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] }
 
@@ -22,12 +23,13 @@ async function load(map: maplibregl.Map) {
 }
 
 // spc_watch_outline has no PDS flag, so PDS watches are not drawn distinctly; the spcwatch.py is_pds join was deliberately not added (unverified).
+// Watch boxes use the TOA (tornado) and SVA (severe) hazard colours.
 const KIND_COLOR: maplibregl.ExpressionSpecification = [
   'match',
   ['get', 'kind'],
   'TOR',
-  TOR_COLOR,
-  SVR_COLOR,
+  HAZARD.TOA,
+  HAZARD.SVA,
 ]
 
 export const spcWatchesLayer: MapLayer = {
@@ -36,10 +38,16 @@ export const spcWatchesLayer: MapLayer = {
   add(map) {
     map.addSource(SOURCE_ID, { type: 'geojson', data: EMPTY })
     map.addLayer({
+      id: `${SOURCE_ID}-casing`,
+      type: 'line',
+      source: SOURCE_ID,
+      paint: { 'line-color': CASING, 'line-width': CASING_WIDTH, 'line-dasharray': watchDash(CASING_WIDTH) },
+    })
+    map.addLayer({
       id: `${SOURCE_ID}-line`,
       type: 'line',
       source: SOURCE_ID,
-      paint: { 'line-color': KIND_COLOR, 'line-width': 2 },
+      paint: { 'line-color': KIND_COLOR, 'line-width': WATCH_WIDTH, 'line-dasharray': watchDash(WATCH_WIDTH) },
     })
     map.addLayer({
       id: `${SOURCE_ID}-label`,
@@ -53,7 +61,7 @@ export const spcWatchesLayer: MapLayer = {
       },
       paint: {
         'text-color': KIND_COLOR,
-        'text-halo-color': '#0b0f14',
+        'text-halo-color': LABEL_HALO,
         'text-halo-width': 1.5,
       },
     })

@@ -2,11 +2,47 @@ import type maplibregl from 'maplibre-gl'
 import { stormReports } from '../sources/spc/reports'
 import { DEFAULT_AOI } from '../state/aoi'
 import type { StormReport } from '../types'
+import { CASING, REPORT } from './mapStyle'
 import type { MapLayer } from './layers'
 
 const SOURCE_ID = 'storm-reports'
+// Markers are drawn to a canvas at 2x and registered with pixelRatio 2, so 18 px here is 9 CSS px.
+const PIXEL_RATIO = 2
+const MARKER_PX = 18
+const ICON = {
+  tornado: `${SOURCE_ID}-tornado`,
+  wind: `${SOURCE_ID}-wind`,
+  hail: `${SOURCE_ID}-hail`,
+} as const
 
 const EMPTY: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] }
+
+// Shape carries the meaning as well as colour: tornado ▼, wind ■, hail ●.
+function drawMarker(kind: keyof typeof ICON): ImageData | null {
+  const canvas = document.createElement('canvas')
+  canvas.width = MARKER_PX
+  canvas.height = MARKER_PX
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  ctx.beginPath()
+  if (kind === 'tornado') {
+    ctx.moveTo(2, 3)
+    ctx.lineTo(MARKER_PX - 2, 3)
+    ctx.lineTo(MARKER_PX / 2, MARKER_PX - 2)
+    ctx.closePath()
+  } else if (kind === 'wind') {
+    ctx.rect(3, 3, MARKER_PX - 6, MARKER_PX - 6)
+  } else {
+    ctx.arc(MARKER_PX / 2, MARKER_PX / 2, MARKER_PX / 2 - 2, 0, Math.PI * 2)
+  }
+  ctx.fillStyle = REPORT[kind]
+  ctx.fill()
+  // 1 px casing at CSS scale.
+  ctx.strokeStyle = CASING
+  ctx.lineWidth = 2
+  ctx.stroke()
+  return ctx.getImageData(0, 0, MARKER_PX, MARKER_PX)
+}
 
 function reportsToGeoJson(reports: StormReport[]): GeoJSON.FeatureCollection {
   return {
@@ -35,24 +71,18 @@ export const stormReportsLayer: MapLayer = {
   id: SOURCE_ID,
   label: 'Storm Reports (today)',
   add(map) {
+    for (const kind of Object.keys(ICON) as (keyof typeof ICON)[]) {
+      const image = drawMarker(kind)
+      if (image && !map.hasImage(ICON[kind])) map.addImage(ICON[kind], image, { pixelRatio: PIXEL_RATIO })
+    }
     map.addSource(SOURCE_ID, { type: 'geojson', data: EMPTY })
     map.addLayer({
       id: SOURCE_ID,
-      type: 'circle',
+      type: 'symbol',
       source: SOURCE_ID,
-      paint: {
-        'circle-radius': 5,
-        'circle-color': [
-          'match',
-          ['get', 'kind'],
-          'tornado',
-          '#ff3b3b',
-          'wind',
-          '#36c5f0',
-          'hail',
-          '#3ddc84',
-          '#ffffff',
-        ],
+      layout: {
+        'icon-image': ['match', ['get', 'kind'], 'tornado', ICON.tornado, 'wind', ICON.wind, ICON.hail],
+        'icon-allow-overlap': true,
       },
     })
     void load(map)
