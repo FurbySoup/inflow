@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { nwsAlerts, type NwsAlertsResponse } from './alerts'
+import { nwsAlerts, vtecEventKey, type NwsAlertsResponse } from './alerts'
 
 const fixture: NwsAlertsResponse = {
   features: [
@@ -58,6 +58,31 @@ describe('nwsAlerts.normalize', () => {
       'https://api.weather.gov/zones/county/SCC009',
       'https://api.weather.gov/zones/county/SCC011',
     ])
+  })
+
+  it('keys an event by VTEC office/phenomenon/significance/number so updates keep their identity', () => {
+    // Real strings from api.weather.gov, 2026-10-11: a CON update keeps the event number of the original.
+    expect(vtecEventKey(['/O.CON.KMTR.SC.Y.0122.000000T0000Z-261012T0400Z/'])).toBe('KMTR.SC.Y.0122')
+    expect(vtecEventKey(['/O.NEW.KFFC.TO.W.0123.261011T1800Z-261011T1830Z/'])).toBe('KFFC.TO.W.0123')
+    expect(vtecEventKey(undefined)).toBeNull()
+    expect(vtecEventKey(['garbage'])).toBeNull()
+    const [tor] = nwsAlerts.normalize({
+      features: [
+        {
+          ...fixture.features[0],
+          properties: {
+            ...fixture.features[0].properties,
+            sent: '2026-10-11T18:00:00Z',
+            messageType: 'Update',
+            parameters: { VTEC: ['/O.CON.KCAE.TO.W.0042.261011T1800Z-261011T1830Z/'] },
+          },
+        },
+      ],
+    })
+    expect(tor.eventKey).toBe('KCAE.TO.W.0042')
+    expect(tor.messageType).toBe('Update')
+    expect(tor.sent).toBe('2026-10-11T18:00:00Z')
+    expect(nwsAlerts.normalize(fixture)[1].eventKey).toBe('urn:oid:watch-1') // no VTEC → id
   })
 
   it('reads impact-based damage threat and PDS text', () => {

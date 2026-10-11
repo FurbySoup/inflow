@@ -1,11 +1,35 @@
-/* Status LED */
-.led { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--offline); flex: none; }
-.led-live { background: var(--live); box-shadow: 0 0 6px var(--live); animation: sc-pulse 2s ease-in-out infinite; }
-.led-loading { background: var(--accent); animation: sc-pulse 0.8s ease-in-out infinite; }
-.led-stale { background: var(--stale); box-shadow: 0 0 6px var(--stale); }
-.led-error { background: var(--error); box-shadow: 0 0 6px var(--error); }
-@keyframes sc-pulse { 50% { opacity: 0.35; } }
-
-@media (prefers-reduced-motion: reduce) {
-  .led { animation: none !important; }
+/* Status LED (ADR-0015): the shape carries the feed state, so it reads without colour.
+   ● live (filled, pulsing halo) · ◌ loading (dotted ring, spinning) · ◐ stale (half fill) · ■ error (square) · ○ offline (ring).
+   Base .led is the plain layer-switch dot used by the map LayerControl; .led-live is its "on" state. */
+.led {
+  display: inline-block;
+  box-sizing: border-box;
+  flex: none;
+  width: calc(var(--fs-data-xs) * .75);
+  height: calc(var(--fs-data-xs) * .75);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-led);
+  background: var(--status-offline);
+}
+.led-live { background: var(--status-live); }
+.led[data-status="live"] {
+  background: var(--status-live);
+  animation: inflow-pulse var(--dur-led-pulse) var(--ease-in-out) infinite;
+}
+.led[data-status="loading"] {
+  background: transparent;
+  border: 1.5px dotted var(--status-loading);
+  animation: inflow-spin 1000ms var(--ease-linear) infinite;
+}
+.led[data-status="stale"] {
+  background: linear-gradient(90deg, var(--status-stale) 50%, transparent 50%);
+  border-color: var(--status-stale);
+}
+.led[data-status="error"] {
+  border-radius: var(--radius-0);
+  background: var(--status-error);
+}
+.led[data-status="offline"] {
+  background: transparent;
+  border-color: var(--status-offline);
 }

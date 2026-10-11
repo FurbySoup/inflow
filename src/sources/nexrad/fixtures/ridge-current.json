@@ -1,0 +1,54 @@
+{
+  "product": "N0S",
+  "generated_at": "2026-10-11T15:36:03Z",
+  "meta": [
+    {
+      "valid": "2026-10-11T15:30:19Z",
+      "product": "N0S",
+      "site": "KSG",
+      "vcp": 35
+    },
+    {
+      "valid": "2026-10-11T15:32:36Z",
+      "product": "N0S",
+      "site": "FFC",
+      "vcp": 35
+    },
+    {
+      "valid": "2026-10-11T15:25:37Z",
+      "product": "N0S",
+      "site": "PAH",
+      "vcp": 35
+    },
+    {
+      "valid": "2026-10-11T15:32:41Z",
+      "product": "N0S",
+      "site": "ABC",
+      "vcp": 215
+    },
+    {
+      "valid": "2026-10-11T15:31:37Z",
+      "product": "N0S",
+      "site": "CLX",
+      "vcp": 215
+    },
+    {
+      "valid": "2026-10-11T15:32:37Z",
+      "product": "N0S",
+      "site": "TLX",
+      "vcp": 35
+    },
+    {
+      "valid": "2026-10-11T15:29:27Z",
+      "product": "N0S",
+      "site": "JGX",
+      "vcp": 35
+    },
+    {
+      "valid": "2023-11-27T13:43:17Z",
+      "product": "N0S",
+      "site": "LIX",
+      "vcp": 35
+    }
+  ]
+}

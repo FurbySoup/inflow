@@ -17,7 +17,9 @@ interface NwsFeature {
     geocode?: { UGC?: string[] }
     affectedZones?: string[]
     description?: string | null
-    parameters?: { tornadoDamageThreat?: string[]; flashFloodDamageThreat?: string[] }
+    sent?: string | null
+    messageType?: string | null
+    parameters?: { tornadoDamageThreat?: string[]; flashFloodDamageThreat?: string[]; VTEC?: string[] }
   }
 }
 
@@ -26,6 +28,17 @@ export interface NwsAlertsResponse {
 }
 
 const SEVERITIES: AlertSeverity[] = ['Extreme', 'Severe', 'Moderate', 'Minor']
+
+const MESSAGE_TYPES = ['Alert', 'Update', 'Cancel'] as const
+
+/** "/O.CON.KFFC.TO.W.0123.261011T1800Z-261011T1830Z/" → "KFFC.TO.W.0123". First operational VTEC string wins. */
+export function vtecEventKey(vtec: string[] | undefined): string | null {
+  for (const v of vtec ?? []) {
+    const m = /^\/O\.[A-Z]{3}\.([A-Z]{4})\.([A-Z]{2})\.([A-Z])\.(\d{4})\./.exec(v)
+    if (m) return `${m[1]}.${m[2]}.${m[3]}.${m[4]}`
+  }
+  return null
+}
 
 /** Highest impact-based damage tag across the tornado and flash-flood threat parameters. */
 function damageThreat(parameters: NwsFeature['properties']['parameters']): Alert['damageThreat'] {
@@ -67,6 +80,9 @@ export const nwsAlerts: SourceAdapter<NwsAlertsResponse, Alert> = {
         zones: p.affectedZones ?? [],
         damageThreat: damageThreat(p.parameters),
         pds: /PARTICULARLY DANGEROUS SITUATION/i.test(`${p.headline ?? ''} ${p.description ?? ''}`),
+        sent: p.sent ?? null,
+        messageType: MESSAGE_TYPES.includes(p.messageType as never) ? (p.messageType as Alert['messageType']) : null,
+        eventKey: vtecEventKey(p.parameters?.VTEC) ?? f.id,
       }
     })
   },
