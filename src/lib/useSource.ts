@@ -9,6 +9,7 @@ export function useSource<Raw, Item>(adapter: SourceAdapter<Raw, Item>) {
     queryKey: [adapter.id, bbox],
     queryFn: async ({ signal }) => adapter.normalize(await adapter.fetch(bbox, signal)),
     refetchInterval: adapter.refreshMs,
+    refetchIntervalInBackground: adapter.background ?? false,
     placeholderData: (prev) => prev,
   })
 }

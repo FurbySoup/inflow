@@ -5,6 +5,13 @@ import { AoiPresets } from './AoiPresets'
 import { KeysButton } from './KeyboardShortcuts'
 import { ThreatButton, WarningsHiddenChip } from './ThreatButton'
 
+// With 52 codes a wide AOI can touch 20+ states; the top bar shows the first few and a count.
+const MAX_AOI_CODES = 6
+const aoiLabel = (states: string[]) =>
+  states.length > MAX_AOI_CODES
+    ? `${states.slice(0, MAX_AOI_CODES).join(' · ')} +${states.length - MAX_AOI_CODES}`
+    : states.join(' · ')
+
 const fmt = (d: Date, timeZone?: string) =>
   d.toLocaleTimeString('en-US', { hour12: false, timeZone })
 
@@ -28,7 +35,7 @@ export function Topbar() {
         <span className="brand-word">INFLOW</span>
       </span>
       <span className="topbar-item">
-        AOI <strong>{states.length ? states.join(' · ') : '—'}</strong>
+        AOI <strong title={states.join(' · ')}>{states.length ? aoiLabel(states) : '—'}</strong>
       </span>
       <ThreatButton />
       <WarningsHiddenChip />

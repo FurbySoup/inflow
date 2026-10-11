@@ -1,5 +1,5 @@
 # 0003. Area of interest is the only cross-panel state
-Status: Accepted
+Status: Accepted (amended by 0016: states come from simplified Census shapes, 52 codes)
 Date: 2026-10-10
 
 ## Context

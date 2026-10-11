@@ -12,22 +12,33 @@ import { queryStatus, type FeedState, type FeedStatus } from '../lib/feedStatus'
 import { Panel } from './Panel'
 import { CameraTile as UiCameraTile, ConsoleButton } from '../ui'
 
-type CameraAdapter = SourceAdapter<unknown, CameraFeed> & { state: string }
+/** One DOT camera feed: its adapter, the states it covers (the panel only queries it while the AOI touches one), and its credit. */
+interface CameraSource {
+  adapter: SourceAdapter<unknown, CameraFeed>
+  states: string[]
+  /** Upstream name shown in the footer, e.g. "KanDrive". */
+  attribution: string
+}
 
-// Append a new DOT camera adapter here.
-// eslint-disable-next-line react-refresh/only-export-components -- adapters are appended to this list
-export const CAMERA_ADAPTERS: CameraAdapter[] = [
-  kansasCameras,
-  nebraskaCameras,
-  txdotCameras,
-  georgiaCameras,
-  floridaCameras,
-  southCarolinaCameras,
+// Append a new DOT camera source here. Coverage and footer texts are derived from this list.
+// eslint-disable-next-line react-refresh/only-export-components -- sources are appended to this list
+export const CAMERA_SOURCES: CameraSource[] = [
+  { adapter: kansasCameras, states: ['KS'], attribution: 'KanDrive' },
+  { adapter: nebraskaCameras, states: ['NE'], attribution: 'Nebraska 511' },
+  { adapter: txdotCameras, states: ['TX'], attribution: 'TxDOT' },
+  { adapter: georgiaCameras, states: ['GA'], attribution: '511GA' },
+  { adapter: floridaCameras, states: ['FL'], attribution: 'FL511' },
+  { adapter: southCarolinaCameras, states: ['SC'], attribution: '511SC' },
 ]
+
+/** "NO DOT CAMERA COVERAGE IN AOI — COVERED: FL · GA · …" built from the source list. */
+function noCoverageText(sources: readonly CameraSource[]): string {
+  const covered = [...new Set(sources.flatMap((s) => s.states))].sort()
+  return `NO DOT CAMERA COVERAGE IN AOI — COVERED: ${covered.join(' · ')}`
+}
 
 const MAX_TILES = 12
 const REFRESH_MS = 60_000
-const NO_COVERAGE = 'NO DOT CAMERA COVERAGE IN AOI — KS · NE · TX · GA · SC · FL'
 
 // Snapshot URLs may already carry a query string (e.g. ?1791658260000).
 function withCacheBuster(url: string, tick: number) {
@@ -142,24 +153,24 @@ export function CamerasPanel() {
 
   // Adapters with no state in the AOI are disabled, so they make no request.
   const results = useQueries({
-    queries: CAMERA_ADAPTERS.map((a) => ({
+    queries: CAMERA_SOURCES.map(({ adapter: a, states: covers }) => ({
       queryKey: [a.id, bbox],
       queryFn: async ({ signal }: { signal: AbortSignal }) =>
         a.normalize(await a.fetch(bbox, signal)),
       refetchInterval: a.refreshMs,
       placeholderData: (prev: CameraFeed[] | undefined) => prev,
-      enabled: states.includes(a.state),
+      enabled: covers.some((st) => states.includes(st)),
     })),
   })
 
-  const covered = CAMERA_ADAPTERS.map((a, i) => ({ state: a.state, query: results[i] })).filter(
-    (r) => states.includes(r.state),
+  const covered = CAMERA_SOURCES.map((source, i) => ({ source, query: results[i] })).filter((r) =>
+    r.source.states.some((st) => states.includes(st)),
   )
 
   if (covered.length === 0) {
     return (
       <Panel collapsible code="CCTV-01" title="DOT Cameras" status="offline">
-        <p className="muted">{NO_COVERAGE}</p>
+        <p className="muted">{noCoverageText(CAMERA_SOURCES)}</p>
       </Panel>
     )
   }
@@ -196,7 +207,7 @@ export function CamerasPanel() {
         status === 'live' && <p className="muted">NO CAMERAS IN VIEW</p>
       )}
       <p className="muted" style={{ marginTop: 8 }}>
-        Snapshots: KanDrive (KS) · Nebraska 511 (NE) · TxDOT (TX) · 511GA (GA) · 511SC (SC) · FL511 (FL)
+        Snapshots: {covered.map((r) => `${r.source.attribution} (${r.source.states.join('/')})`).join(' · ')}
       </p>
     </Panel>
   )

@@ -8,6 +8,8 @@ export interface SourceAdapter<Raw, Item> {
   id: string
   /** Poll interval in ms for TanStack Query `refetchInterval`. */
   refreshMs: number
+  /** Keep polling while the tab is hidden (TanStack `refetchIntervalInBackground`). Default false; notification sources set it. */
+  background?: boolean
   fetch(aoi: Bbox, signal?: AbortSignal): Promise<Raw>
   normalize(raw: Raw): Item[]
 }
