@@ -21,6 +21,8 @@ function alert(over: Partial<Alert>): Alert {
     geometry: null,
     states: ['GA'],
     zones: [],
+    damageThreat: null,
+    pds: false,
     ...over,
   }
 }

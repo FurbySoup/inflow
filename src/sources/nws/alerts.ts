@@ -16,6 +16,8 @@ interface NwsFeature {
     expires: string | null
     geocode?: { UGC?: string[] }
     affectedZones?: string[]
+    description?: string | null
+    parameters?: { tornadoDamageThreat?: string[]; flashFloodDamageThreat?: string[] }
   }
 }
 
@@ -24,6 +26,16 @@ export interface NwsAlertsResponse {
 }
 
 const SEVERITIES: AlertSeverity[] = ['Extreme', 'Severe', 'Moderate', 'Minor']
+
+/** Highest impact-based damage tag across the tornado and flash-flood threat parameters. */
+function damageThreat(parameters: NwsFeature['properties']['parameters']): Alert['damageThreat'] {
+  const tags = [...(parameters?.tornadoDamageThreat ?? []), ...(parameters?.flashFloodDamageThreat ?? [])].map((t) =>
+    t.toUpperCase(),
+  )
+  if (tags.includes('CATASTROPHIC')) return 'catastrophic'
+  if (tags.includes('CONSIDERABLE')) return 'considerable'
+  return null
+}
 
 export const nwsAlerts: SourceAdapter<NwsAlertsResponse, Alert> = {
   id: 'nws-alerts',
@@ -53,6 +65,8 @@ export const nwsAlerts: SourceAdapter<NwsAlertsResponse, Alert> = {
         geometry: f.geometry,
         states: [...new Set(ugc.map((z) => z.slice(0, 2)))],
         zones: p.affectedZones ?? [],
+        damageThreat: damageThreat(p.parameters),
+        pds: /PARTICULARLY DANGEROUS SITUATION/i.test(`${p.headline ?? ''} ${p.description ?? ''}`),
       }
     })
   },

@@ -60,6 +60,24 @@ describe('nwsAlerts.normalize', () => {
     ])
   })
 
+  it('reads impact-based damage threat and PDS text', () => {
+    const [torFeature, watchFeature] = fixture.features
+    const [tor, watch] = nwsAlerts.normalize({
+      features: [
+        { ...torFeature, properties: { ...torFeature.properties, parameters: { tornadoDamageThreat: ['CONSIDERABLE'] } } },
+        { ...watchFeature, properties: { ...watchFeature.properties, description: 'THIS IS A PARTICULARLY DANGEROUS SITUATION' } },
+      ],
+    })
+    expect(tor.damageThreat).toBe('considerable')
+    expect(tor.pds).toBe(false)
+    expect(watch.damageThreat).toBeNull()
+    expect(watch.pds).toBe(true)
+    const [emergency] = nwsAlerts.normalize({
+      features: [{ ...torFeature, properties: { ...torFeature.properties, parameters: { flashFloodDamageThreat: ['CATASTROPHIC'] } } }],
+    })
+    expect(emergency.damageThreat).toBe('catastrophic')
+  })
+
   it('defaults zones to an empty list when affectedZones is absent', () => {
     const [tor] = nwsAlerts.normalize(fixture)
     expect(tor.zones).toEqual([])

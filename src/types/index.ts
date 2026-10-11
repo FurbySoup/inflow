@@ -25,6 +25,10 @@ export interface Alert {
   states: string[]
   /** NWS `affectedZones` URLs (e.g. https://api.weather.gov/zones/county/GAC029); resolves zone-based alerts to shapes. */
   zones: string[]
+  /** NWS impact-based tag: tornadoDamageThreat / flashFloodDamageThreat (CATASTROPHIC = Tornado/Flash Flood Emergency). */
+  damageThreat: 'considerable' | 'catastrophic' | null
+  /** "Particularly dangerous situation" in the product text (PDS watches and warnings). */
+  pds: boolean
 }
 
 export interface LiveStream {
