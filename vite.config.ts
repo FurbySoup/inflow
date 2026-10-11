@@ -52,6 +52,64 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/api\/fl511/, ''),
       },
+      // Wave 8 (WP-28): CARS GraphQL for IA, MN, IN. The POST answers with ACAO *, but the OPTIONS preflight
+      // hits the CloudFront SPA shell with no ACAO (re-checked 2026-10-11), so they are proxied like KS/NE.
+      '/api/511ia': {
+        target: 'https://511ia.org',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/511ia/, '/api'),
+      },
+      '/api/511mn': {
+        target: 'https://511mn.org',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/511mn/, '/api'),
+      },
+      '/api/511in': {
+        target: 'https://511in.org',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/511in/, '/api'),
+      },
+      // Wave 8 (WP-29): more IBI "511" sites. None send CORS on the camera list (re-checked 2026-10-11).
+      '/api/az511': {
+        target: 'https://az511.gov',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/az511/, ''),
+      },
+      '/api/511id': {
+        target: 'https://511.idaho.gov',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/511id/, ''),
+      },
+      '/api/511ak': {
+        target: 'https://511.alaska.gov',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/511ak/, ''),
+      },
+      '/api/511la': {
+        target: 'https://511la.org',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/511la/, ''),
+      },
+      '/api/ctroads': {
+        target: 'https://ctroads.org',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/ctroads/, ''),
+      },
+      '/api/nvroads': {
+        target: 'https://www.nvroads.com',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/nvroads/, ''),
+      },
+      '/api/511pa': {
+        target: 'https://www.511pa.com',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/511pa/, ''),
+      },
+      '/api/newengland511': {
+        target: 'https://newengland511.org',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/newengland511/, ''),
+      },
       '/api/kiwisdr': {
         target: 'http://rx.linkfanel.net',
         changeOrigin: true,

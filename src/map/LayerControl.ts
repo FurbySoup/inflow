@@ -98,6 +98,8 @@ export class LayerControl implements maplibregl.IControl {
     this.map = map
     mounted.add(this)
     const root = document.createElement('div')
+    // MapLibre's corner containers are pointer-events:none; only .maplibregl-ctrl children get clicks back.
+    root.className = 'maplibregl-ctrl'
     Object.assign(root.style, {
       background: 'var(--panel)',
       border: '1px solid var(--border)',

@@ -31,6 +31,13 @@ v1 must work with no API keys (ADR-0001) and US coverage only. Endpoints were ve
 - 2026-10-10 (WP-07): CARS GraphQL sends `Access-Control-Allow-Origin` only for same-origin/simple requests; JSON POSTs from localhost fail preflight. Moved behind the dev proxy.
 - 2026-10-10 (WP-02): IEM `n0q_0.json` valid time is at `meta.valid`.
 - 2026-10-10 (WP-06): KiwiSDR directory is JS with a trailing comma (not valid JSON); `bands` is Hz `"min-max"`; only ~2 of ~870 receivers cover 144 MHz.
+- 2026-10-11 (Wave 8 re-verification; curl from a UK egress, plus the browser pane for OpenMHz):
+  - **OpenMHz** `GET /systems` → `{success, systems[]}`: 465 systems, 452 with a 2-letter `state`, 41 states. It works cross-origin from a browser (fetched from example.com). curl gets a 403 only with its default User-Agent. Browser-direct stays the rule.
+  - **CARS IA/MN/IN** (`511ia.org`, `511mn.org`, `511in.org`): same query, preflight fails → proxied. Zoom without clusters: MN 9, IA ≥ 11 (then capped at 100 per response), IN ≥ 13.
+  - **IBI 511** AZ/ID/AK/LA/CT/NV/PA/New England: same list shape as GA/FL, no CORS → proxied. 511PA and New England 511 snapshots send ACAO twice, so use plain `<img>` only.
+  - **WSDOT**: keyless ArcGIS `data.wsdot.wa.gov/arcgis/rest/services/TravelInformation/TravelInfoCamerasWeather/FeatureServer/0/query` echoes the origin. **Caltrans** CWWP2 `cctvStatusD{NN}.json`: CORS `*`, every value a string.
+  - **SPC:** `day3otlk_sigprob` is stale (last issued March 2026); use `day3otlk_cigprob`. `day1otlk_torn` now carries CIG features (`LABEL` `CIG1`…). An empty day is one `DN: 0` feature with an empty GeometryCollection.
+  - **IEM** answers an invalid tile layer with a 200 error PNG, so check layer names by looking at the tile.
 
 ## Consequences
 - Terms for IEM, OpenMHz, DOT feeds are UNVERIFIED for redistribution. Fine for local use; must be reviewed before public hosting (roadmap gate).

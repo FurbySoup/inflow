@@ -59,6 +59,8 @@ class VelocityControl implements maplibregl.IControl {
   private view: VelocityView = { label: null, valid: null, linkUrl: null }
 
   constructor() {
+    // Without this class the corner container's pointer-events:none swallows clicks on the link.
+    this.root.className = 'maplibregl-ctrl'
     this.root.style.cssText =
       'display:flex;align-items:center;gap:8px;padding:4px 8px;background:var(--surface-scrim);' +
       'border:1px solid var(--border);font-family:var(--font-data);font-size:12px;color:var(--text);white-space:nowrap;'

@@ -13,4 +13,5 @@
 .badge-aoi { color: var(--accent); }
 .badge-ctx { color: var(--muted); }
 .badge-zone { color: var(--muted); }
-.badge-pds { color: var(--extreme); }
+/* HANDOFF §2: PDS is the one filled badge (white fill, dark ink), as on alert rows. */
+.badge-pds { background: var(--badge-pds-bg); color: var(--badge-pds-fg); border-color: var(--badge-pds-bg); font-weight: 700; }

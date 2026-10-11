@@ -80,6 +80,38 @@ Expected conflicts:
 
 After merge: update the kit previews where builders didn't, then re-sync Claude Design.
 
+## Wave 8 (any area): planned 2026-10-11
+Endpoints were re-verified on 2026-10-11 by curl, plus the browser pane for OpenMHz. The facts are in each package and in the ADR-0004 corrections.
+
+Prep (done, on `main`):
+- **P8a:** 52-code AOI states from simplified Census shapes, `stateAt`, `src/lib/geo.ts` ([ADR-0016](adr/0016-nationwide-aoi-states.md)); the top bar caps the AOI label at 6 codes.
+- **P8b:** `SourceAdapter.background` → `refetchIntervalInBackground` (for Wave 9).
+- **P8c:**
+  - `CAMERA_SOURCES { adapter, states, attribution }` replaces `CAMERA_ADAPTERS`; the coverage and footer texts are derived from it;
+  - proxy routes for 3 CARS and 8 IBI sites.
+- **P8d (user reports):**
+  - map controls get `maplibregl-ctrl`, so the WeatherWise link and the Layers toggle take clicks (the corner containers are `pointer-events: none`);
+  - the Toast PDS badge is white-filled (HANDOFF §2).
+- Not changed: the WALL/CHASE label after a manual collapse is intentional (see the comment in `layout.ts`).
+
+| WP | Title | Wave | Owns (exclusive) | Registry edits allowed |
+|---|---|---|---|---|
+| [26](packages/WP-26-aoi-alert-matching.md) | Alerts match the AOI by polygon + threat-button a11y | 8 | `aoiMatch.ts`, `AlertsList.tsx`, `threat.ts`, `ThreatButton.tsx`, `threat.css`, `newAlerts.ts`, `ToastRegion.tsx` (+ tests) | — |
+| [27](packages/WP-27-openmhz-any-area.md) | OpenMHz systems for any area | 8 | `src/sources/openmhz/**`, `AudioPanel.tsx`, `config/audio.json` (delete) | — |
+| [28](packages/WP-28-cameras-cars-ia-mn-in.md) | Cameras IA/MN/IN (CARS) | 8 | `src/sources/cars/**` | `CAMERA_SOURCES` +3 |
+| [29](packages/WP-29-cameras-ibi511-more.md) | Cameras AZ/ID/AK/LA/CT/NV/PA/New England (IBI) + walk back-off | 8 | `src/sources/ibi511/**` | `CAMERA_SOURCES` +8 |
+| [30](packages/WP-30-cameras-wa-ca.md) | Cameras WA (WSDOT) + CA (Caltrans) | 8 | `src/sources/wsdot/**`, `src/sources/caltrans/**` | `CAMERA_SOURCES` +2 |
+| [31](packages/WP-31-spc-outlook-days.md) | SPC outlook D1–8 + AOI risk | 8 | `sources/spc/outlook.ts`, `map/spcOutlook.ts`, `map/outlookDay.ts`, `map/OutlookDayControl.ts`, `panels/OutlookRisk.tsx`, `panels/outlookRisk.ts` | `MapPanel.tsx` addControl line, `Topbar.tsx` one element |
+| [32](packages/WP-32-goes-west.md) | GOES-West for western AOIs | 8 | `map/satellite.ts`, `sources/satellite/**` | — |
+| [33](packages/WP-33-stream-tile-play.md) | Play thumbnails in place (ADR-0017) | 8 | kit `StreamTile` + `css/stream.css` + preview; `StreamsGrid.tsx`, `sources/streams/playing.ts` | — |
+| [34](packages/WP-34-aoi-clock.md) | AOI local time in the top bar | 8 | `sources/nws/points.ts`, `panels/clock.ts`, Topbar clock items | — |
+
+Expected conflicts (trivial):
+- `CAMERA_SOURCES` appends (WP-28, 29, 30);
+- `Topbar.tsx` (WP-31 one element vs WP-34 clock items).
+
+Merge order: 26, 27, 32, 28, 29, 30, then 31, 34, 33. After merging: the full ADR-0014 matrix, then re-sync Claude Design (StreamTile, Badge).
+
 **Wave 7: INFLOW design implementation** (`docs/design/inflow-v1/HANDOFF.md` §9). D0 (tokens, fonts, brand) is done.
 - Orchestrator prep:
   - split `src/ui/styles.css` into per-component files, so builders can own kit components without conflicts (kit-css.mjs inlines them for the design sync);
