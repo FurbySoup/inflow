@@ -75,7 +75,16 @@ Live proofing used one area and one known event. These waves make INFLOW work fo
   - about 40–60 regular chasers by channelId, each with a home region;
   - slow round-robin liveness (ADR-0013), a live-first sort, and a "chaser went live" trigger.
 - **Hazardous Weather Outlook** for the AOI's forecast office (NWS `/points` → CWA → HWO).
-- **Chaser positions on the map** (user idea): pending research. Sources such as Spotter Network likely need an account or agreement.
+- **Chaser positions on the map** (user idea, researched 2026-10-11).
+  - Spotter Network is the only source. Its feeds (`/feeds/gr.txt`, `/feeds/rss-positions.xml`) are keyless and CORS `*`.
+  - Its terms are personal and non-commercial only, and forbid displaying the data, so redrawing positions needs written permission.
+  - The feeds also carry phone numbers and emails.
+  - v1 can only offer an "SN MAP ↗" link-out (Wave 9).
+  - With an agreement (v2/v4):
+    - a Worker `/api/sn` strips PII and filters to the roster;
+    - a `chaser-positions` layer joins the roster by verified SN `public_id`;
+    - staleness tiers: live under 5 min, dimmed to 20, ghosted to 60, then hidden;
+    - each map marker links to its stream tile.
 
 **Needs the v2 Worker:**
 - push notifications while the tab is closed (cron poller + Web Push);
