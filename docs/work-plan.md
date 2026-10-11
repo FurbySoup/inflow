@@ -80,7 +80,26 @@ Expected conflicts:
 
 After merge: update the kit previews where builders didn't, then re-sync Claude Design.
 
-## Wave 9 (notifications, chasers, help): planned 2026-10-11
+## Wave 9 (notifications, chasers, help): merged 2026-10-11
+- **Verifiers caught:**
+  - the narrow-tier `.panel-body` 320 px cap boxing the new help dialog on phones (WP-40);
+  - two differing descriptions per AOI preset (WP-39, now glossary-only).
+- **Orchestrator review caught:**
+  - an HWO "SPOTTERS: NOT NEEDED" guess when the text has no spotter sentence (now omitted);
+  - the kit Panel title being used as a string in aria-labels, so tips come from `TaggedText` instead of widening the prop.
+- **Live check:**
+  - matrix passes at all 7 sizes (top bar one row at 1366 and up with NOTIFY);
+  - 113 tagged terms, all with tips;
+  - HWO live from FFC; the default AOI centre is in CHS (no HWO in the API), so no strip shows there, correctly;
+  - help: 3 columns at 1920, 1 column on a phone, search works (an earlier "broken search" was a scripted-input artefact).
+- **Needs a visible browser** (the pane was hidden): the D1–D8 map change, and a real background-tab notification (the permission prompt is the user's).
+- **Follow-ups (minor):**
+  - the roster scheduler can lag up to 60 s after the tab becomes visible;
+  - HWO fixtures still carry the county lists;
+  - the panel LED ignores OpenMHz list errors (from Wave 8);
+  - the tablet-portrait top bar is now 3 rows (95 px).
+
+
 Research was re-verified on 2026-10-11 (roster channel IDs on their own `/streams` pages, HWO coverage, the Spotter Network map URL, the Notification API, SPC issuance). Facts are in each package.
 
 Prep (done, on `main`):
