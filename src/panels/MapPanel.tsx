@@ -28,7 +28,7 @@ function alertsToGeoJson(alerts: Alert[]): GeoJSON.FeatureCollection {
       .map((a) => ({
         type: 'Feature',
         geometry: a.geometry!,
-        properties: { id: a.id, event: a.event, color: ALERT_COLORS[a.event] ?? '#36c5f0' },
+        properties: { id: a.id, event: a.event, color: ALERT_COLORS[a.event] ?? '#8DC5EE' },
       })),
   }
 }
@@ -96,7 +96,8 @@ export function MapPanel() {
         id: 'alerts-focus',
         type: 'line',
         source: 'alerts-focus',
-        paint: { 'line-color': '#36c5f0', 'line-width': 4 },
+        // INFLOW --map-focus (ice-200); MapLibre paint needs a literal.
+        paint: { 'line-color': '#CFE6F8', 'line-width': 4 },
       })
       m.on('click', 'alerts-fill', (e) => {
         const id = e.features?.[0]?.properties.id

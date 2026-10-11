@@ -1,26 +1,11 @@
+@import './tokens.css';
 /*
- * Storm Chasers UI kit — tokens + component classes (ADR-0007).
- * Shared by the app (imported from src/index.css) and the Claude Design system.
- * All colors are tokens on :root; components never hardcode colors.
+ * INFLOW UI kit: component classes (ADR-0007, ADR-0015).
+ * Tokens come from tokens.css (INFLOW v1 design handoff). Legacy names (--bg, --panel, --accent…)
+ * are aliases there; new code uses the semantic names (--surface-*, --text-*, --status-*, --hz-*).
+ * Shared by the app (imported from src/index.css) and the Claude Design system. Components never hardcode colours.
  */
 :root {
-  --bg: #05080d;
-  --panel: #0b1118;
-  --panel-head: #0f1822;
-  --border: #1c2a38;
-  --grid: rgba(80, 160, 220, 0.04);
-  --text: #cfe3f2;
-  --muted: #5f7a90;
-  --accent: #36c5f0;
-  --live: #3ddc84;
-  --stale: #ffb020;
-  --error: #ff3b3b;
-  --offline: #3a4a5a;
-  --extreme: #ff3b3b;
-  --severe: #ff8c1a;
-  --moderate: #ffd23f;
-  --font-ui: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --font-data: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
   font-family: var(--font-ui);
   color: var(--text);
 }
@@ -80,7 +65,7 @@ body {
   padding: 2px 4px;
   cursor: pointer;
 }
-.panel-toggle:hover { background: rgba(54, 197, 240, 0.12); }
+.panel-toggle:hover { background: var(--accent-fill); }
 .panel-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 /* Without meta, the toggle pushes itself to the right edge. */
 .panel-toggle-push { margin-left: auto; }
@@ -126,7 +111,7 @@ body {
   /* Also applied to link-outs (<a class="btn-console">), which add a ↗ glyph. */
   text-decoration: none;
 }
-.btn-console:hover { background: rgba(54, 197, 240, 0.12); }
+.btn-console:hover { background: var(--accent-fill); }
 /* Feedback (ADR-0012): the active toggle/preset is unmistakable, a solid accent fill. */
 .btn-console[aria-pressed='true'] { background: var(--accent); color: var(--bg); }
 .btn-console:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -142,9 +127,9 @@ body {
   padding: 5px 8px;
   margin-bottom: 4px;
   border-left: 3px solid var(--offline);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--surface-head);
 }
-.alerts .sev-extreme { border-color: var(--extreme); background: rgba(255, 59, 59, 0.08); }
+.alerts .sev-extreme { border-color: var(--extreme); background: color-mix(in srgb, var(--hz-tor) 8%, var(--surface-panel)); }
 .alerts .sev-severe { border-color: var(--severe); }
 .alerts .sev-moderate { border-color: var(--moderate); }
 /* Signifiers (ADR-0012): actionable rows carry a persistent ⌖ "focus on map" glyph and react to hover/focus;
@@ -159,7 +144,7 @@ body {
   font-size: 0.85rem;
   line-height: 1;
 }
-.alerts li[role='button']:hover { background: rgba(54, 197, 240, 0.08); }
+.alerts li[role='button']:hover { background: var(--accent-fill); }
 .alerts li[role='button']:hover::after,
 .alerts li[role='button']:focus-visible::after,
 .alerts li.alert-selected::after { color: var(--accent); }
@@ -173,7 +158,7 @@ body {
 
 /* Stream tile */
 .stream-tile { margin: 0 0 10px; }
-.stream-tile iframe { width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--border); background: #000; display: block; }
+.stream-tile iframe { width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--border); background: var(--surface-inset); display: block; }
 .stream-frame { position: relative; }
 /* Swap affordance (ADR-0012): always visible — no hover dependency — and sits outside the player's own controls. */
 .stream-swap {
@@ -186,7 +171,7 @@ body {
   line-height: 1.4;
   padding: 1px 6px;
   color: var(--accent);
-  background: rgba(5, 8, 13, 0.82);
+  background: var(--surface-scrim);
   border: 1px solid var(--accent);
   cursor: pointer;
 }
@@ -203,7 +188,7 @@ body {
   line-height: 1.4;
   padding: 1px 6px;
   color: var(--accent);
-  background: rgba(5, 8, 13, 0.82);
+  background: var(--surface-scrim);
   border: 1px solid var(--accent);
   cursor: pointer;
 }

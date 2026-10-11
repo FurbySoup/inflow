@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"><style>body{margin:0;background:#080B0E}a{color:#8DC5EE}a:hover{color:#CFE6F8}button{font-family:inherit}</style></helmet>
+<div data-preset="{{ preset }}" style="width:{{ wpx }};height:{{ hpx }};display:flex;flex-direction:column;background:var(--surface-app);color:var(--text-primary);font-family:var(--font-ui);overflow:hidden;position:relative;box-sizing:border-box">
+
+  <header style="min-height:var(--topbar-h);flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-4);padding:0 var(--sp-5);background:var(--surface-head);border-bottom:1px solid var(--border-default);box-sizing:border-box">
+    <div style="display:flex;align-items:center;gap:var(--sp-3);color:var(--text-bright)">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none" style="flex:none"><path d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4" stroke="#8DC5EE" stroke-width="2"></path><rect x="6" y="6" width="4" height="4" fill="#F2F5F7"></rect></svg>
+      <span style="font:700 var(--fs-ui-l)/1 var(--font-ui);letter-spacing:var(--tr-wordmark)">INFLOW</span>
+    </div>
+    <button style="display:flex;align-items:center;gap:var(--sp-3);height:var(--hit-min);min-height:28px;padding:0 var(--sp-4);background:var(--surface-inset);border:1px solid var(--border-control);border-radius:var(--radius-control);color:var(--text-primary);cursor:pointer" style-hover="border-color:var(--accent)">
+      <span style="font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--text-muted)">AOI</span>
+      <span style="font:500 var(--fs-data-s)/1 var(--font-data);color:var(--text-bright)">OK · S KS · N TX</span>
+      <span style="font:400 var(--fs-data-s)/1 var(--font-data);color:var(--accent)">✎</span>
+    </button>
+    <sc-if value="{{ threatOn }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ focusTop }}" style="display:flex;align-items:center;gap:var(--sp-3);height:var(--hit-min);min-height:28px;padding:0 var(--sp-2) 0 var(--sp-4);background:var(--hz-tor);border:1px solid var(--hz-tor);border-radius:var(--radius-control);color:var(--hz-tor-ink);cursor:pointer;font:700 var(--fs-ui-s)/1 var(--font-ui);letter-spacing:var(--tr-label)" style-hover="border-color:var(--text-bright)">
+        <span style="font-family:var(--font-data)">▼</span>{{ threatLabel }}<span style="font:600 var(--fs-data-s)/1 var(--font-data);font-variant-numeric:tabular-nums">{{ threatNext }}</span>
+        <span style="display:flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--hz-tor-ink);border-radius:var(--radius-control);font:400 13px/1 var(--font-data)">⌖</span>
+      </button>
+    </sc-if>
+    <sc-if value="{{ alertsDegraded }}" hint-placeholder-val="{{ false }}">
+      <span style="display:flex;align-items:center;gap:var(--sp-3);height:28px;padding:0 var(--sp-4);background:var(--surface-raised);color:var(--status-error);font:700 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label)"><span style="width:9px;height:9px;background:var(--status-error)"></span>NWS FEED DOWN {{ alertAgeTxt }} · WARNINGS MAY BE MISSING</span>
+    </sc-if>
+    <sc-if value="{{ threatOff }}" hint-placeholder-val="{{ false }}">
+      <span style="font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--text-muted)">◇ NO WARNINGS IN AOI</span>
+    </sc-if>
+    <span style="flex:1"></span>
+    <sc-if value="{{ showFull }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:center;gap:var(--sp-3);font:500 var(--fs-data-xs)/1 var(--font-data);color:var(--text-muted)">
+        <span style="font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label)">FEEDS</span>
+        <span style="color:var(--status-live)">● {{ hLive }}</span><span style="color:var(--status-stale)">◐ {{ hStale }}</span><span style="color:var(--status-offline)">○ {{ hOff }}</span>
+      </div>
+      <button style="display:flex;align-items:center;gap:var(--sp-3);height:var(--hit-min);min-height:28px;padding:0 var(--sp-3) 0 var(--sp-4);background:transparent;border:1px solid var(--border-control);border-radius:var(--radius-control);color:var(--text-primary);cursor:pointer" style-hover="border-color:var(--accent)">
+        <span style="font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--text-muted)">LAYOUT</span>
+        <span style="font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label)">{{ presetLabel }}</span><span style="color:var(--accent);font:400 var(--fs-data-xs)/1 var(--font-data)">▾</span>
+      </button>
+    </sc-if>
+    <div style="display:flex;align-items:baseline;gap:var(--sp-4);font-variant-numeric:tabular-nums">
+      <span style="font:600 var(--fs-data-l)/1 var(--font-data);color:var(--text-bright)">{{ clockZ }}<span style="color:var(--text-muted)">Z</span></span>
+      <sc-if value="{{ showFull }}" hint-placeholder-val="{{ true }}"><span style="font:400 var(--fs-data-s)/1 var(--font-data);color:var(--text-muted)">{{ clockL }} CDT</span></sc-if>
+    </div>
+  </header>
+
+  <div style="flex:1;min-height:0;display:grid;grid-template-columns:var(--layout-cols);grid-template-rows:var(--layout-rows);grid-template-areas:var(--layout-areas);gap:var(--gutter);padding:var(--gutter);box-sizing:border-box">
+
+    <section style="grid-area:map;position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--surface-panel)">
+      <div style="height:var(--panel-head-h);flex:none;display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-3) 0 var(--sp-4);background:var(--surface-head);border-bottom:1px solid var(--border-default)">
+        <span style="flex:none;width:calc(var(--fs-data-xs) * .75);height:calc(var(--fs-data-xs) * .75);box-sizing:border-box;border-radius:50%;background:var(--status-live);animation:inflow-pulse 2000ms var(--ease-in-out) infinite"></span>
+        <span style="font:500 var(--fs-data-xs)/1 var(--font-data);letter-spacing:var(--tr-code);color:var(--text-muted)">WX-01</span>
+        <span style="font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--text-primary)">AREA MAP</span>
+        <span style="flex:1"></span>
+        <span style="font:400 var(--fs-data-xs)/1 var(--font-data);color:var(--text-muted)">KTLX · N0Q · {{ radarTime }} · <span style="color:{{ mapAgeC }}">AGE {{ mapAge }}</span></span>
+      </div>
+      <div style="flex:1;min-height:0;position:relative;overflow:hidden;background:var(--map-basemap)">
+        <div style="position:absolute;inset:0;background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:64px 64px"></div>
+        {{ mapUnder }}
+        <div style="position:absolute;inset:0;opacity:var(--map-sat-opacity);background:{{ satBg }}"></div>
+        <div style="position:absolute;inset:0;opacity:var(--map-radar-opacity);background:{{ radarBg }}"></div>
+        {{ mapOver }}
+        <sc-if value="{{ pdsOn }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;clip-path:{{ pdsClip }};opacity:var(--map-pds-hatch-opacity);background:repeating-linear-gradient(135deg,#FFFFFF 0 2px,transparent 2px 8px)"></div></sc-if>
+        <sc-for list="{{ reports }}" as="r" hint-placeholder-count="6">
+          <span style="position:absolute;left:{{ r.x }}%;top:{{ r.y }}%;width:9px;height:9px;margin:-5px 0 0 -5px;box-sizing:border-box;background:{{ r.c }};border:{{ r.b }};border-radius:{{ r.rad }};clip-path:{{ r.clip }}"></span>
+        </sc-for>
+        <sc-for list="{{ shields }}" as="r" hint-placeholder-count="0">
+          <span style="position:absolute;left:{{ r.x }}%;top:{{ r.y }}%;padding:2px 4px;background:#3A4856;color:var(--text-bright);font:700 var(--fs-data-xs)/1 var(--font-data);white-space:nowrap">{{ r.n }}</span>
+        </sc-for>
+        <sc-for list="{{ cities }}" as="c" hint-placeholder-count="7">
+          <span style="position:absolute;left:{{ c.x }}%;top:{{ c.y }}%;font:500 var(--fs-ui-s)/1 var(--font-ui);color:var(--map-label);text-shadow:0 0 2px #040608,0 0 2px #040608,0 0 4px #040608;white-space:nowrap">{{ c.n }}</span>
+        </sc-for>
+
+        <div style="position:absolute;left:var(--sp-4);top:var(--sp-4);width:{{ lyrW }};background:var(--surface-scrim);border:1px solid var(--border-default)">
+          <button style="width:100%;height:var(--panel-head-h);display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-3);background:transparent;border:0;border-bottom:1px solid var(--border-default);color:var(--text-primary);cursor:pointer">
+            <span style="font:500 var(--fs-data-xs)/1 var(--font-data);color:var(--text-muted)">LYR</span>
+            <span style="font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label)">LAYERS</span><span style="flex:1"></span>
+            <span style="font:400 var(--fs-data-xs)/1 var(--font-data);color:var(--text-muted)">{{ lyrCount }}</span>
+            <span style="display:flex;align-items:center;justify-content:center;width:18px;height:18px;border:1px solid var(--border-strong);border-radius:var(--radius-control);font:400 10px/1 var(--font-data);color:var(--text-secondary)">{{ lyrChev }}</span>
+          </button>
+          <sc-if value="{{ lyrOpen }}" hint-placeholder-val="{{ true }}">
+            <sc-for list="{{ layers }}" as="l" hint-placeholder-count="6">
+              <button onClick="{{ l.toggle }}" style="width:100%;min-height:var(--hit-min);display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--sp-3);padding:var(--sp-2) var(--sp-3);background:transparent;border:0;border-bottom:1px solid var(--border-default);color:var(--text-primary);cursor:pointer;text-align:left" style-hover="background:var(--surface-raised)">
+                <span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:600 var(--fs-ui-xs)/1.1 var(--font-ui);letter-spacing:var(--tr-label);color:{{ l.fg }}">{{ l.k }}</span><span style="font:400 var(--fs-data-xs)/1.1 var(--font-data);color:var(--text-muted);white-space:nowrap">{{ l.src }}</span></span>
+                <span style="display:flex;align-items:center;gap:6px;font:600 var(--fs-data-xs)/1 var(--font-data);color:{{ l.fg }}">{{ l.word }}<span style="width:28px;height:14px;box-sizing:border-box;border:1px solid {{ l.sw }};border-radius:var(--radius-control);display:flex;justify-content:{{ l.just }};padding:2px"><span style="width:10px;height:8px;background:{{ l.knob }}"></span></span></span>
+              </button>
+            </sc-for>
+          </sc-if>
+        </div>
+
+        <div style="position:absolute;left:var(--sp-4);bottom:var(--sp-4);display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-2);background:var(--surface-scrim);border:1px solid var(--border-default)">
+          <button onClick="{{ togglePlay }}" style="width:var(--hit-min);height:var(--hit-min);min-width:28px;min-height:28px;display:flex;align-items:center;justify-content:center;background:var(--surface-raised);border:1px solid var(--border-control);border-radius:var(--radius-control);color:var(--text-bright);cursor:pointer;font:400 var(--fs-data-s)/1 var(--font-data)" style-hover="border-color:var(--accent)">{{ playGlyph }}</button>
+          <div style="display:flex;gap:2px;align-items:flex-end;height:16px">
+            <sc-for list="{{ frames }}" as="f" hint-placeholder-count="12"><span style="width:{{ f.w }};height:{{ f.h }};background:{{ f.c }}"></span></sc-for>
+          </div>
+          <span style="display:flex;align-items:center;gap:6px;min-width:76px;font:600 var(--fs-data-s)/1 var(--font-data);color:{{ frameFg }};font-variant-numeric:tabular-nums"><span style="width:7px;height:7px;border-radius:50%;background:{{ frameDot }}"></span>{{ frameLabel }}</span>
+        </div>
+
+        <div style="position:absolute;right:var(--sp-4);bottom:var(--sp-4);display:flex;flex-direction:column;align-items:flex-end;gap:var(--sp-2)">
+          <sc-if value="{{ showLegend }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;gap:var(--sp-4);padding:4px 8px;background:var(--surface-scrim);font:500 var(--fs-data-xs)/1 var(--font-data);color:var(--text-secondary)">
+              <span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;background:var(--rpt-tor);clip-path:polygon(0 0,100% 0,50% 100%)"></span>TOR RPT</span>
+              <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;background:var(--rpt-wind)"></span>WIND</span>
+              <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:var(--rpt-hail)"></span>HAIL</span>
+              <span style="display:flex;align-items:center;gap:5px"><span style="width:14px;border-top:2px solid var(--text-secondary)"></span>WARNING</span>
+              <span style="display:flex;align-items:center;gap:5px"><span style="width:14px;border-top:2px dashed var(--text-secondary)"></span>WATCH</span>
+            </div>
+          </sc-if>
+          <span style="padding:3px 8px;background:var(--surface-scrim);font:400 var(--fs-data-xs)/1.2 var(--font-data);color:var(--text-secondary)">radar: synthetic test pattern · basemap © OpenStreetMap © CARTO · alerts NWS · outlook SPC</span>
+        </div>
+
+        <sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+          <div role="alert" style="position:absolute;top:var(--sp-4);left:50%;transform:translateX(-50%);width:min(600px,calc(100% - 24px));display:grid;grid-template-columns:auto minmax(0,1fr);background:var(--surface-raised);box-shadow:var(--elev-toast);outline:2px solid var(--hz-tor);animation:inflow-arrive 240ms var(--ease-out) both,inflow-flash 1000ms linear 240ms 3">
+            <div style="width:calc(var(--chip-w) + 8px);background:var(--hz-tor);color:var(--hz-tor-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:inset 0 0 0 3px var(--hz-pds-mark)"><span style="font:700 var(--fs-data-xl)/1 var(--font-data)">▼</span><span style="font:700 var(--fs-data-xs)/1 var(--font-data);letter-spacing:var(--tr-code)">TOR</span></div>
+            <div style="padding:var(--sp-4);display:flex;flex-direction:column;gap:var(--sp-3);min-width:0">
+              <div style="display:flex;align-items:center;gap:var(--sp-3);font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--text-muted)"><span style="color:var(--text-bright)">NEW IN AOI</span>· SOURCE NWS NORMAN<span style="flex:1"></span><span style="font-family:var(--font-data);letter-spacing:0">ISSUED 21:46Z</span></div>
+              <div style="display:flex;align-items:center;gap:var(--sp-3);font:600 var(--fs-ui-l)/1.2 var(--font-ui);color:var(--text-bright)">Tornado Warning <span style="padding:2px 6px;background:var(--badge-pds-bg);color:var(--badge-pds-fg);font:700 var(--fs-data-xs)/1 var(--font-data)">PDS</span> Moore · Norman OK</div>
+              <div style="display:flex;align-items:center;gap:var(--sp-3)">
+                <span style="font:600 var(--fs-data-m)/1 var(--font-data);color:var(--text-primary);font-variant-numeric:tabular-nums">{{ toastCd }}</span><span style="flex:1"></span>
+                <button onClick="{{ focusPds }}" style="height:var(--hit-min);min-height:28px;display:flex;align-items:center;gap:6px;padding:0 var(--sp-4);background:var(--accent);border:1px solid var(--accent);border-radius:var(--radius-control);color:var(--ink-dark);font:700 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);cursor:pointer" style-hover="background:var(--accent-strong)">⌖ FOCUS MAP</button>
+                <button onClick="{{ dismiss }}" style="height:var(--hit-min);min-height:28px;display:flex;align-items:center;gap:6px;padding:0 var(--sp-4);background:transparent;border:1px solid var(--border-control);border-radius:var(--radius-control);color:var(--text-primary);font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);cursor:pointer" style-hover="border-color:var(--accent)">DISMISS ✕</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <sc-if value="{{ spMapB }}" hint-placeholder-val="{{ true }}"><div title="drag to resize" style="position:absolute;left:0;right:0;bottom:calc(-1 * (var(--splitter-hit) + var(--gutter)) / 2);height:var(--splitter-hit);z-index:5;cursor:row-resize;display:flex;align-items:center;justify-content:center"><span style="position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--border-strong)"></span><span style="position:relative;display:flex;gap:3px;padding:3px 6px;background:var(--surface-raised);border:1px solid var(--border-strong)"><i style="width:2px;height:2px;background:var(--text-secondary)"></i><i style="width:2px;height:2px;background:var(--text-secondary)"></i><i style="width:2px;height:2px;background:var(--text-secondary)"></i></span></div></sc-if>
+      <sc-if value="{{ spMapR }}" hint-placeholder-val="{{ false }}"><div title="drag to resize" style="position:absolute;top:0;bottom:0;right:calc(-1 * (var(--splitter-hit) + var(--gutter)) / 2);width:var(--splitter-hit);z-index:5;cursor:col-resize;display:flex;align-items:center;justify-content:center"><span style="position:absolute;top:0;bottom:0;left:50%;border-left:1px solid var(--border-strong)"></span><span style="position:relative;display:flex;flex-direction:column;gap:3px;padding:6px 3px;background:var(--surface-raised);border:1px solid var(--border-strong)"><i style="width:2px;height:2px;background:var(--text-secondary)"></i><i style="width:2px;height:2px;background:var(--text-secondary)"></i><i style="width:2px;height:2px;background:var(--text-secondary)"></i></span></div></sc-if>
+    </section>
+
+    <section style="grid-area:alerts;position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--surface-panel)">
+      <div style="height:var(--panel-head-h);flex:none;display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-3) 0 var(--sp-4);background:var(--surface-head);border-bottom:1px solid var(--border-default)">
+        <span style="flex:none;width:calc(var(--fs-data-xs) * .75);height:calc(var(--fs-data-xs) * .75);box-sizing:border-box;border-radius:{{ aLed.r }};background:{{ aLed.bg }};border:{{ aLed.b }};border-top-color:{{ aLed.bt }};animation:{{ aLed.anim }}"></span>
+        <span style="font:500 var(--fs-data-xs)/1 var(--font-data);letter-spacing:var(--tr-code);color:var(--text-muted)">WX-02</span>
+        <span style="font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--text-primary)">NWS ALERTS</span>
+        <span style="flex:1"></span>
+        <span style="font:400 var(--fs-data-xs)/1 var(--font-data);color:var(--text-muted)">{{ alertMeta }}</span>
+        <button style="width:22px;height:22px;display:flex;align-items:center;justify-content:center;padding:0;background:transparent;border:1px solid var(--border-strong);border-radius:var(--radius-control);color:var(--text-secondary);font:400 10px/1 var(--font-data);cursor:pointer" style-hover="border-color:var(--accent);color:var(--accent-strong)">▾</button>
+      </div>
+      <div style="flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column">
+        <sc-if value="{{ alertsDegraded }}" hint-placeholder-val="{{ false }}">
+          <div role="alert" style="flex:none;display:flex;flex-direction:column;gap:var(--sp-3);padding:var(--sp-4);background:var(--surface-raised);border-bottom:2px solid var(--status-error)">
+            <div style="display:flex;align-items:center;gap:var(--sp-3);font:700 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--status-error)"><span style="flex:none;width:9px;height:9px;background:var(--status-error)"></span>NWS FEED ERROR · WARNINGS MAY BE MISSING</div>
+            <div style="font:400 var(--fs-ui-s)/1.4 var(--font-ui);color:var(--text-secondary);text-wrap:pretty">Last good update {{ lastGood }}Z, {{ alertAgeTxt }} ago. New warnings issued since then are not shown. Use NOAA Weather Radio or weather.gov until this clears.</div>
+            <div style="display:flex;gap:var(--sp-3)">
+              <button style="height:var(--hit-min);min-height:26px;padding:0 var(--sp-4);background:transparent;border:1px solid var(--border-control);border-radius:var(--radius-control);color:var(--text-primary);font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);cursor:pointer" style-hover="border-color:var(--accent)">RETRY ↻</button>
+              <a href="https://www.weather.gov" style="height:var(--hit-min);min-height:26px;display:flex;align-items:center;padding:0 var(--sp-4);border:1px solid var(--accent-line);border-radius:var(--radius-control);color:var(--accent);text-decoration:none;font:500 var(--fs-data-xs)/1 var(--font-data)" style-hover="border-color:var(--accent)">WEATHER.GOV ↗</a>
+            </div>
+          </div>
+        </sc-if>
+        <sc-for list="{{ alerts }}" as="a" hint-placeholder-count="6">
+          <div onClick="{{ a.onClick }}" tabindex="0" style="flex:none;display:grid;grid-template-columns:var(--chip-w) minmax(0,1fr) auto auto;align-items:center;gap:var(--sp-4);min-height:var(--row-h);padding:0 var(--sp-4) 0 var(--sp-3);box-sizing:border-box;border-bottom:1px solid var(--border-default);background:{{ a.bg }};outline:{{ a.outline }};outline-offset:-2px;animation:{{ a.anim }};cursor:{{ a.cursor }};opacity:{{ a.op }}" style-hover="background:var(--surface-raised)">
+            <div style="height:calc(var(--row-h) - 14px);box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:4px;background:{{ a.chipBg }};color:{{ a.chipInk }};border:{{ a.chipBorder }};box-shadow:{{ a.chipRing }};font:700 var(--fs-data-s)/1 var(--font-data);letter-spacing:var(--tr-code)"><span style="color:{{ a.glyphC }}">{{ a.g }}</span>{{ a.k }}</div>
+            <div style="min-width:0;display:flex;flex-direction:column;gap:3px">
+              <div style="display:flex;align-items:center;gap:6px;min-width:0"><span style="font:{{ a.tw }} var(--fs-ui-m)/1.15 var(--font-ui);color:var(--text-bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.title }}</span><sc-if value="{{ a.pds }}" hint-placeholder-val="{{ false }}"><span style="flex:none;padding:2px 5px;background:var(--badge-pds-bg);color:var(--badge-pds-fg);font:700 var(--fs-data-xs)/1 var(--font-data)">PDS</span></sc-if></div>
+              <span style="font:400 var(--fs-ui-s)/1.15 var(--font-ui);color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.area }}</span>
+            </div>
+            <sc-if value="{{ a.zone }}" hint-placeholder-val="{{ false }}"><span style="padding:3px 5px;background:var(--badge-zone-bg);color:var(--badge-zone-fg);font:600 var(--fs-data-xs)/1 var(--font-data);letter-spacing:var(--tr-code)">ZONE</span></sc-if>
+            <sc-if value="{{ a.poly }}" hint-placeholder-val="{{ true }}"><span style="width:22px;height:22px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;border:1px solid {{ a.focBorder }};border-radius:var(--radius-control);color:{{ a.focFg }};background:{{ a.focBg }};font:400 14px/1 var(--font-data)">⌖</span></sc-if>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;min-width:68px">
+              <span style="font:{{ a.cdw }} var(--fs-data-m)/1 var(--font-data);color:{{ a.cdc }};font-variant-numeric:tabular-nums">{{ a.cd }}</span>
+              <span style="width:100%;height:2px;background:var(--border-default)"><span style="display:block;height:2px;width:{{ a.pct }}%;background:{{ a.cdc }}"></span></span>
+            </div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ moreAlerts }}" hint-placeholder-val="{{ false }}"><button style="min-height:var(--hit-min);margin:var(--sp-3);background:transparent;border:1px solid var(--border-control);border-radius:var(--radius-control);color:var(--text-primary);font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);cursor:pointer">{{ moreAlertsLabel }}</button></sc-if>
+        <sc-if value="{{ noAlerts }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:var(--sp-3);padding:var(--sp-6)">
+            <span style="font:600 var(--fs-ui-s)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--text-secondary)">◇ NO ACTIVE WARNINGS IN AOI</span>
+            <span style="font:400 var(--fs-ui-m)/1.4 var(--font-ui);color:var(--text-muted);text-wrap:pretty">NWS checked {{ clockZ }}Z. Next check in 30 s. Watches and outlooks stay on the map.</span>
+          </div>
+        </sc-if>
+      </div>
+      <sc-if value="{{ spAlertsR }}" hint-placeholder-val="{{ false }}"><div title="drag to resize" style="position:absolute;top:0;bottom:0;right:calc(-1 * (var(--splitter-hit) + var(--gutter)) / 2);width:var(--splitter-hit);z-index:5;cursor:col-resize;display:flex;align-items:center;justify-content:center"><span style="position:absolute;top:0;bottom:0;left:50%;border-left:1px solid var(--border-strong)"></span><span style="position:relative;display:flex;flex-direction:column;gap:3px;padding:6px 3px;background:var(--surface-raised);border:1px solid var(--border-strong)"><i style="width:2px;height:2px;background:var(--text-secondary)"></i><i style="width:2px;height:2px;background:var(--text-secondary)"></i><i style="width:2px;height:2px;background:var(--text-secondary)"></i></span></div></sc-if>
+    </section>
+
+    <section style="grid-area:feeds;position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--surface-panel)">
+      <div style="height:var(--panel-head-h);flex:none;display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-3) 0 var(--sp-4);background:var(--surface-head);border-bottom:1px solid var(--border-default)">
+        <span style="flex:none;width:calc(var(--fs-data-xs) * .75);height:calc(var(--fs-data-xs) * .75);box-sizing:border-box;border-radius:50%;background:var(--status-live);animation:inflow-pulse 2000ms var(--ease-in-out) infinite"></span>
+        <span style="font:500 var(--fs-data-xs)/1 var(--font-data);letter-spacing:var(--tr-code);color:var(--text-muted)">VID-01</span>
+        <span style="font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--text-primary)">CHASER FEEDS</span>
+        <span style="flex:1"></span>
+        <span style="font:400 var(--fs-data-xs)/1 var(--font-data);color:var(--text-muted)">{{ hLive }}/13 LIVE · THUMBS SNAPSHOT 15s</span>
+        <button style="width:22px;height:22px;display:flex;align-items:center;justify-content:center;padding:0;background:transparent;border:1px solid var(--border-strong);border-radius:var(--radius-control);color:var(--text-secondary);font:400 10px/1 var(--font-data);cursor:pointer" style-hover="border-color:var(--accent);color:var(--accent-strong)">▾</button>
+      </div>
+      <div style="flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:var(--sp-3);padding:var(--sp-3)">
+        <div style="flex:none;display:flex;flex-direction:column;background:var(--surface-inset)">
+          <div style="aspect-ratio:16/9;position:relative;background:repeating-linear-gradient(135deg,#10161c 0 12px,#0c1116 12px 24px);display:flex;align-items:center;justify-content:center">
+            <span style="font:400 var(--fs-data-s)/1 var(--font-data);color:var(--text-muted)">primary stream · youtube embed</span>
+            <span style="position:absolute;left:var(--sp-3);top:var(--sp-3);display:flex;align-items:center;gap:6px;padding:4px 7px;background:var(--surface-scrim);font:600 var(--fs-data-xs)/1 var(--font-data);color:var(--status-live)"><span style="width:7px;height:7px;border-radius:50%;background:var(--status-live);animation:inflow-pulse 2000ms var(--ease-in-out) infinite"></span>LIVE<span style="color:var(--text-secondary);font-weight:400">{{ primary.viewers }}</span></span>
+            <span style="position:absolute;right:var(--sp-3);top:var(--sp-3);padding:4px 7px;background:{{ primary.badgeBg }};color:{{ primary.badgeFg }};font:600 var(--fs-data-xs)/1 var(--font-data);letter-spacing:var(--tr-code)">{{ primary.badge }}</span>
+          </div>
+          <a href="#" style="display:flex;align-items:center;gap:var(--sp-3);min-height:var(--hit-min);padding:var(--sp-2) var(--sp-3);color:var(--accent);text-decoration:none;border-top:1px solid var(--border-default)" style-hover="color:var(--accent-strong);background:var(--accent-fill)">
+            <span style="font:600 var(--fs-data-s)/1.2 var(--font-data)">{{ primary.h }}</span>
+            <span style="font:400 var(--fs-ui-s)/1.2 var(--font-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0">{{ primary.loc }}</span>
+            <span style="flex:none;width:20px;height:20px;display:flex;align-items:center;justify-content:center;border:1px solid var(--accent-line);border-radius:var(--radius-control);font:400 12px/1 var(--font-data)">↗</span>
+          </a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3)">
+          <sc-for list="{{ thumbs }}" as="s" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;background:var(--surface-inset);min-width:0;opacity:{{ s.op }}">
+              <div style="aspect-ratio:16/9;position:relative;background:{{ s.img }};display:flex;align-items:center;justify-content:center;padding:4px;box-sizing:border-box;text-align:center">
+                <span style="font:400 var(--fs-data-xs)/1.3 var(--font-data);color:{{ s.phc }}">{{ s.ph }}</span>
+                <sc-if value="{{ s.snap }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:4px;bottom:4px;padding:2px 4px;background:var(--surface-scrim);font:500 10px/1 var(--font-data);color:var(--text-secondary);font-variant-numeric:tabular-nums">SNAP {{ s.age }}</span></sc-if>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;min-height:var(--hit-min);padding:2px 4px 2px 6px">
+                <span style="flex:none;width:7px;height:7px;box-sizing:border-box;border-radius:{{ s.led.r }};background:{{ s.led.bg }};border:{{ s.led.b }};border-top-color:{{ s.led.bt }};animation:{{ s.led.anim }}"></span>
+                <span style="font:500 var(--fs-data-xs)/1 var(--font-data);color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0">{{ s.h }}</span>
+                <span style="flex:none;padding:2px 4px;background:{{ s.bBg }};color:{{ s.bFg }};font:600 10px/1 var(--font-data);letter-spacing:var(--tr-code)">{{ s.badge }}</span>
+                <button title="make primary" style="flex:none;width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0;background:transparent;border:1px solid var(--border-control);border-radius:var(--radius-control);color:var(--text-primary);font:400 9px/1 var(--font-data);cursor:pointer" style-hover="border-color:var(--accent)">▲</button>
+                <button title="open source" style="flex:none;width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0;background:transparent;border:1px solid var(--accent-line);border-radius:var(--radius-control);color:var(--accent);font:400 11px/1 var(--font-data);cursor:pointer" style-hover="border-color:var(--accent)">↗</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ moreStreams }}" hint-placeholder-val="{{ false }}"><button style="min-height:var(--hit-min);background:transparent;border:1px solid var(--border-control);border-radius:var(--radius-control);color:var(--text-primary);font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);cursor:pointer">12 MORE STREAMS ▸</button></sc-if>
+      </div>
+      <sc-if value="{{ spFeedsL }}" hint-placeholder-val="{{ true }}"><div title="drag to resize" style="position:absolute;top:0;bottom:0;left:calc(-1 * (var(--splitter-hit) + var(--gutter)) / 2);width:var(--splitter-hit);z-index:5;cursor:col-resize;display:flex;align-items:center;justify-content:center"><span style="position:absolute;top:0;bottom:0;left:50%;border-left:1px solid var(--border-strong)"></span><span style="position:relative;display:flex;flex-direction:column;gap:3px;padding:6px 3px;background:var(--surface-raised);border:1px solid var(--border-strong)"><i style="width:2px;height:2px;background:var(--text-secondary)"></i><i style="width:2px;height:2px;background:var(--text-secondary)"></i><i style="width:2px;height:2px;background:var(--text-secondary)"></i></span></div></sc-if>
+    </section>
+
+    <section style="grid-area:radio;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--surface-panel)">
+      <div style="height:var(--panel-head-h);flex:none;display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-3) 0 var(--sp-4);background:var(--surface-head);border-bottom:1px solid var(--border-default)">
+        <span style="flex:none;width:calc(var(--fs-data-xs) * .75);height:calc(var(--fs-data-xs) * .75);box-sizing:border-box;border-radius:{{ rLed.r }};background:{{ rLed.bg }};border:{{ rLed.b }};border-top-color:{{ rLed.bt }};animation:{{ rLed.anim }}"></span>
+        <span style="font:500 var(--fs-data-xs)/1 var(--font-data);letter-spacing:var(--tr-code);color:var(--text-muted)">AUD-01</span>
+        <span style="font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--text-primary)">SCANNER</span>
+        <span style="flex:1"></span>
+        <span style="font:400 var(--fs-data-xs)/1 var(--font-data);color:var(--text-muted)">{{ radioMeta }}</span>
+        <button style="width:22px;height:22px;display:flex;align-items:center;justify-content:center;padding:0;background:transparent;border:1px solid var(--border-strong);border-radius:var(--radius-control);color:var(--text-secondary);font:400 10px/1 var(--font-data);cursor:pointer" style-hover="border-color:var(--accent);color:var(--accent-strong)">{{ radioChev }}</button>
+      </div>
+      <sc-if value="{{ radioOpen }}" hint-placeholder-val="{{ true }}">
+        <sc-if value="{{ radioHas }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:none;display:flex;gap:var(--sp-3);padding:var(--sp-3)">
+            <button style="flex:1;min-width:0;height:var(--hit-min);min-height:28px;display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-3);background:var(--surface-inset);border:1px solid var(--border-control);border-radius:var(--radius-control);color:var(--text-primary);cursor:pointer;text-align:left" style-hover="border-color:var(--accent)"><span style="font:500 var(--fs-data-s)/1 var(--font-data);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">OKC METRO · P25</span><span style="color:var(--accent);font:400 var(--fs-data-xs)/1 var(--font-data)">▾</span></button>
+            <button style="height:var(--hit-min);min-height:28px;display:flex;align-items:center;gap:6px;padding:0 var(--sp-4);background:var(--accent);border:1px solid var(--accent);border-radius:var(--radius-control);color:var(--ink-dark);font:700 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);cursor:pointer;white-space:nowrap" style-hover="background:var(--accent-strong)">▶ PLAY LATEST</button>
+          </div>
+          <div style="flex:1;min-height:0;overflow:hidden;border-top:1px solid var(--border-default)">
+            <sc-for list="{{ calls }}" as="c" hint-placeholder-count="5">
+              <div style="display:grid;grid-template-columns:22px minmax(0,1fr) auto auto auto;align-items:center;gap:var(--sp-3);min-height:calc(var(--row-h) - 12px);padding:0 var(--sp-3);border-bottom:1px solid var(--border-default)">
+                <button style="width:22px;height:22px;display:flex;align-items:center;justify-content:center;padding:0;background:transparent;border:1px solid var(--border-control);border-radius:var(--radius-control);color:var(--text-primary);font:400 9px/1 var(--font-data);cursor:pointer" style-hover="border-color:var(--accent);color:var(--accent-strong)">▶</button>
+                <span style="font:500 var(--fs-data-s)/1 var(--font-data);color:{{ c.fg }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.tg }}</span>
+                <span style="font:400 var(--fs-data-xs)/1 var(--font-data);color:var(--text-muted)">{{ c.dur }}</span>
+                <span style="font:600 var(--fs-data-xs)/1 var(--font-data);color:{{ c.dc }};white-space:nowrap">{{ c.delay }}</span>
+                <span style="font:400 var(--fs-data-xs)/1 var(--font-data);color:var(--text-muted);min-width:52px;text-align:right;font-variant-numeric:tabular-nums">{{ c.ago }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="flex:none;display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-3);border-top:1px solid var(--border-default)">
+            <span style="font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--text-muted)">RECEIVERS</span>
+            <a href="#" style="display:flex;align-items:center;gap:6px;height:22px;padding:0 var(--sp-3);border:1px solid var(--accent-line);border-radius:var(--radius-control);color:var(--accent);text-decoration:none;font:500 var(--fs-data-xs)/1 var(--font-data)" style-hover="border-color:var(--accent)">CB 19 ↗</a>
+            <a href="#" style="display:flex;align-items:center;gap:6px;height:22px;padding:0 var(--sp-3);border:1px solid var(--accent-line);border-radius:var(--radius-control);color:var(--accent);text-decoration:none;font:500 var(--fs-data-xs)/1 var(--font-data)" style-hover="border-color:var(--accent)">2M 146.94 ↗</a>
+          </div>
+        </sc-if>
+        <sc-if value="{{ radioEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:var(--sp-3);padding:var(--sp-6)">
+            <span style="font:600 var(--fs-ui-s)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--text-secondary)">○ NO SCANNER SYSTEMS IN AOI</span>
+            <span style="font:400 var(--fs-ui-m)/1.4 var(--font-ui);color:var(--text-muted);text-wrap:pretty">Moore PD and Norman PD are encrypted, and no public feeds cover the rest of this area. Widen the AOI or add a receiver link.</span>
+            <button style="height:var(--hit-min);min-height:28px;padding:0 var(--sp-4);background:transparent;border:1px solid var(--border-control);border-radius:var(--radius-control);color:var(--text-primary);font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);cursor:pointer" style-hover="border-color:var(--accent)">✎ EDIT AOI</button>
+          </div>
+        </sc-if>
+      </sc-if>
+    </section>
+
+    <section style="grid-area:cams;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--surface-panel)">
+      <div style="height:var(--panel-head-h);flex:none;display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-3) 0 var(--sp-4);background:var(--surface-head);border-bottom:1px solid var(--border-default)">
+        <span style="flex:none;width:calc(var(--fs-data-xs) * .75);height:calc(var(--fs-data-xs) * .75);box-sizing:border-box;border-radius:50%;background:var(--status-live);animation:inflow-pulse 2000ms var(--ease-in-out) infinite"></span>
+        <span style="font:500 var(--fs-data-xs)/1 var(--font-data);letter-spacing:var(--tr-code);color:var(--text-muted)">CCTV-01</span>
+        <span style="font:600 var(--fs-ui-xs)/1 var(--font-ui);letter-spacing:var(--tr-label);color:var(--text-primary)">DOT CAMERAS</span>
+        <span style="flex:1"></span>
+        <span style="font:400 var(--fs-data-xs)/1 var(--font-data);color:var(--text-muted)">{{ camMeta }}</span>
+        <button style="width:22px;height:22px;display:flex;align-items:center;justify-content:center;padding:0;background:transparent;border:1px solid var(--border-strong);border-radius:var(--radius-control);color:var(--text-secondary);font:400 10px/1 var(--font-data);cursor:pointer" style-hover="border-color:var(--accent);color:var(--accent-strong)">{{ camChev }}</button>
+      </div>
+      <sc-if value="{{ camOpen }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1;min-height:0;overflow:hidden;display:grid;grid-template-columns:repeat({{ camCols }},minmax(0,1fr));align-content:start;gap:var(--sp-3);padding:var(--sp-3)">
+          <sc-for list="{{ cams }}" as="c" hint-placeholder-count="6">
+            <button style="display:flex;flex-direction:column;padding:0;background:var(--surface-inset);border:1px solid var(--border-default);border-radius:0;cursor:zoom-in;text-align:left;min-width:0;color:inherit" style-hover="border-color:var(--accent)">
+              <div style="width:100%;aspect-ratio:16/10;position:relative;background:{{ c.img }};display:flex;align-items:center;justify-content:center"><span style="font:400 var(--fs-data-xs)/1 var(--font-data);color:{{ c.phc }}">{{ c.ph }}</span><span style="position:absolute;right:4px;top:4px;font:400 11px/1 var(--font-data);color:var(--text-secondary);background:var(--surface-scrim);padding:2px 3px">⤢</span></div>
+              <div style="width:100%;box-sizing:border-box;display:flex;align-items:center;gap:6px;padding:5px 6px">
+                <span style="flex:none;width:7px;height:7px;box-sizing:border-box;border-radius:{{ c.led.r }};background:{{ c.led.bg }};border:{{ c.led.b }};border-top-color:{{ c.led.bt }}"></span>
+                <span style="font:500 var(--fs-data-xs)/1 var(--font-data);color:var(--text-primary);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.n }}</span>
+                <span style="font:400 var(--fs-data-xs)/1 var(--font-data);color:{{ c.agec }};font-variant-numeric:tabular-nums">{{ c.age }}</span>
+              </div>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1920,&quot;height&quot;:1080},&quot;preset&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;default&quot;,&quot;wall&quot;,&quot;chase&quot;,&quot;mobile&quot;],&quot;default&quot;:&quot;default&quot;,&quot;tsType&quot;:&quot;'default'|'wall'|'chase'|'mobile'&quot;},&quot;scenario&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;active&quot;,&quot;outbreak&quot;,&quot;quiet&quot;,&quot;degraded&quot;],&quot;default&quot;:&quot;active&quot;,&quot;tsType&quot;:&quot;'active'|'outbreak'|'quiet'|'degraded'&quot;},&quot;w&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1920,&quot;tsType&quot;:&quot;number&quot;},&quot;h&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1080,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  state = { tick: 0, focus: null, toast: true, playing: true, off: {} };
+  componentDidMount() { this.iv = setInterval(() => this.setState(s => ({ tick: s.tick + 1 })), 1000); }
+  componentWillUnmount() { clearInterval(this.iv); }
+  renderVals() {
+    const h = React.createElement;
+    const P = this.props.preset ?? 'default', S = this.props.scenario ?? 'active';
+    const W = this.props.w ?? 1920, H = this.props.h ?? 1080;
+    const { tick: t, off } = this.state;
+    const wall = P === 'wall', chase = P === 'chase', mob = P === 'mobile', quiet = S === 'quiet', out = S === 'outbreak', degr = S === 'degraded';
+    const fmtAge = s => s < 60 ? `${s}s` : `${Math.floor(s / 60)}m${String(s % 60).padStart(2, '0')}s`;
+    const p2 = n => String(n).padStart(2, '0');
+    const Z = 21 * 3600 + 47 * 60 + 12 + t;
+    const hms = s => `${p2(Math.floor(s / 3600) % 24)}:${p2(Math.floor(s / 60) % 60)}:${p2(s % 60)}`;
+    const cdf = s => s >= 3600 ? `T-${Math.floor(s / 3600)}:${p2(Math.floor(s / 60) % 60)}:${p2(s % 60)}` : `T-${p2(Math.floor(s / 60))}:${p2(s % 60)}`;
+    const HZ = {
+      TOR: { c: 'var(--hz-tor)', ink: 'var(--hz-tor-ink)', g: '▼', r: 1 }, SVR: { c: 'var(--hz-svr)', ink: 'var(--hz-svr-ink)', g: '◆', r: 2 },
+      FFW: { c: 'var(--hz-ffw)', ink: 'var(--hz-ffw-ink)', g: '≋', r: 3 }, TOA: { c: 'var(--hz-toa)', g: '▽', r: 4, watch: 1 }, SVA: { c: 'var(--hz-sva)', g: '◇', r: 5, watch: 1 }
+    };
+    const PG = {
+      tor1: '395,365 440,320 470,340 425,385', tor2: '535,350 575,325 598,350 558,375', pds: '485,315 530,282 560,305 515,338',
+      tor3: '425,230 470,195 495,215 450,250', tor4: '495,85 540,55 560,75 515,105', tor5: '330,455 370,430 390,450 350,475',
+      svr1: '300,420 365,385 392,412 328,448', ffw: '470,250 540,250 540,290 470,290',
+      toa: '360,120 700,120 700,400 330,420 300,250', sva: '220,430 520,440 540,570 200,570'
+    };
+    const ACT = [
+      { id: 'a1', k: 'TOR', title: 'Tornado Warning', area: 'Grady · McClain OK', exp: 1092, len: 2700, poly: 'tor1' },
+      { id: 'a2', k: 'TOR', title: 'Tornado Warning', area: 'Cleveland OK', exp: 452, len: 2700, poly: 'tor2' },
+      { id: 'a3', k: 'SVR', title: 'Severe Thunderstorm Warning', area: 'Caddo · Comanche OK', exp: 1910, len: 3600, poly: 'svr1' },
+      { id: 'a4', k: 'SVR', title: 'Severe Thunderstorm Warning', area: 'Wichita Falls TX', exp: 2380, len: 3600, zone: 1 },
+      { id: 'a5', k: 'FFW', title: 'Flash Flood Warning', area: 'Oklahoma Co. OK', exp: 6210, len: 10800, poly: 'ffw' },
+      { id: 'a6', k: 'TOA', title: 'Tornado Watch 212', area: '34 counties · OK KS', exp: 14420, len: 25200, poly: 'toa' },
+      { id: 'a7', k: 'SVA', title: 'Severe Thunderstorm Watch 213', area: 'N TX · S OK', exp: 11800, len: 21600, poly: 'sva' }
+    ];
+    const OUT = [
+      { id: 'o0', k: 'TOR', pds: 1, title: 'Tornado Warning', area: 'Moore · Norman OK', exp: 1308, len: 2700, poly: 'pds' },
+      { id: 'o4', k: 'TOR', title: 'Tornado Warning', area: 'Sumner KS', exp: 288, len: 2700, poly: 'tor4' },
+      ...ACT.slice(0, 2),
+      { id: 'o3', k: 'TOR', title: 'Tornado Warning', area: 'Logan · Kingfisher OK', exp: 1640, len: 2700, poly: 'tor3' },
+      { id: 'o5', k: 'TOR', title: 'Tornado Warning', area: 'Cotton OK', exp: 2010, len: 2700, poly: 'tor5' },
+      ...ACT.slice(2)
+    ];
+    let al = quiet ? [] : (out ? OUT : ACT).slice().sort((a, b) => (b.pds ? 1 : 0) - (a.pds ? 1 : 0) || HZ[a.k].r - HZ[b.k].r || a.exp - b.exp);
+    const top = al.find(a => a.k === 'TOR');
+    const focusId = this.state.focus ?? (top && top.id);
+    const reduce = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cap = mob ? 5 : 99;
+    const alerts = al.slice(0, cap).map(a => {
+      const z = HZ[a.k], rem = Math.max(0, a.exp - t), foc = a.id === focusId, urgent = !z.watch && rem < 600;
+      return {
+        ...a, g: z.g, poly: !!a.poly, zone: !!a.zone, pds: !!a.pds,
+        bg: foc ? 'var(--accent-fill)' : 'transparent',
+        outline: a.pds ? '2px solid var(--hz-tor)' : foc ? '1px solid var(--accent)' : 'none',
+        anim: a.pds && !reduce ? 'inflow-flash 1000ms linear infinite' : 'none',
+        cursor: a.poly ? 'pointer' : 'default',
+        chipBg: z.watch ? 'var(--surface-raised)' : z.c, chipInk: z.watch ? 'var(--text-primary)' : z.ink,
+        chipBorder: z.watch ? `2px dashed ${z.c}` : 'none', chipRing: a.pds ? 'inset 0 0 0 2px var(--hz-pds-mark)' : 'none', glyphC: z.watch ? z.c : 'inherit',
+        tw: a.k === 'TOR' ? '600' : '500', op: degr ? '0.72' : '1',
+        focBorder: foc ? 'var(--accent)' : 'var(--border-control)', focFg: foc ? 'var(--ink-dark)' : 'var(--accent)', focBg: foc ? 'var(--accent)' : 'transparent',
+        cd: cdf(rem), cdc: urgent ? 'var(--hz-tor-text)' : 'var(--text-primary)', cdw: urgent ? '700' : '500',
+        pct: Math.round(100 * rem / a.len),
+        onClick: a.poly ? () => this.setState({ focus: a.id }) : undefined
+      };
+    });
+    const tors = al.filter(a => a.k === 'TOR'), pdsN = al.filter(a => a.pds).length;
+    const nextTor = tors.length ? Math.min(...tors.map(a => a.exp - t)) : 0;
+
+    const ST = [['@plainschaser', 'Chickasha OK · 3 mi NE of hook', 'aoi'], ['@drylinedan', 'Norman OK', 'aoi'], ['@redriverwx', 'Lawton OK', 'aoi'], ['@mesolowmike', 'Kingfisher OK', 'aoi'], ['@okstormcrew', 'Moore OK', 'aoi'], ['@cellhunter405', 'Blanchard OK', 'aoi'], ['@turnpikechase', 'Newcastle OK', 'aoi'], ['@caprockwx', 'Childress TX · outside AOI', 'ctx'], ['@kansasbound', 'Wellington KS', 'aoi'], ['@wedgewatch', 'Purcell OK', 'aoi'], ['@gustfrontgus', 'Duncan OK', 'aoi'], ['@prairieline', 'Enid OK', 'ctx'], ['@lowlevel_jet', 'Vernon TX', 'ctx']];
+    const stat = i => quiet ? ({ 7: 'live', 1: 'live', 3: 'live', 8: 'live', 10: 'loading', 6: 'stale' }[i] || 'offline') : out ? 'live' : (i === 11 ? 'stale' : i === 12 ? 'offline' : 'live');
+    const LED = s => ({
+      live: { r: '50%', bg: 'var(--status-live)', b: 'none', bt: 'transparent', anim: 'inflow-pulse 2000ms var(--ease-in-out) infinite' },
+      loading: { r: '50%', bg: 'transparent', b: '1.5px solid var(--status-loading)', bt: 'transparent', anim: 'inflow-spin 1000ms linear infinite' },
+      stale: { r: '50%', bg: 'linear-gradient(90deg,var(--status-stale) 50%,transparent 50%)', b: '1.5px solid var(--status-stale)', bt: 'var(--status-stale)', anim: 'none' },
+      error: { r: '0', bg: 'var(--status-error)', b: 'none', bt: 'transparent', anim: 'none' },
+      offline: { r: '50%', bg: 'transparent', b: '1.5px solid var(--status-offline)', bt: 'var(--status-offline)', anim: 'none' }
+    }[s]);
+    const pi = quiet ? 7 : 0;
+    const counts = { live: 0, stale: 0, offline: 0 };
+    ST.forEach((_, i) => { const s = stat(i); if (s === 'live') counts.live++; else if (s === 'stale') counts.stale++; else if (s === 'offline') counts.offline++; });
+    const nThumb = chase ? 0 : mob ? 4 : wall ? 6 : (W >= 1600 ? 8 : 6);
+    const stripe = 'repeating-linear-gradient(135deg,#10161c 0 8px,#0c1116 8px 16px)';
+    const thumbs = ST.map((s, i) => ({ s, i })).filter(o => o.i !== pi).slice(0, nThumb).map(({ s, i }) => {
+      const st = stat(i), live = st === 'live';
+      return {
+        h: s[0], led: LED(st), badge: s[2] === 'aoi' ? '◉ IN AOI' : 'CTX', bBg: s[2] === 'aoi' ? 'var(--badge-aoi-bg)' : 'transparent', bFg: s[2] === 'aoi' ? 'var(--badge-aoi-fg)' : 'var(--badge-ctx-fg)',
+        img: live || st === 'stale' ? stripe : 'var(--surface-panel)', op: st === 'offline' ? '0.85' : '1',
+        snap: live, age: fmtAge((i * 3 + t) % 15),
+        ph: { live: 'snapshot · ' + s[1].split(' ·')[0].toLowerCase() + ' · click to play', stale: '◐ STALE · frozen 2m', loading: 'connecting…', offline: '○ OFFLINE · last seen ' + (20 + i * 7) + 'm' }[st],
+        phc: live ? 'var(--text-muted)' : st === 'stale' ? 'var(--status-stale)' : 'var(--text-muted)'
+      };
+    });
+    const ps = ST[pi];
+    const primary = { h: ps[0], loc: ps[1], viewers: out ? '11.8K' : quiet ? '640' : '4.2K', badge: ps[2] === 'aoi' ? '◉ IN AOI' : 'CTX', badgeBg: ps[2] === 'aoi' ? 'var(--badge-aoi-bg)' : 'var(--surface-scrim)', badgeFg: ps[2] === 'aoi' ? 'var(--badge-aoi-fg)' : 'var(--badge-ctx-fg)' };
+
+    const CALLS = [['GRADY CO SO', 14, '0:22', 45], ['OKC FIRE DISP', 51, '0:09', 120], ['OHP TROOP A', 97, '0:31', 45], ['NORMAN EMS', 125, '0:12', 900], ['SKYWARN NET 146.94', 220, '1:04', 30], ['GRADY CO SO', 252, '0:18', 45], ['MOORE PD', 301, '0:07', 900]];
+    const ago = s => s < 60 ? `${s}s ago` : `${Math.floor(s / 60)}m${p2(s % 60)} ago`;
+    const calls = CALLS.slice(0, mob ? 3 : 7).map((c, i) => ({ tg: c[0], dur: c[2], ago: ago(c[1] + t), fg: i === 0 ? 'var(--text-bright)' : 'var(--text-primary)', delay: c[3] >= 600 ? `◐ ${c[3] / 60}m DELAY` : `~${fmtAge(c[3])}`, dc: c[3] >= 600 ? 'var(--status-stale)' : 'var(--text-muted)' }));
+    const CAMS = [['I-44 @ MM 83', 18], ['I-35 @ SH-9', 42], ['H.E. BAILEY TPK', 12], ['US-81 CHICKASHA', -1], ['I-40 @ MERIDIAN', 27], ['SH-74 @ NW 150', 51]];
+    const cams = CAMS.slice(0, mob ? 4 : 6).map((c, i) => {
+      const st = quiet ? (i === 1 || i === 4 ? 'offline' : i === 3 ? 'stale' : 'live') : c[1] < 0 ? 'stale' : 'live';
+      return {
+        n: c[0], led: LED(st), img: st === 'offline' ? 'var(--surface-panel)' : stripe,
+        ph: st === 'offline' ? '○ OFFLINE' : st === 'stale' ? '◐ STALE' : 'snapshot',
+        phc: st === 'stale' ? 'var(--status-stale)' : 'var(--text-muted)',
+        age: st === 'live' ? `${p2((c[1] + t) % 60)}s` : st === 'stale' ? '6m12s' : '—', agec: st === 'stale' ? 'var(--status-stale)' : 'var(--text-muted)'
+      };
+    });
+
+    const LY = [...(chase ? [['ROADS + TOWNS', 'chase basemap']] : []), ['RADAR', 'N0Q · KTLX'], ['SATELLITE', 'GOES-E · CH13 IR'], ['SPC OUTLOOK', 'DAY 1 · 1630Z'], ['WARNINGS', 'NWS · polygons'], ['WATCHES', 'SPC · counties'], ['STORM REPORTS', 'SPC LSR · today']];
+    const on = k => !off[k];
+    const layers = LY.map(([k, src]) => ({
+      k, src, word: on(k) ? 'ON' : 'OFF', fg: on(k) ? 'var(--text-primary)' : 'var(--text-muted)',
+      sw: on(k) ? 'var(--accent)' : 'var(--border-control)', knob: on(k) ? 'var(--accent)' : 'var(--text-disabled)', just: on(k) ? 'flex-end' : 'flex-start',
+      toggle: () => this.setState(s => ({ off: { ...s.off, [k]: !s.off[k] } }))
+    }));
+    const lyrOpen = !(wall || mob || chase);
+
+    const fidx = this.state.playing ? t % 12 : 11;
+    const fTime = Z - (11 - fidx) * 240 - (Z % 60);
+    const frames = Array.from({ length: 12 }, (_, i) => ({ w: '6px', h: i === fidx ? '16px' : '8px', c: i === fidx ? 'var(--accent-strong)' : i < fidx ? 'var(--text-muted)' : 'var(--border-strong)' }));
+    const isLive = fidx === 11;
+
+    // map geometry
+    const vb = { viewBox: '0 0 1000 600', preserveAspectRatio: 'none', style: { position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block', pointerEvents: 'none' } };
+    const ns = { vectorEffect: 'non-scaling-stroke' };
+    const line = (d, st, k) => h('path', { key: k, d, ...ns, style: { fill: 'none', ...st } });
+    const pg = (pts, st, k) => h('polygon', { key: k, points: pts, ...ns, style: { strokeLinejoin: 'round', ...st } });
+    const SPC = quiet ? [['tstm', '150,100 850,120 880,520 180,540'], ['mrgl', '600,80 820,90 830,260 620,250']]
+      : [['mrgl', '100,40 900,60 950,500 700,590 120,580'], ['slgt', '200,80 820,90 860,470 260,560'], ['enh', '300,140 720,150 740,420 330,480'], ...(out ? [['mdt', '380,200 640,210 650,380 400,420']] : [])];
+    const SPCC = { tstm: '#C1E9C1', mrgl: '#66A366', slgt: '#FFE066', enh: '#FFA366', mdt: '#E06666' };
+    const under = [
+      line('M0 110 L1000 110', { stroke: 'var(--map-boundary)', strokeWidth: 1.5 }, 'b1'),
+      line('M0 470 C 120 480 220 455 330 485 S 520 470 620 500 S 800 485 1000 505', { stroke: 'var(--map-boundary)', strokeWidth: 1.5 }, 'b2'),
+      line('M505 0 L505 600', { stroke: 'var(--map-road)', strokeWidth: 2 }, 'r1'), line('M0 280 L1000 280', { stroke: 'var(--map-road)', strokeWidth: 2 }, 'r2'), line('M505 275 L330 450 L300 600', { stroke: 'var(--map-road)', strokeWidth: 2 }, 'r3'),
+      ...(chase && on('ROADS + TOWNS') ? [
+        line('M505 0 L505 600', { stroke: '#3A4856', strokeWidth: 3.5 }, 'cr1'), line('M0 280 L1000 280', { stroke: '#3A4856', strokeWidth: 3.5 }, 'cr2'), line('M505 275 L330 450 L300 600', { stroke: '#3A4856', strokeWidth: 3.5 }, 'cr3'),
+        line('M420 0 L420 600', { stroke: '#2C3946', strokeWidth: 2 }, 'cr4'), line('M0 350 L1000 350', { stroke: '#2C3946', strokeWidth: 2 }, 'cr5'), line('M0 220 L1000 220', { stroke: '#2C3946', strokeWidth: 2 }, 'cr6'),
+        line('M560 0 L560 600', { stroke: '#2C3946', strokeWidth: 2 }, 'cr7'), line('M505 280 L760 160 L1000 120', { stroke: '#3A4856', strokeWidth: 3.5 }, 'cr8')
+      ] : []),
+      ...(on('SPC OUTLOOK') ? SPC.map(([k, pts]) => pg(pts, { fill: SPCC[k], fillOpacity: 'var(--map-spc-fill-opacity)', stroke: SPCC[k], strokeOpacity: 0.55, strokeWidth: 1 }, 'spc' + k)) : [])
+    ];
+    const over = [];
+    const watchPolys = al.filter(a => HZ[a.k].watch && a.poly);
+    const warnPolys = al.filter(a => !HZ[a.k].watch && a.poly);
+    if (on('WATCHES')) watchPolys.forEach(a => {
+      over.push(pg(PG[a.poly], { fill: 'none', stroke: 'var(--map-casing)', strokeWidth: 4, strokeDasharray: '10 6' }, a.id + 'c'));
+      over.push(pg(PG[a.poly], { fill: 'none', stroke: HZ[a.k].c, strokeWidth: 2, strokeDasharray: '10 6' }, a.id + 's'));
+    });
+    let fb = null;
+    if (on('WARNINGS')) warnPolys.forEach(a => {
+      const foc = a.id === focusId, dim = focusId && !foc ? 0.55 : 1, z = HZ[a.k];
+      if (foc) over.push(pg(PG[a.poly], { fill: z.c, fillOpacity: 'var(--map-focus-fill-opacity)', stroke: 'var(--map-focus)', strokeWidth: 9, strokeOpacity: 0.35 }, a.id + 'f'));
+      over.push(pg(PG[a.poly], { fill: 'none', stroke: a.k === 'FFW' ? 'rgba(242,245,247,.6)' : 'var(--map-casing)', strokeWidth: a.pds ? 7 : 4.5, opacity: dim }, a.id + 'c'));
+      if (a.pds) over.push(pg(PG[a.poly], { fill: 'none', stroke: 'var(--hz-pds-mark)', strokeWidth: 4.5 }, a.id + 'w'));
+      over.push(pg(PG[a.poly], { fill: 'none', stroke: z.c, strokeWidth: a.pds ? 2.5 : 2, opacity: dim }, a.id + 's'));
+      if (foc) {
+        const xs = PG[a.poly].split(' ').map(p => +p.split(',')[0]), ys = PG[a.poly].split(' ').map(p => +p.split(',')[1]);
+        fb = [Math.min(...xs) - 14, Math.min(...ys) - 18, Math.max(...xs) + 14, Math.max(...ys) + 18];
+      }
+    });
+    if (fb) {
+      const [x0, y0, x1, y1] = fb, L = 14, Ly = 18;
+      over.push(line(`M${x0} ${y0 + Ly}V${y0}H${x0 + L}M${x1 - L} ${y0}H${x1}V${y0 + Ly}M${x1} ${y1 - Ly}V${y1}H${x1 - L}M${x0 + L} ${y1}H${x0}V${y1 - Ly}`, { stroke: 'var(--map-focus)', strokeWidth: 2 }, 'ret'));
+    }
+    const pdsA = al.find(a => a.pds);
+    const pdsClip = pdsA ? 'polygon(' + PG[pdsA.poly].split(' ').map(p => { const [x, y] = p.split(','); return `${x / 10}% ${y / 6}%`; }).join(',') + ')' : 'none';
+
+    const blob = (x, y, rx, ry, kind) => {
+      const st = { s: '#E000E0 0%,#FF0000 14%,#FF8C00 26%,#FFE000 40%,#00C000 58%,rgba(0,140,0,.75) 74%,rgba(0,224,224,.3) 88%,transparent 100%', m: '#FF0000 0%,#FF8C00 12%,#FFE000 28%,#00C000 50%,rgba(0,140,0,.7) 72%,rgba(0,224,224,.25) 88%,transparent 100%', w: '#00C000 0%,rgba(0,140,0,.7) 45%,rgba(0,224,224,.25) 80%,transparent 100%' }[kind];
+      return `radial-gradient(ellipse ${rx / 10}% ${ry / 6}% at ${x / 10}% ${y / 6}%,${st})`;
+    };
+    const cells = quiet ? [[250, 300, 50, 22, 'w'], [700, 150, 40, 18, 'w'], [740, 170, 30, 14, 'w']]
+      : [[425, 345, 46, 30, 's'], [445, 322, 30, 20, 'm'], [518, 312, out ? 44 : 34, 24, out ? 's' : 'm'], [455, 215, 38, 22, out ? 's' : 'm'], [520, 72, 34, 18, out ? 's' : 'm'], [355, 428, 44, 26, 'm'], [565, 350, 30, 18, 'm'], [300, 490, 56, 22, 'w'], [610, 380, 90, 20, 'w'], [650, 300, 60, 16, 'w']];
+    const radarBg = on('RADAR') ? cells.map(c => blob(...c)).join(',') : 'none';
+    const satBg = on('SATELLITE') ? (quiet ? 'radial-gradient(ellipse 30% 25% at 70% 30%,rgba(190,200,210,.5),transparent)' : 'radial-gradient(ellipse 45% 55% at 52% 45%,rgba(200,210,220,.55),rgba(150,160,170,.25) 60%,transparent),radial-gradient(ellipse 10% 12% at 44% 55%,rgba(150,60,180,.6),transparent)') : 'none';
+    const R = quiet ? [[650, 170, 'hail']] : [[410, 355, 'tor'], [432, 336, 'tor'], [360, 420, 'wind'], [600, 360, 'wind'], [528, 296, 'wind'], [450, 210, 'hail'], [352, 436, 'hail'], [470, 226, 'hail'], [300, 470, 'hail'], ...(out ? [[505, 320, 'tor'], [520, 308, 'tor'], [452, 226, 'tor'], [520, 80, 'tor']] : [])];
+    const reports = on('STORM REPORTS') ? R.map(([x, y, k]) => ({ x: x / 10, y: y / 6, c: `var(--rpt-${k})`, b: k === 'tor' ? 'none' : '1px solid var(--map-casing)', rad: k === 'hail' ? '50%' : '0', clip: k === 'tor' ? 'polygon(0 0,100% 0,50% 100%)' : 'none' })) : [];
+    const roadsOn = chase && on('ROADS + TOWNS');
+    const cities = [['Oklahoma City', 512, 262], ['Norman', 540, 322], ['Chickasha', 370, 318], ['Lawton', 300, 452], ['Wichita Falls', 270, 520], ['Kingfisher', 395, 182], ['Wichita', 535, 32], ['Tulsa', 720, 190], ...(roadsOn ? [['Tuttle', 452, 292], ['Blanchard', 470, 352], ['Newcastle', 482, 312], ['Purcell', 568, 372], ['Minco', 400, 262], ['El Reno', 410, 242], ['Mustang', 466, 270]] : [])].map(([n, x, y]) => ({ n, x: x / 10, y: y / 6 }));
+    const shields = roadsOn ? [['I-44', 418, 390], ['I-35', 507, 400], ['I-40', 640, 274], ['US-81', 422, 120], ['SH-9', 600, 344], ['H.E. BAILEY', 360, 418], ['I-44 TPK', 700, 196]].map(([n, x, y]) => ({ n, x: x / 10, y: y / 6 })) : [];
+    const radarAge = (t + 52) % 270, alertAge = degr ? 554 + t : (t + 12) % 30;
+    const lastGoodS = Z - alertAge;
+
+    const focusTop = () => top && this.setState({ focus: top.id });
+    return {
+      preset: P, presetLabel: P.toUpperCase(),
+      wpx: W + 'px', hpx: mob ? 'auto' : H + 'px',
+      clockZ: hms(Z), clockL: hms(Z - 5 * 3600),
+      threatOn: tors.length > 0, threatOff: tors.length === 0,
+      threatLabel: `${tors.length} TORNADO WARNING${tors.length > 1 ? 'S' : ''}${pdsN ? ` · ${pdsN} PDS` : ''}`,
+      threatNext: tors.length ? 'NEXT EXP ' + cdf(Math.max(0, nextTor)) : '',
+      focusTop, focusPds: () => pdsA && this.setState({ focus: pdsA.id, toast: false }), dismiss: () => this.setState({ toast: false }),
+      showFull: !mob, hLive: counts.live, hStale: counts.stale, hOff: counts.offline,
+      alerts, alertMeta: quiet ? `0 ACTIVE · CHECKED ${fmtAge(alertAge)} AGO` : degr ? `${al.length} LAST KNOWN · ${fmtAge(alertAge)} OLD` : `${al.length} ACTIVE · CHECKED ${fmtAge(alertAge)} AGO`, noAlerts: al.length === 0,
+      aLed: LED(degr ? 'error' : 'live'), alertsDegraded: degr, alertAgeTxt: fmtAge(alertAge), lastGood: hms(lastGoodS),
+      mapAge: fmtAge(radarAge), mapAgeC: radarAge > 600 ? 'var(--status-stale)' : 'var(--text-muted)', shields,
+      moreAlerts: al.length > cap, moreAlertsLabel: `${al.length - cap} MORE ALERTS ▸`,
+      primary, thumbs, moreStreams: chase,
+      radioOpen: !wall, radioChev: wall ? '▸' : '▾', radioHas: !quiet, radioEmpty: quiet, radioMeta: quiet ? '0 PUBLIC SYSTEMS' : '3 SYSTEMS · DELAY 30s–15m', rLed: LED(quiet ? 'offline' : 'live'), calls,
+      camOpen: !(wall || chase), camChev: wall || chase ? '▸' : '▾', camCols: mob ? 2 : 3, cams, camMeta: quiet ? '4/6 · NEWEST 8s' : `6/6 · NEWEST ${fmtAge((t + 8) % 60)}`,
+      layers, lyrOpen, lyrChev: lyrOpen ? '▾' : '▸', lyrCount: `${LY.filter(([k]) => on(k)).length}/6 ON`, lyrW: lyrOpen ? '240px' : '200px',
+      frames, frameLabel: isLive ? 'LIVE' : `${p2(Math.floor(fTime / 3600) % 24)}:${p2(Math.floor(fTime / 60) % 60)}Z`, frameFg: isLive ? 'var(--status-live)' : 'var(--text-primary)', frameDot: isLive ? 'var(--status-live)' : 'transparent',
+      playGlyph: this.state.playing ? '❚❚' : '▶', togglePlay: () => this.setState(s => ({ playing: !s.playing })),
+      radarTime: `${p2(Math.floor(fTime / 3600) % 24)}:${p2(Math.floor(fTime / 60) % 60)}Z`,
+      mapUnder: h('svg', vb, under), mapOver: h('svg', vb, over), radarBg, satBg, reports, cities,
+      pdsOn: !!pdsA && on('WARNINGS'), pdsClip, showLegend: !mob,
+      toastOn: out && this.state.toast, toastCd: pdsA ? 'until 22:09Z · ' + cdf(Math.max(0, pdsA.exp - t)) : '',
+      spMapB: P === 'default', spFeedsL: P === 'default', spMapR: wall || chase, spAlertsR: wall
+    };
+  }
+}
+</script>
+</body>
+</html>

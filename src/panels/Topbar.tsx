@@ -18,8 +18,13 @@ export function Topbar() {
 
   return (
     <header className="topbar">
-      <span className="brand">
-        STORM<span className="accent">//</span>CHASERS
+      {/* INFLOW brand (design handoff v1, direction 1a): AOI-reticle mark + wordmark. Never in a hazard colour, never animated. */}
+      <span className="brand" aria-label="INFLOW">
+        <svg className="brand-mark" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4" stroke="var(--accent)" strokeWidth="2" />
+          <rect x="6" y="6" width="4" height="4" fill="var(--text-bright)" />
+        </svg>
+        <span className="brand-word">INFLOW</span>
       </span>
       <span className="topbar-item">
         AOI <strong>{states.length ? states.join(' · ') : '—'}</strong>
