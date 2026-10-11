@@ -6,6 +6,9 @@ import type { Bbox } from '../../types'
 export type GoesSource = 'iem' | 'nowcoast'
 export type GoesSector = 'east' | 'west'
 
+/** One credit for both sectors: MapLibre cannot change a source's attribution after it is added. */
+export const GOES_ATTRIBUTION = 'GOES-East/West via IEM / NOAA'
+
 export const GOES_REFRESH_MS = 10 * 60_000
 
 /** Centre longitude west of this uses GOES-West. */
@@ -36,9 +39,4 @@ export function goesTileUrl(source: GoesSource, sector: GoesSector, cacheBust?: 
   }
   const base = `${IEM_TILE_BASE}${IEM_LAYERS[sector]}/{z}/{x}/{y}.png`
   return cacheBust === undefined ? base : `${base}?t=${cacheBust}`
-}
-
-/** Attribution string shown by MapLibre for the sector in use. */
-export function goesAttribution(sector: GoesSector): string {
-  return sector === 'west' ? 'GOES-West via IEM / NOAA' : 'GOES-East via IEM / NOAA'
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { DEFAULT_AOI } from '../../state/aoi'
-import { goesAttribution, goesSector, goesTileUrl } from './goes'
+import { GOES_ATTRIBUTION, goesSector, goesTileUrl } from './goes'
 
 const EAST_IEM =
   'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/goes_east_conus_ch13/{z}/{x}/{y}.png'
@@ -59,9 +59,8 @@ describe('goesTileUrl', () => {
   })
 })
 
-describe('goesAttribution', () => {
-  it('names the sector in use', () => {
-    expect(goesAttribution('east')).toBe('GOES-East via IEM / NOAA')
-    expect(goesAttribution('west')).toBe('GOES-West via IEM / NOAA')
+describe('GOES_ATTRIBUTION', () => {
+  it('is one credit covering both sectors', () => {
+    expect(GOES_ATTRIBUTION).toBe('GOES-East/West via IEM / NOAA')
   })
 })

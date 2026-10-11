@@ -1,8 +1,8 @@
 import type maplibregl from 'maplibre-gl'
 import { useAoi } from '../state/aoi'
 import {
+  GOES_ATTRIBUTION,
   GOES_REFRESH_MS,
-  goesAttribution,
   goesSector,
   goesTileUrl,
   type GoesSector,
@@ -15,11 +15,7 @@ let active: GoesSource = 'iem'
 // Which GOES sector is shown. Follows the AOI centre (GOES-West west of 105°W).
 let sector: GoesSector = 'east'
 
-/**
- * Points the existing source at the current source and sector. Same source id, so draw order is kept.
- * The attribution stays as set in `add`: MapLibre re-reads it from the addSource options on every
- * setTiles load, so a sector switch leaves the GOES-East credit until the page reloads.
- */
+/** Points the existing source at the current source and sector. Same source id, so draw order is kept. */
 function applyTiles(map: maplibregl.Map, cacheBust?: number): void {
   const src = map.getSource('satellite') as maplibregl.RasterTileSource | undefined
   if (!src) return
@@ -36,7 +32,7 @@ export const satelliteLayer: MapLayer = {
       type: 'raster',
       tiles: [goesTileUrl(active, sector)],
       tileSize: 256,
-      attribution: goesAttribution(sector),
+      attribution: GOES_ATTRIBUTION,
     })
     map.addLayer({
       id: 'satellite',
