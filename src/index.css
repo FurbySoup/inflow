@@ -150,12 +150,13 @@ body.resizing iframe { pointer-events: none; }
   .layout {
     height: auto;
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    grid-template-rows: auto calc(100dvh - 60px) auto;
+    grid-template-rows: auto calc(100dvh - 84px) auto;
     grid-template-areas: 'top top' 'map side' 'bottom bottom';
     column-gap: 4px;
   }
   .splitter { display: none; }
-  .topbar { flex-wrap: nowrap; gap: 10px; padding: 4px 10px; }
+  /* Wrap to two rows rather than scroll: a hidden-scrollbar overflow would hide the layout menu with no signifier (ADR-0012). */
+  .topbar { flex-wrap: wrap; row-gap: 4px; gap: 10px; padding: 4px 10px; }
   .side { overflow-y: auto; }
   /* The console is the second "screen": bounded, so each panel scrolls inside itself. */
   .bottom { height: calc(100dvh - 12px); margin-top: 4px; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 4px; }
