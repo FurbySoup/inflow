@@ -5,6 +5,7 @@ import { nwsAlerts } from '../sources/nws/alerts'
 import { mapLayers } from '../map/layers'
 import { CASING, FFW_CASING, FLY_EASING, FLY_MS, FOCUS, HAZARD, LABEL, LABEL_HALO, OPACITY, PDS_MARK } from '../map/mapStyle'
 import { LayerControl } from '../map/LayerControl'
+import { OutlookDayControl } from '../map/OutlookDayControl'
 import { hazardCode, isPds, isWatch } from '../lib/hazards'
 import { useSource } from '../lib/useSource'
 import { statesInBbox } from '../lib/states'
@@ -187,6 +188,7 @@ export function MapPanel() {
       })
       setReady(true)
       m.addControl(new LayerControl(mapLayers), 'top-left')
+      m.addControl(new OutlookDayControl(), 'top-left')
     })
 
     m.on('moveend', () => {
