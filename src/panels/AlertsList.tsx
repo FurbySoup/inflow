@@ -1,14 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { nwsAlerts } from '../sources/nws/alerts'
 import { useSource } from '../lib/useSource'
+import { compareAlerts, isPds } from '../lib/hazards'
 import { useAoi } from '../state/aoi'
 import type { Alert } from '../types'
 import { Panel } from './Panel'
 import { queryStatus } from '../lib/feedStatus'
-import { geometryBbox, isEmergencyWarning, remainingMs } from './alertGeometry'
+import {
+  alertDurationMs,
+  alertsView,
+  formatAge,
+  formatZulu,
+  geometryBbox,
+  isListed,
+  remainingMs,
+} from './alertGeometry'
 import { AlertList, AlertRow } from '../ui'
-
-const SEVERITY_RANK = { Extreme: 0, Severe: 1, Moderate: 2, Minor: 3, Unknown: 4 }
 
 export function AlertsList() {
   const states = useAoi((s) => s.states)
@@ -29,13 +36,17 @@ export function AlertsList() {
     el?.scrollIntoView({ block: 'nearest' })
   }, [focus])
 
-  const visible = (query.data ?? [])
+  const listed = (query.data ?? [])
     .filter((a) => a.states.some((s) => states.includes(s)))
-    .filter((a) => {
-      const left = remainingMs(a.expires, now)
-      return left === null || left > 0
-    })
-    .sort((a, b) => SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity])
+    .sort(compareAlerts)
+    .map((a) => ({ alert: a, left: remainingMs(a.expires, now) }))
+    .filter((r) => isListed(r.left))
+
+  const active = listed.filter((r) => r.left === null || r.left > 0).length
+  const view = alertsView({ isError: query.isError, hasData: query.data !== undefined, rows: listed.length })
+  const degraded = view === 'degraded'
+  const lastGood = query.dataUpdatedAt > 0 ? query.dataUpdatedAt : null
+  const age = lastGood === null ? '--' : formatAge(now - lastGood)
 
   const select = (a: Alert) => {
     const bbox = geometryBbox(a.geometry)
@@ -43,25 +54,49 @@ export function AlertsList() {
   }
 
   return (
-    <Panel collapsible code="WX-02" title="NWS Alerts" status={queryStatus(query)} meta={visible.length}>
-      {query.isError && <p className="error">NWS alerts unavailable</p>}
-      <AlertList ref={listRef}>
-        {visible.map((a) => (
-          <AlertRow
-            key={a.id}
-            alertId={a.id}
-            event={a.event}
-            area={a.areaDesc}
-            severity={a.severity}
-            remainingMs={remainingMs(a.expires, now)}
-            zone={a.geometry === null}
-            selected={focus?.id === a.id}
-            emergency={isEmergencyWarning(a.event, a.headline)}
-            onSelect={() => select(a)}
-          />
-        ))}
+    <Panel
+      collapsible
+      code="WX-02"
+      title="NWS Alerts"
+      status={queryStatus(query)}
+      meta={`${active} ACTIVE · ${age}`}
+    >
+      <AlertList
+        ref={listRef}
+        feedError={
+          view === 'degraded' || view === 'unavailable'
+            ? { lastGood, retrying: query.isFetching, onRetry: () => void query.refetch() }
+            : null
+        }
+        empty={
+          view === 'empty'
+            ? {
+                label: 'NO ACTIVE ALERTS IN AOI',
+                note: `NWS checked ${formatZulu(lastGood)}. Watches and outlooks stay on the map.`,
+              }
+            : null
+        }
+      >
+        {listed.map(({ alert: a, left }) => {
+          const bbox = geometryBbox(a.geometry)
+          return (
+            <AlertRow
+              key={a.id}
+              alertId={a.id}
+              event={a.event}
+              area={a.areaDesc}
+              severity={a.severity}
+              remainingMs={left}
+              durationMs={alertDurationMs(a.onset, a.expires)}
+              zone={a.geometry === null}
+              selected={focus?.id === a.id}
+              emergency={isPds(a)}
+              degraded={degraded}
+              onSelect={bbox ? () => select(a) : undefined}
+            />
+          )
+        })}
       </AlertList>
     </Panel>
   )
 }
-
