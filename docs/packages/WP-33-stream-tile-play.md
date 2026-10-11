@@ -27,7 +27,7 @@ User report and spec (2026-10-11):
     - `offline` and `unchecked` (`unknown`) otherwise.
 - **StreamTile (kit), new optional props:** `liveKind?: 'live' | 'replay' | 'offline' | 'unchecked'`, `playing?: boolean`, `onPlay?: () => void`, `onStop?: () => void`.
   - **Live-kind tag** on the frame's top-left, on every tile including the primary. It is never colour alone (ADR-0012):
-    - `● LIVE`: `--status-live` / alert-red family per tokens, solid;
+    - `● LIVE`: solid `--status-live` (phosphor). **Never a hazard red**: red means NWS hazards only (HANDOFF §1);
     - `↺ REPLAY`: `--text-muted` outline;
     - `○ OFFLINE`: muted;
     - `◌ UNCHECKED`: muted.
