@@ -22,14 +22,15 @@ describe('southCarolinaCameras.normalize', () => {
 
   it('skips inactive cameras', () => {
     const cams = southCarolinaCameras.normalize(raw())
-    // Fixture record e7208fd0 (I-26 W @ MM 106) is active:false and sits inside the bbox.
+    // Synthetic fixture record e7208fd0: copied from a real camera (I-26 W @ MM 106) with active flipped to false.
+    // Upstream had no inactive cameras on 2026-10-11.
     expect(cams.find((c) => c.id.endsWith('e7208fd0-d2a0-11e6-8996-0123456789ab'))).toBeUndefined()
   })
 
   it('uses the description as title, falling back to route and direction', () => {
     const cams = southCarolinaCameras.normalize(raw())
     expect(cams.find((c) => c.id === 'sc511:2735')?.title).toBe('I-77 S @ MM 4.9')
-    // Fixture record e72327e6 has description "" and route/direction I-26 EB.
+    // Synthetic fixture record e72327e6: copied from a real camera with description blanked, route/direction I-26 EB.
     expect(cams.find((c) => c.id === 'sc511:e72327e6-d2a0-11e6-8996-0123456789ab')?.title).toBe('I-26 EB')
   })
 

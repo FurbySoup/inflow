@@ -35,21 +35,31 @@ export interface Sc511Adapter extends SourceAdapter<Sc511Raw, CameraFeed> {
 }
 
 let listCache: { at: number; features: Sc511Feature[] } | null = null
+// Concurrent cold-cache callers share one 695 KB download.
+let inFlight: Promise<Sc511Feature[]> | null = null
+
+async function loadList(signal?: AbortSignal): Promise<Sc511Feature[]> {
+  if (listCache && Date.now() - listCache.at < LIST_CACHE_MS) return listCache.features
+  if (!inFlight) {
+    inFlight = (async () => {
+      const res = await fetch(LIST_PATH, { signal, headers: { Accept: 'application/json' } })
+      if (!res.ok) throw new Error(`511SC cameras ${res.status}`)
+      const json = (await res.json()) as Sc511Collection
+      listCache = { at: Date.now(), features: json.features }
+      return json.features
+    })().finally(() => {
+      inFlight = null
+    })
+  }
+  return inFlight
+}
 
 export const southCarolinaCameras: Sc511Adapter = {
   id: 'sc-cameras',
   state: 'SC',
   refreshMs: 60_000,
   async fetch(aoi: Bbox, signal?: AbortSignal) {
-    let features = listCache && Date.now() - listCache.at < LIST_CACHE_MS ? listCache.features : null
-    if (!features) {
-      const res = await fetch(LIST_PATH, { signal, headers: { Accept: 'application/json' } })
-      if (!res.ok) throw new Error(`511SC cameras ${res.status}`)
-      const json = (await res.json()) as Sc511Collection
-      features = json.features
-      listCache = { at: Date.now(), features }
-    }
-    return { bbox: aoi, features }
+    return { bbox: aoi, features: await loadList(signal) }
   },
   normalize(raw) {
     const { bbox } = raw
