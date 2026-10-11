@@ -1,0 +1,160 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          -80.997286,
+          33.948503
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "guid": "b22cd0fa2004472fa3e063db",
+        "id": "2735",
+        "name": "10002",
+        "description": "I-77 S @ MM 4.9",
+        "deviceid": 0,
+        "route": "I-77",
+        "mrm": 4.9,
+        "direction": "SB",
+        "distance": null,
+        "jurisdiction": "Columbia",
+        "rtmp_url": "rtmp://s18.us-east-1.skyvdn.com:1935/rtplive/10002",
+        "rtsp_url": "rtsp://s18.us-east-1.skyvdn.com:554/rtplive/10002",
+        "ios_url": "https://s18.us-east-1.skyvdn.com/rtplive/10002/playlist_sfm4s.m3u8",
+        "https_url": "https://s18.us-east-1.skyvdn.com/rtplive/10002/playlist.m3u8",
+        "preroll_url": "https://s18.us-east-1.skyvdn.com/preroll/10002/playlist.m3u8",
+        "clsps_url": "clsps://s18.us-east-1.skyvdn.com/10002",
+        "image_url": "https://scdotsnap.us-east-1.skyvdn.com/thumbs/10002.flv.png",
+        "active": true,
+        "problem_stream": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          -81.111833,
+          34.038528
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "guid": "98a64cefc1554437bdee496e",
+        "id": "e72068cf-d2a0-11e6-8996-0123456789ab",
+        "name": "10014",
+        "description": "I-26 W @ MM 106.8",
+        "deviceid": 0,
+        "route": "I-26",
+        "mrm": 107,
+        "direction": "WB",
+        "distance": null,
+        "jurisdiction": "Columbia",
+        "rtmp_url": "rtmp://s18.us-east-1.skyvdn.com:1935/rtplive/10014",
+        "rtsp_url": "rtsp://s18.us-east-1.skyvdn.com:554/rtplive/10014",
+        "ios_url": "https://s18.us-east-1.skyvdn.com/rtplive/10014/playlist_sfm4s.m3u8",
+        "https_url": "https://s18.us-east-1.skyvdn.com/rtplive/10014/playlist.m3u8",
+        "preroll_url": "https://s18.us-east-1.skyvdn.com/preroll/10014/playlist.m3u8",
+        "clsps_url": "clsps://s18.us-east-1.skyvdn.com/10014",
+        "image_url": "https://scdotsnap.us-east-1.skyvdn.com/thumbs/10014.flv.png",
+        "active": true,
+        "problem_stream": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          -81.110316,
+          34.00339
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "guid": "55b5f2bd104441d8be432e78",
+        "id": "e72327e5-d2a0-11e6-8996-0123456789ab",
+        "name": "10015",
+        "description": "I-26 E @ MM 110.1 (US 378)",
+        "deviceid": 0,
+        "route": "I-26",
+        "mrm": 110,
+        "direction": "NB",
+        "distance": null,
+        "jurisdiction": "Columbia",
+        "rtmp_url": "rtmp://s19.us-east-1.skyvdn.com:1935/rtplive/10015",
+        "rtsp_url": "rtsp://s19.us-east-1.skyvdn.com:554/rtplive/10015",
+        "ios_url": "https://s19.us-east-1.skyvdn.com/rtplive/10015/playlist_sfm4s.m3u8",
+        "https_url": "https://s19.us-east-1.skyvdn.com/rtplive/10015/playlist.m3u8",
+        "preroll_url": "https://s19.us-east-1.skyvdn.com/preroll/10015/playlist.m3u8",
+        "clsps_url": "clsps://s19.us-east-1.skyvdn.com/10015",
+        "image_url": "https://scdotsnap.us-east-1.skyvdn.com/thumbs/10015.flv.png",
+        "active": true,
+        "problem_stream": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          -81.120218,
+          34.047257
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "guid": "790afada62a54c1bbe29382f",
+        "id": "e7208fd0-d2a0-11e6-8996-0123456789ab",
+        "name": "10023",
+        "description": "I-26 W @ MM 106",
+        "deviceid": 0,
+        "route": "I-26",
+        "mrm": 106,
+        "direction": "WB",
+        "distance": null,
+        "jurisdiction": "Columbia",
+        "rtmp_url": "rtmp://s18.us-east-1.skyvdn.com:1935/rtplive/10023",
+        "rtsp_url": "rtsp://s18.us-east-1.skyvdn.com:554/rtplive/10023",
+        "ios_url": "https://s18.us-east-1.skyvdn.com/rtplive/10023/playlist_sfm4s.m3u8",
+        "https_url": "https://s18.us-east-1.skyvdn.com/rtplive/10023/playlist.m3u8",
+        "preroll_url": "https://s18.us-east-1.skyvdn.com/preroll/10023/playlist.m3u8",
+        "clsps_url": "clsps://s18.us-east-1.skyvdn.com/10023",
+        "image_url": "https://scdotsnap.us-east-1.skyvdn.com/thumbs/10023.flv.png",
+        "active": false,
+        "problem_stream": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          -81.069311,
+          33.925831
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "guid": "b7d5919f180141fd93bfc563",
+        "id": "e72327e6-d2a0-11e6-8996-0123456789ab",
+        "name": "10018",
+        "description": "",
+        "deviceid": 0,
+        "route": "I-26",
+        "mrm": 115.7,
+        "direction": "EB",
+        "distance": null,
+        "jurisdiction": "Columbia",
+        "rtmp_url": "rtmp://s19.us-east-1.skyvdn.com:1935/rtplive/10018",
+        "rtsp_url": "rtsp://s19.us-east-1.skyvdn.com:554/rtplive/10018",
+        "ios_url": "https://s19.us-east-1.skyvdn.com/rtplive/10018/playlist_sfm4s.m3u8",
+        "https_url": "https://s19.us-east-1.skyvdn.com/rtplive/10018/playlist.m3u8",
+        "preroll_url": "https://s19.us-east-1.skyvdn.com/preroll/10018/playlist.m3u8",
+        "clsps_url": "clsps://s19.us-east-1.skyvdn.com/10018",
+        "image_url": "https://scdotsnap.us-east-1.skyvdn.com/thumbs/10018.flv.png",
+        "active": true,
+        "problem_stream": false
+      }
+    }
+  ]
+}
