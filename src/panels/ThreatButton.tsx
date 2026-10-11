@@ -6,11 +6,12 @@ import { isLayerOn, subscribeLayers, toggleLayer } from '../map/LayerControl'
 import { ConsoleButton } from '../ui'
 import { formatRemaining, geometryBbox } from './alertGeometry'
 import { threatSummary } from './threat'
+import './threat.css'
 
 // Top-bar threat button (INFLOW v1 §5): the most severe tornado warning in the AOI stays one press away.
 // Affordance: focus the map on the most severe TOR. Signifier: the boxed ⌖ glyph, always visible.
 // Feedback: the map flies to and outlines it (MapPanel). Read-only when there are none (ADR-0012).
-// Classes (threat-*, warnings-chip) carry the tokenised look; see WP-21 for the CSS they need.
+// Look lives in ./threat.css (threat-*, warnings-chip classes), tokens only.
 
 /** Live count of tornado warnings in the AOI, the most severe one as the focus target. */
 export function ThreatButton() {
