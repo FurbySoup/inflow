@@ -12,6 +12,9 @@
 - Wide stories use `cardMode: "column"` (AlertList, AlertRow, CameraTile, Panel, StreamTile). They triggered `[GRID_OVERFLOW]`.
 - Re-sync: `npm run build:ui`, re-copy the scripts into `.ds-sync/`, fetch `_ds_sync.json` → `.design-sync/.cache/remote-sync.json`, then `node .ds-sync/resync.mjs --config .design-sync/config.json --node-modules ./node_modules --entry ./dist/ui/index.js --out ./ds-bundle --remote .design-sync/.cache/remote-sync.json`.
 
+- 2026-10-11 Wave 7 re-sync: Toast added (`cardMode: column`, it was wider than grid cells). AlertList/AlertRow/Panel/StatusLed/StreamTile previews were rewritten by the design wave and graded good.
+- The kit must not import app code: `src/ui/hazard.ts` holds the event → hazard code mapping; `src/lib/hazards.ts` re-exports it. `npm run build:ui` fails (TS6059 rootDir) if a kit file imports `src/lib`.
+
 ## Known render warns
 - `[FONT_REMOTE]` for IBM Plex: expected (Google Fonts import).
 

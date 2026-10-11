@@ -1,26 +1,13 @@
 import type { Alert } from '../types'
 
+import { hazardCode, type HazardCode } from '../ui/hazard'
+
 /**
  * Hazard classification shared by the alert rows, top-bar threat button, toasts and map (INFLOW v1 §6).
- * Codes follow the NWS hazards-map legend; anything else is OTHER (still listed, never toasted).
+ * The event → code mapping lives in the kit (src/ui/hazard.ts) so kit components can use it without
+ * importing app code; the Alert-based rules (PDS, emergency, sort order) live here.
  */
-export type HazardCode = 'TOR' | 'SVR' | 'FFW' | 'TOA' | 'SVA' | 'SPS' | 'OTHER'
-
-const BY_EVENT: Record<string, HazardCode> = {
-  'Tornado Warning': 'TOR',
-  'Severe Thunderstorm Warning': 'SVR',
-  'Flash Flood Warning': 'FFW',
-  'Tornado Watch': 'TOA',
-  'Severe Thunderstorm Watch': 'SVA',
-  'Special Weather Statement': 'SPS',
-}
-
-export function hazardCode(event: string): HazardCode {
-  return BY_EVENT[event] ?? 'OTHER'
-}
-
-/** Watches render with a dashed hazard border; warnings with a solid fill. */
-export const isWatch = (event: string) => / Watch$/.test(event)
+export { hazardCode, isWatch, type HazardCode } from '../ui/hazard'
 
 /** Tornado or Flash Flood Emergency (NWS CATASTROPHIC damage threat). */
 export const isEmergency = (a: Pick<Alert, 'damageThreat'>) => a.damageThreat === 'catastrophic'

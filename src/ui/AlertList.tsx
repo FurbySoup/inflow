@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components -- pure time formatters sit beside the row that uses them; format.ts is orchestrator-owned */
 import type { ReactNode, Ref } from 'react'
-import { hazardCode, isWatch, type HazardCode } from '../lib/hazards'
+import { hazardCode, isWatch, type HazardCode } from './hazard'
 
 export type AlertSeverity = 'Extreme' | 'Severe' | 'Moderate' | 'Minor' | 'Unknown'
 
@@ -98,7 +98,7 @@ function FeedErrorBanner({ lastGood, retrying, onRetry }: AlertFeedError) {
 }
 
 export interface AlertRowProps {
-  /** NWS event name, e.g. "Tornado Warning". Also classifies the hazard chip via src/lib/hazards.ts. */
+  /** NWS event name, e.g. "Tornado Warning". Also classifies the hazard chip via ./hazard.ts. */
   event: string
   /** Affected area description, e.g. "Screven, GA". */
   area: string

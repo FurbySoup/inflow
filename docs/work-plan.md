@@ -40,7 +40,25 @@ WeatherWise research (2026-10-11):
 ## Waves 7–9 — outline (from the user's recurring-use brief and the INFLOW design handoff, 2026-10-11)
 Live proofing used one area and one known event. These waves make INFLOW work for **any area, every day**. Packages are written when each wave is approved; research is in this session's reports, summarised here.
 
-## Wave 7 (INFLOW design implementation) — approved 2026-10-11
+## Wave 7 (INFLOW design implementation): merged 2026-10-11 (Wave 6 / WP-18 merged the same day)
+- **Verifiers caught:**
+  - IndexedDB-style fallbacks were fine, but OTHER chips filled solid (WP-19);
+  - an AOI subscription leak and an empty-tiles race (WP-18);
+  - an unguarded Fullscreen API (WP-17).
+- **Orchestrator review caught:**
+  - NWS updates re-toasting under new ids, so `Alert.eventKey` (VTEC) was added (P7c);
+  - YouTube live thumbnails are 5-min cached, so WP-23 got honest `THUMB ≤5m` labels.
+- **Live checks caught:**
+  - `base.css` emptied by the P7b split script (body margin, box-sizing and text helpers lost; every preset scrolled 24 px);
+  - top-bar overflow hidden behind a scrollbar at ≤1366 px with a live threat button;
+  - WALL at 1024 px overflowed 45 px;
+  - CHASE squeezed alerts to 74 px;
+  - a phone User-Agent broke /api/youtube (302 to m.youtube.com);
+  - the kit importing app code (`src/lib/hazards.ts`), which broke `build:ui`. Event codes now live in `src/ui/hazard.ts`, and `build:ui` joins the merge gate.
+- **Follow-ups:**
+  - the toast's PDS badge is red outline, not white fill;
+  - the threat button's accessible name should start with its visible text;
+  - CHASE preset label vs manual collapse.
 Prep (done):
 - **P7a:** `Alert.damageThreat` + `Alert.pds`, plus `src/lib/hazards.ts` (codes, PDS/emergency, sort order, most severe TOR).
 - **P7b:** one CSS file per kit component (`src/ui/css/*.css`).

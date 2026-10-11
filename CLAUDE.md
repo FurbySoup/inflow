@@ -16,7 +16,7 @@ npx vitest run -t "derives states"              # single test by name
 npm run build        # typecheck + production build to dist/
 npm run build:ui     # UI kit library (src/ui → dist/ui, ES + .d.ts), the input to the Claude Design sync
 ```
-Merge gate for any change: `npm run typecheck && npm run lint && npm test`.
+Merge gate for any change: `npm run typecheck && npm run lint && npm test && npm run build:ui`. `build:ui` catches kit files importing app code (`src/ui` must stay self-contained).
 In the desktop app, `.claude/launch.json` defines the `dev` server for live checks in the browser pane.
 
 ## Architecture (read the ADRs in `docs/adr/` before structural changes)
@@ -54,7 +54,7 @@ In the desktop app, `.claude/launch.json` defines the `dev` server for live chec
 - The desktop browser pane runs `requestAnimationFrame` at 0/s when unfocused: a black MapLibre map there is the environment, not a bug (inspect via dev-only `window.__map`).
 
 ## Parallel work (ADR-0010)
-Features are specified as self-contained work packages in `docs/packages/`, scheduled in waves in `docs/work-plan.md`. Waves 1–5 (WP-01…17) are merged.
+Features are specified as self-contained work packages in `docs/packages/`, scheduled in waves in `docs/work-plan.md`. Waves 1–7 (WP-01…25) are merged. Wave 8 (any area) and Wave 9 (notifications + chaser roster) are outlined in `docs/work-plan.md`.
 - **Agents:** packages are built by the `wp-builder` agent (Haiku, one per package, `isolation: "worktree"`) and checked by `wp-verifier`. Both are custom agent types in `.claude/agents/`.
 - **Shared files:** `src/types/index.ts`, `src/state/*`, `src/lib/*`, `src/ui/*`, `src/index.css`, `vite.config.ts` and `package.json` are changed only by the orchestrating session. Builders report needed changes instead.
 - **Wave hygiene:**
