@@ -80,6 +80,30 @@ Expected conflicts:
 
 After merge: update the kit previews where builders didn't, then re-sync Claude Design.
 
+## Wave 9 (notifications, chasers, help): planned 2026-10-11
+Research was re-verified on 2026-10-11 (roster channel IDs on their own `/streams` pages, HWO coverage, the Spotter Network map URL, the Notification API, SPC issuance). Facts are in each package.
+
+Prep (done, on `main`):
+- **P9a ([ADR-0018](adr/0018-acronym-expansions.md)):** kit `Abbr` + `glossary.ts`; kit components tag their own acronyms; top bar AOI/UTC/LOCAL; `? HELP` (shown on touch too) lists the glossary.
+- **P9b ([ADR-0019](adr/0019-browser-notifications.md)):** `src/state/notify.ts` bus.
+- **P9c:** `src/panels/help/chaserTerms.ts`, 78 chaser terms in 5 groups (orchestrator-written).
+- **P9d:** `config/chasers.json`, 58 verified channels (54 chasers + 4 coverage outlets).
+  - About 30 candidates were dropped: no streams, inactive, not US, impostor handles or unverifiable.
+- Not changed: the WALL/CHASE label (intentional).
+
+| WP | Title | Wave | Owns (exclusive) | Registry edits allowed |
+|---|---|---|---|---|
+| [35](packages/WP-35-notification-engine.md) | Notification engine + NWS/SPC triggers | 9 | `src/notify/**` | `Topbar.tsx` one element, `App.tsx` one mount |
+| [36](packages/WP-36-chaser-roster-live-now.md) | Chaser roster, LIVE NOW, went-live, SN link-out | 9 | `src/sources/chasers/**`, `StreamsGrid.tsx`, `LiveNow.tsx` | — |
+| [37](packages/WP-37-hazardous-weather-outlook.md) | Hazardous Weather Outlook strip | 9 | `src/sources/nws/hwo.ts`, `HwoStrip.tsx`, AlertsList acronym tags | `AlertsList.tsx` one element |
+| [38](packages/WP-38-spc-day-selector-clarity.md) | SPC day selector you can see working | 9 | `OutlookDayControl.ts`, `spcOutlook.ts`, `outlookDay.ts`, `sources/spc/outlook.ts`, `OutlookRisk.tsx`, `spcRisk.ts` | — |
+| [39](packages/WP-39-acronym-tips-app.md) | Acronym tips across the rest of the app | 9 | acronym tags in ThreatButton, AudioPanel, CamerasPanel, AoiPresets, LayerControl, velocity | — (glossary additions reported to the orchestrator) |
+| [40](packages/WP-40-help-redesign.md) | Help redesign: tabs, search, chaser terms grid | 9 | help dialog in `KeyboardShortcuts.tsx` → `src/panels/help/**` | — |
+
+Expected conflicts: `Topbar.tsx` (WP-35 only, since the prep already touched it). There's no other overlap.
+
+Merge order: 38, 37, 39, 40, 36, then 35 (35 delivers 36's events). After merging: add the glossary terms reported by WP-39; run the full ADR-0014 matrix; re-sync Claude Design (Abbr + tips in 5 components).
+
 ## Wave 8 (any area): merged 2026-10-11
 - **Verifiers caught:** an always-mounted empty live region leaving a 24 px gap in the top bar (WP-26).
 - **Orchestrator review caught:**

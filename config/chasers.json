@@ -1,0 +1,767 @@
+{
+  "verified": "2026-10-11",
+  "method": "channel /streams page: canonical link, externalId and the id all agree; active = streamed within 8 months",
+  "chasers": [
+    {
+      "id": "ryanhallyall",
+      "name": "Ryan Hall, Y'all",
+      "handle": "@RyanHallYall",
+      "channelId": "UCJHAT3Uvv-g3I8H3GhHWV7w",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "reedtimmerwx",
+      "name": "Reed Timmer",
+      "handle": "@ReedTimmerWx",
+      "channelId": "UCV6hWxB0-u_IX7e-h4fEBAw",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "brandoncopicwx",
+      "name": "Brandon Copic",
+      "handle": "@BrandonCopicWx",
+      "channelId": "UCPqLI_AohMn1jnFg8ocMyHA",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "maxvelocitywx",
+      "name": "Max Velocity",
+      "handle": "@MaxVelocityWX",
+      "channelId": "UCvBVK2ymNzPLRJrgip2GeQQ",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "livestormsmedia",
+      "name": "Live Storms Media (Brett Adair)",
+      "handle": "@LiveStormsMedia",
+      "channelId": "UC1nJElGcVcTpeZJVyxEbzJw",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "freddymckinney",
+      "name": "Freddy McKinney",
+      "handle": "@FreddyMcKinney",
+      "channelId": "UCZSDkxJS7PRw9V0_Sm6U7jg",
+      "kind": "chaser",
+      "regions": [
+        "NE",
+        "Plains"
+      ],
+      "states": [
+        "NE",
+        "TX",
+        "OK",
+        "KS",
+        "SD",
+        "ND",
+        "CO"
+      ]
+    },
+    {
+      "id": "tornadotitans",
+      "name": "Tornado Titans",
+      "handle": "@TornadoTitans",
+      "channelId": "UCri9Wr8e5rjVNeIwIQVhWcA",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "stormchaservince",
+      "name": "Vince Waelti",
+      "handle": "@StormChaserVince",
+      "channelId": "UCqSk-ojoH2rgAuYadPLJgJA",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "connorcroff",
+      "name": "Connor Croff",
+      "handle": "@ConnorCroff",
+      "channelId": "UCb0U1g5r4kH_NDMGiGRhysA",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "tornadopaigeyy",
+      "name": "Tornado Paigeyy",
+      "handle": "@tornadopaigeyy",
+      "channelId": "UCCzfjxXs0o9h1cOgnnmc2Zw",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "coreygerkenwx",
+      "name": "Corey Gerken",
+      "handle": "@coreygerkenwx",
+      "channelId": "UCx5ex9rJumpj-oKgVJrP4hA",
+      "kind": "chaser",
+      "regions": [
+        "OH"
+      ],
+      "states": [
+        "OH"
+      ]
+    },
+    {
+      "id": "mikesweatherpage",
+      "name": "Mikes Weather Page",
+      "handle": "@MikesWeatherPage",
+      "channelId": "UCQDC0j2oiSRSbQ5sSalzFYA",
+      "kind": "chaser",
+      "regions": [
+        "Southeast",
+        "Gulf/Atlantic coast"
+      ],
+      "states": [
+        "GA",
+        "SC",
+        "NC",
+        "FL",
+        "AL",
+        "TX",
+        "LA",
+        "MS"
+      ]
+    },
+    {
+      "id": "jordanhallwx",
+      "name": "Jordan Hall",
+      "handle": "@jordanhallwx",
+      "channelId": "UC86mOt7YnKgRUQxblDpsN-g",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "aaronjayjack",
+      "name": "Aaron Jayjack (Jayjack Storm Trax)",
+      "handle": "@AaronJayjack",
+      "channelId": "UC8QZ-OIqfWKek1CpMvs2O3g",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "bamastormchaser",
+      "name": "Brett Adair",
+      "handle": "@BamaStormChaser",
+      "channelId": "UCTgHmBdjiKZtkGpM3urHX7g",
+      "kind": "chaser",
+      "regions": [
+        "AL",
+        "Dixie"
+      ],
+      "states": [
+        "AL",
+        "MS",
+        "LA",
+        "AR",
+        "TN",
+        "GA"
+      ]
+    },
+    {
+      "id": "zhallarstormtracker",
+      "name": "Zachary Hall",
+      "handle": "@ZhallARstormtracker",
+      "channelId": "UCob3w9mNa3VzPs0CXxon6ow",
+      "kind": "chaser",
+      "regions": [
+        "AR"
+      ],
+      "states": [
+        "AR"
+      ]
+    },
+    {
+      "id": "wxchasing",
+      "name": "WXChasing (Brandon Clement)",
+      "handle": "@WxChasing",
+      "channelId": "UCD3KREyo3IqCLBC-4khGgIw",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "stormchasingvideo",
+      "name": "StormChasingVideo",
+      "handle": "@StormChasingVideo",
+      "channelId": "UCWAN-rRJFLosqgiiIFVpkEQ",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "tannercharleschasing",
+      "name": "Tanner Charles",
+      "handle": "@TannerCharlesChasing",
+      "channelId": "UCAdsKTAapDXhosiq7B237SA",
+      "kind": "chaser",
+      "regions": [
+        "MN"
+      ],
+      "states": [
+        "MN"
+      ]
+    },
+    {
+      "id": "highriskchris",
+      "name": "HIGH RISK Chris",
+      "handle": "@highriskchris",
+      "channelId": "UCGpPbdVAtTUgW_w98lXC9nw",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "stormchaserbradarnold",
+      "name": "Brad Arnold",
+      "handle": "@StormChaserBradArnold",
+      "channelId": "UCj6aoh3tZuQoqfHs4ZWpHcA",
+      "kind": "chaser",
+      "regions": [
+        "national",
+        "AL"
+      ],
+      "states": [
+        "AL"
+      ]
+    },
+    {
+      "id": "stormchaserchad",
+      "name": "Storm Chaser Chad",
+      "handle": "@StormChaserChad",
+      "channelId": "UCUBJzfRvBPA56lz4BHoXb8A",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "stormchaserscottpeake",
+      "name": "Scott Peake",
+      "handle": "@stormchaserscottpeake",
+      "channelId": "UCqAWcfd0BJBgCW8iyOLOF3g",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "trprostormchasers",
+      "name": "TR Pro Storm Chasers (Craig T.)",
+      "handle": "@trprostormchasers",
+      "channelId": "UCE5hG35cePuCb3MbxDlYRPQ",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "twisterradarwx",
+      "name": "TwisterRadar WX (Blake Neace)",
+      "handle": "@TwisterRadarWX",
+      "channelId": "UC2zxynFcqRYRGvzfOLPjhaw",
+      "kind": "chaser",
+      "regions": [
+        "Ohio Valley"
+      ],
+      "states": [
+        "OH",
+        "KY",
+        "IN",
+        "WV"
+      ]
+    },
+    {
+      "id": "jadenpappenheimwx",
+      "name": "Jaden Pappenheim",
+      "handle": "@JadenPappenheimWx",
+      "channelId": "UC6lUxl1KxmI7TWnAA6go1EQ",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "stormrunnermedia",
+      "name": "StormRunner Media (Garrett Thompson)",
+      "handle": "@stormrunnermedia",
+      "channelId": "UCBmOfiL9LC3dT4Ps2veVCoQ",
+      "kind": "chaser",
+      "regions": [
+        "NE",
+        "Plains"
+      ],
+      "states": [
+        "NE",
+        "TX",
+        "OK",
+        "KS",
+        "SD",
+        "ND",
+        "CO"
+      ]
+    },
+    {
+      "id": "brmidwestroadrescue",
+      "name": "Brittney Richardson",
+      "handle": "@BRMidwestRoadRescue",
+      "channelId": "UCMmlV4B6Bx2GuYtIaxpLcfw",
+      "kind": "chaser",
+      "regions": [
+        "Midwest"
+      ],
+      "states": [
+        "IA",
+        "IL",
+        "IN",
+        "MO",
+        "MN",
+        "WI",
+        "MI",
+        "OH"
+      ]
+    },
+    {
+      "id": "texasstormchasers",
+      "name": "Texas Storm Chasers",
+      "handle": "@texasstormchasers",
+      "channelId": "UCNPvoDpoOWevcdTHr8GyTyA",
+      "kind": "chaser",
+      "regions": [
+        "TX"
+      ],
+      "states": [
+        "TX"
+      ]
+    },
+    {
+      "id": "stormchaseraaronrigsby",
+      "name": "Aaron Rigsby",
+      "handle": "@StormChaserAaronRigsby",
+      "channelId": "UCjb4P7zpp4wX4rOlHixLQ_w",
+      "kind": "chaser",
+      "regions": [
+        "OH",
+        "national"
+      ],
+      "states": [
+        "OH"
+      ]
+    },
+    {
+      "id": "mistormchasers",
+      "name": "Michigan Storm Chasers",
+      "handle": "@MIStormChasers",
+      "channelId": "UCy4Zv53jpdE_FfNh3bmtKiA",
+      "kind": "chaser",
+      "regions": [
+        "MI"
+      ],
+      "states": [
+        "MI"
+      ]
+    },
+    {
+      "id": "adamlucio",
+      "name": "Adam Lucio",
+      "handle": "@AdamLucio",
+      "channelId": "UCf8dNCufHlKZp-CgU8NPryw",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "twisterchasers",
+      "name": "TwisterChasers (Jeff Piotrowski)",
+      "handle": "@TwisterChasers",
+      "channelId": "UCTWhf2uDTdr3pVNKUCdgnDQ",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "johnmckinneywx",
+      "name": "John McKinney",
+      "handle": "@johnmckinneywx",
+      "channelId": "UCWMRFAo3Cvd7W8yQpQwsOQA",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "mesohunterwx",
+      "name": "MesoHunter",
+      "handle": "@MesoHunterWX",
+      "channelId": "UCCbcwQgGkci3CRffdrCKFbg",
+      "kind": "chaser",
+      "regions": [
+        "OK",
+        "Plains"
+      ],
+      "states": [
+        "OK",
+        "TX",
+        "KS",
+        "NE",
+        "SD",
+        "ND",
+        "CO"
+      ]
+    },
+    {
+      "id": "nashseverewx",
+      "name": "Nashville Severe Weather",
+      "handle": "@NashSevereWx",
+      "channelId": "UC6ajz-N5HOlsEjSuh2KwruQ",
+      "kind": "coverage",
+      "regions": [
+        "TN"
+      ],
+      "states": [
+        "TN"
+      ]
+    },
+    {
+      "id": "alabamawxnet",
+      "name": "Alabama Weather Network",
+      "handle": "@AlabamaWxNet",
+      "channelId": "UCKWbzT8S4nBdmdx3IeqSsKg",
+      "kind": "coverage",
+      "regions": [
+        "AL",
+        "Dixie"
+      ],
+      "states": [
+        "AL",
+        "MS",
+        "LA",
+        "AR",
+        "TN",
+        "GA"
+      ]
+    },
+    {
+      "id": "tscwx",
+      "name": "Texas Weather Roundup (David Reimer)",
+      "handle": "@TSCWX",
+      "channelId": "UCoIfgmxArIATc2EpHD3W9EA",
+      "kind": "chaser",
+      "regions": [
+        "TX"
+      ],
+      "states": [
+        "TX"
+      ]
+    },
+    {
+      "id": "pastormtrackerz",
+      "name": "PA Storm Trackerz",
+      "handle": "@PAStormTrackerz",
+      "channelId": "UC8QsEgtF7RfkDauZ1s9icVg",
+      "kind": "chaser",
+      "regions": [
+        "PA"
+      ],
+      "states": [
+        "PA"
+      ]
+    },
+    {
+      "id": "wx-chasin-mason",
+      "name": "Mason Harris",
+      "handle": "@wx_chasin_mason",
+      "channelId": "UCwuM4EWhlY6raej6VTzPSBg",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "wxwithzach",
+      "name": "Storm Chaser Zach (WXwithZach)",
+      "handle": "@WXwithZach",
+      "channelId": "UC33bAQMD2MLLeu_MrNJsg7A",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "the-otus-project",
+      "name": "The OTUS Project",
+      "handle": "@The_OTUS_Project",
+      "channelId": "UCGHMjAIF2LNULPrCGOkVtgA",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "msliveweather",
+      "name": "Mississippi LIVE Weather",
+      "handle": "@msliveweather",
+      "channelId": "UCpwkblwcoQu5dZZGio1SS3A",
+      "kind": "coverage",
+      "regions": [
+        "MS",
+        "Dixie"
+      ],
+      "states": [
+        "MS",
+        "AL",
+        "LA",
+        "AR",
+        "TN",
+        "GA"
+      ]
+    },
+    {
+      "id": "brianemfingerwx",
+      "name": "Brian Emfinger",
+      "handle": "@BrianEmfingerWx",
+      "channelId": "UCwv4c1i6QktoA72HORu9DVw",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "valcastor",
+      "name": "Val and Amy Castor",
+      "handle": "@ValCastor",
+      "channelId": "UC4U3dB379IaNrC5Uss7RAPw",
+      "kind": "chaser",
+      "regions": [
+        "OK",
+        "Plains"
+      ],
+      "states": [
+        "OK",
+        "TX",
+        "KS",
+        "NE",
+        "SD",
+        "ND",
+        "CO"
+      ]
+    },
+    {
+      "id": "stormgasm",
+      "name": "Stormgasm (Simon Brewer, Jim Bishop)",
+      "handle": "@Stormgasm",
+      "channelId": "UCAnSuGYTjwbGoBMgF_aBpnQ",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "stormofpassion",
+      "name": "Storm of Passion (TIV-2)",
+      "handle": "@stormofpassion",
+      "channelId": "UCGS82m2ORvg1nfeAJsFqWDg",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "stormchaserirl",
+      "name": "Nathan Moore (StormChaserIRL)",
+      "handle": "@StormChaserIRL",
+      "channelId": "UCXUU-_dJ-eGBh3-bjPNsalQ",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "markpeyton",
+      "name": "Mark Peyton Vlogs",
+      "handle": "@MarkPeyton",
+      "channelId": "UC9Y_sKyerjEGdywnoB0XrXg",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "stormchasernickgorman",
+      "name": "Nick Gorman",
+      "handle": "@StormchaserNickGorman",
+      "channelId": "UCUBLqizQoTZnNI6Cnk2GSuQ",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "hunterhurleywx",
+      "name": "Hunter Hurley",
+      "handle": "@hunterhurleywx",
+      "channelId": "UCcePu4MA9UdIt0OrPjVnSzw",
+      "kind": "chaser",
+      "regions": [
+        "MO",
+        "KS",
+        "Plains"
+      ],
+      "states": [
+        "MO",
+        "KS",
+        "TX",
+        "OK",
+        "NE",
+        "SD",
+        "ND",
+        "CO"
+      ]
+    },
+    {
+      "id": "chrisfltornado",
+      "name": "Chris FL",
+      "handle": "@chrisfltornado",
+      "channelId": "UCd9PU7D8eH6htvQUg77heJg",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "loganeschrichwx",
+      "name": "Logan Eschrich",
+      "handle": "@LoganEschrichWx",
+      "channelId": "UCzWvF3HESF2MlJDONlivyFQ",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "stormchaserkipmetcalf",
+      "name": "Kip Metcalf",
+      "handle": "@StormChaserKipMetcalf",
+      "channelId": "UCESP88Ej6_e0t1TlCtm9zwA",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "indwxnetwork",
+      "name": "Indiana Weather Network",
+      "handle": "@indwxnetwork",
+      "channelId": "UC87ryYqjxb9sLK36I5mdO8w",
+      "kind": "coverage",
+      "regions": [
+        "IN"
+      ],
+      "states": [
+        "IN"
+      ]
+    },
+    {
+      "id": "cjziegler",
+      "name": "CJ Ziegler",
+      "handle": "@CJZiegler",
+      "channelId": "UCx_mcHxMvZ8PBmVTtg6Ddtw",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    },
+    {
+      "id": "tornadicfanatic",
+      "name": "Sean Voysey (Tornadic Fanatic)",
+      "handle": "@TornadicFanatic",
+      "channelId": "UC2aX3sFXft9UKCzAjL8ZEPQ",
+      "kind": "chaser",
+      "regions": [
+        "Southwest",
+        "national"
+      ],
+      "states": [
+        "AZ",
+        "NM"
+      ]
+    },
+    {
+      "id": "jarodvogelwx",
+      "name": "Jarod Vogel",
+      "handle": "@JarodVogelWX",
+      "channelId": "UCZFPH-_gdKia3HJkH0QJdyA",
+      "kind": "chaser",
+      "regions": [
+        "national"
+      ],
+      "states": []
+    }
+  ]
+}

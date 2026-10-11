@@ -27,12 +27,16 @@ Registry edits allowed:
   - `new Notification(title, { body, tag, renotify: false, requireInteraction: false })`.
   - Notifications show while the tab is hidden.
   - `onclick`: `window.focus()`, then close.
+  - `requestPermission()` resolves `'granted' | 'denied' | 'default'`; treat `default` as not granted.
+  - **`new Notification()` throws a TypeError on most mobile browsers** (they need a service worker). Feature-detect and try/catch; on failure the control shows `NOT SUPPORTED ON THIS BROWSER` and the engine falls back to the in-app count.
+  - `renotify` has limited support and throws with an empty `tag`. Pass it only inside try/catch, or omit it (we use `false`, the default, so omit it).
+  - On `visibilitychange` → visible, close notifications the engine opened.
 - **Background timers:** Chrome throttles hidden tabs to about 1 wake per minute, so 60 s polls still run.
 - **Sources** (read-only):
   - `nwsAlerts` (`src/sources/nws/alerts.ts`, 60 s): `Alert.eventKey` is the de-dupe key (updates get new ids);
   - `spcWatchBoxes` (`src/sources/iemspc/watches.ts`);
   - `spcMesoscale` (`src/sources/iemspc/mesoscale.ts`, `properties.num`);
-  - `spcOutlookDay(1)` (`src/sources/spc/outlook.ts`): `properties.ISSUE` is `YYYYMMDDHHMM`, a new Day 1 issuance at 06/13/1630/20/01Z;
+  - `spcOutlookDay(1)` (`src/sources/spc/outlook.ts`): detect a new issuance by `properties.ISSUE_ISO` (the actual minute, e.g. 16:29). Day 1 issues at 06/13/1630/20/01Z;
   - `highestCategory`, `RISK_ORDER` (`src/panels/spcRisk.ts`);
   - `alertInAoi` (`src/panels/aoiMatch.ts`);
   - `hazardCode`, `isPds` (`src/lib/hazards.ts`).
