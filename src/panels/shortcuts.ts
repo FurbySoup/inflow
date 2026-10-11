@@ -26,6 +26,7 @@ export type ShortcutAction =
 /** Layer toggles by letter. W drives both watch outline layers (WP-17 prep contract). */
 export const LAYER_KEYS: Readonly<Record<string, readonly string[]>> = {
   r: ['radar'],
+  v: ['velocity'],
   s: ['satellite'],
   w: ['watch-outlines', 'spc-watch'],
 }

@@ -1,0 +1,234 @@
+{
+  "type": "FeatureCollection",
+  "count": 12,
+  "features": [
+    {
+      "type": "Feature",
+      "id": "ABC",
+      "properties": {
+        "sname": "Bethel",
+        "state": "AK",
+        "country": "US",
+        "sid": "ABC",
+        "network": "NEXRAD",
+        "online": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -161.87,
+          60.78
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "AHG",
+      "properties": {
+        "sname": "Kenai",
+        "state": "AK",
+        "country": "US",
+        "sid": "AHG",
+        "network": "NEXRAD",
+        "online": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -151.35,
+          60.72
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "CLX",
+      "properties": {
+        "sname": "Charleston",
+        "state": "SC",
+        "country": "US",
+        "sid": "CLX",
+        "network": "NEXRAD",
+        "online": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -81.042,
+          32.655
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "FFC",
+      "properties": {
+        "sname": "Atlanta",
+        "state": "GA",
+        "country": "US",
+        "sid": "FFC",
+        "network": "NEXRAD",
+        "online": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -84.566,
+          33.363
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "GUA",
+      "properties": {
+        "sname": "Andersen AFB",
+        "state": "GU",
+        "country": "US",
+        "sid": "GUA",
+        "network": "NEXRAD",
+        "online": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.8,
+          13.45
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "HMO",
+      "properties": {
+        "sname": "Molokai",
+        "state": "HI",
+        "country": "US",
+        "sid": "HMO",
+        "network": "NEXRAD",
+        "online": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -157.17,
+          21.12
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "JGX",
+      "properties": {
+        "sname": "Robins AFB",
+        "state": "GA",
+        "country": "US",
+        "sid": "JGX",
+        "network": "NEXRAD",
+        "online": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -83.351,
+          32.675
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "JUA",
+      "properties": {
+        "sname": "Puerto Rico",
+        "state": "PR",
+        "country": "US",
+        "sid": "JUA",
+        "network": "NEXRAD",
+        "online": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -66.07,
+          18.1
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "KSG",
+      "properties": {
+        "sname": "Camp Humphreys",
+        "state": "  ",
+        "country": "KR",
+        "sid": "KSG",
+        "network": "NEXRAD",
+        "online": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.285,
+          37.207
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "PAH",
+      "properties": {
+        "sname": "Paducah",
+        "state": "KY",
+        "country": "US",
+        "sid": "PAH",
+        "network": "NEXRAD",
+        "online": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.772,
+          37.068
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "TBW",
+      "properties": {
+        "sname": "Tampa",
+        "state": "FL",
+        "country": "US",
+        "sid": "TBW",
+        "network": "NEXRAD",
+        "online": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.402,
+          27.705
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "TLX",
+      "properties": {
+        "sname": "Oklahoma City",
+        "state": "OK",
+        "country": "US",
+        "sid": "TLX",
+        "network": "NEXRAD",
+        "online": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -97.2779,
+          35.3334
+        ]
+      }
+    }
+  ]
+}
