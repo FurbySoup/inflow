@@ -27,7 +27,7 @@ export function Topbar() {
       <span className="topbar-item">
         UTC <strong className="clock">{fmt(now, 'UTC')}Z</strong>
       </span>
-      <span className="topbar-item">
+      <span className="topbar-item topbar-local">
         LOCAL <strong className="clock">{fmt(now)}</strong>
       </span>
     </header>

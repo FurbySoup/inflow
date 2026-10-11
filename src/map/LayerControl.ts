@@ -38,6 +38,12 @@ function writeVisibility(state: Record<string, boolean>): void {
   }
 }
 
+const SMALL_SCREEN = '(max-width: 900px), (max-height: 500px)'
+
+function startCollapsed(): boolean {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia(SMALL_SCREEN).matches
+}
+
 /** Console-style layer switchboard. Each row toggles every style layer its overlay id prefixes. */
 export class LayerControl implements maplibregl.IControl {
   private readonly rows: Toggleable[]
@@ -66,17 +72,25 @@ export class LayerControl implements maplibregl.IControl {
       minWidth: '180px',
     })
 
-    const head = document.createElement('div')
-    head.textContent = 'Layers'
-    Object.assign(head.style, {
-      padding: '2px 10px 6px',
-      color: 'var(--text)',
-      borderBottom: '1px solid var(--border)',
-      marginBottom: '4px',
-    })
-    root.append(head)
+    // Collapsible header (ADR-0012 signifier: ▾/▸ glyph + aria-expanded). Starts collapsed on small
+    // screens (ADR-0014), where an open list would cover most of the map.
+    const list = document.createElement('div')
+    list.id = 'layer-control-list'
+    for (const row of this.rows) list.append(this.buildRow(row))
 
-    for (const row of this.rows) root.append(this.buildRow(row))
+    const head = document.createElement('button')
+    head.type = 'button'
+    head.className = 'layer-ctrl-head'
+    head.setAttribute('aria-controls', list.id)
+    const setOpen = (open: boolean) => {
+      list.hidden = !open
+      head.setAttribute('aria-expanded', String(open))
+      head.textContent = `${open ? '▾' : '▸'} Layers`
+      root.style.padding = open ? '6px 0' : '0'
+    }
+    head.addEventListener('click', () => setOpen(list.hidden))
+    root.append(head, list)
+    setOpen(!startCollapsed())
 
     this.container = root
     this.applyAll()

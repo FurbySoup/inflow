@@ -260,6 +260,14 @@ body {
   color: var(--muted);
 }
 
+/* Touch (ADR-0014): controls grow to a usable target; hover-only cues never carry meaning (ADR-0012). */
+@media (pointer: coarse) {
+  .btn-console { min-height: 32px; padding: 4px 12px; }
+  .stream-swap, .stream-sound { min-height: 28px; padding: 4px 10px; }
+  .stream-select { min-height: 28px; }
+  .alerts li[role='button'] { min-height: 36px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .led, .alerts li.alert-emergency { animation: none !important; }
 }

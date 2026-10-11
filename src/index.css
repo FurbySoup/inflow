@@ -4,10 +4,15 @@
 .layout {
   display: grid;
   height: 100vh;
-  padding: 4px;
-  /* Track sizes come from the layout store (ADR-0011) via --side-w / --bottom-h. */
-  grid-template-columns: minmax(0, 1fr) 6px var(--side-w, 400px);
-  grid-template-rows: 40px minmax(0, 1fr) 6px var(--bottom-h, 230px);
+  /* dvh: mobile browsers' 100vh includes the collapsing address bar. */
+  height: 100dvh;
+  /* Notched phones in landscape: keep content out of the safe-area insets (needs viewport-fit=cover). */
+  padding: max(4px, env(safe-area-inset-top)) max(4px, env(safe-area-inset-right))
+    max(4px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
+  /* Track sizes come from the layout store (ADR-0011) via --side-w / --bottom-h. They're capped
+     against the viewport so a size saved on a big monitor can't crush the map on a small one. */
+  grid-template-columns: minmax(0, 1fr) 6px min(var(--side-w, 400px), 50vw);
+  grid-template-rows: 2.5rem minmax(0, 1fr) 6px min(var(--bottom-h, 230px), 45vh);
   grid-template-areas:
     'top top top'
     'map vsplit side'
@@ -57,7 +62,12 @@ body.resizing iframe { pointer-events: none; }
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   color: var(--muted);
+  /* Last resort when controls outgrow the bar: scroll it rather than overflow the page. */
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+.topbar > * { flex: none; }
 .brand { color: var(--text); font-weight: 700; letter-spacing: 0.2em; }
 .topbar strong { color: var(--text); font-weight: 600; }
 .clock { font-variant-numeric: tabular-nums; color: var(--accent) !important; }
@@ -80,10 +90,46 @@ body.resizing iframe { pointer-events: none; }
 }
 .console-cell { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
 
+/* Layer control header: a toggle, so it signifies like one (ADR-0012). */
+.layer-ctrl-head {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 6px 10px;
+  color: var(--text);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.layer-ctrl-head[aria-expanded='false'] { border-bottom-color: transparent; }
+.layer-ctrl-head:hover { color: var(--accent); }
+.layer-ctrl-head:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
 /* MapLibre controls on the dark theme */
 .maplibregl-ctrl-attrib { background: rgba(5, 8, 13, 0.7) !important; color: var(--muted); }
 .maplibregl-ctrl-attrib a { color: var(--muted) !important; }
 
+/* Responsive tiers (ADR-0014). Check every change at the viewport matrix in docs/work-plan.md. */
+
+/* Mid-width desktop / tablet landscape: tighten the top bar, drop the secondary clock. */
+@media (max-width: 1280px) {
+  .topbar { gap: 14px; }
+  .topbar-local { display: none; }
+}
+
+/* Wall displays: scale rem-based type so a 4K panel reads from across the room. */
+@media (min-width: 2560px) {
+  html { font-size: 125%; }
+}
+@media (min-width: 3600px) {
+  html { font-size: 150%; }
+}
+
+/* Narrow (phones, tablet portrait): stack map, feeds, console; the page scrolls. */
 @media (max-width: 900px) {
   .layout {
     height: auto;
@@ -95,4 +141,23 @@ body.resizing iframe { pointer-events: none; }
   .topbar { flex-wrap: wrap; gap: 12px; padding: 8px 12px; }
   .bottom { grid-template-columns: 1fr; }
   .panel-body { max-height: 320px; }
+}
+
+/* Short landscape (phones on their side, in-vehicle mounts): map and feeds side by side fill the
+   first screen; the console follows below. Comes after the narrow tier so it wins on e.g. 844x390. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .layout {
+    height: auto;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    grid-template-rows: auto calc(100dvh - 60px) auto;
+    grid-template-areas: 'top top' 'map side' 'bottom bottom';
+    column-gap: 4px;
+  }
+  .splitter { display: none; }
+  .topbar { flex-wrap: nowrap; gap: 10px; padding: 4px 10px; }
+  .side { overflow-y: auto; }
+  /* The console is the second "screen": bounded, so each panel scrolls inside itself. */
+  .bottom { height: calc(100dvh - 12px); margin-top: 4px; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 4px; }
+  .bottom > .splitter { display: none; }
+  .panel-body { max-height: none; }
 }

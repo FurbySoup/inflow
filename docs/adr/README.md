@@ -17,6 +17,7 @@ Short, numbered, immutable. To change a decision, add a new ADR that supersedes 
 | [0011](0011-layout-customization.md) | Layout customization | Accepted |
 | [0012](0012-affordances-and-signifiers.md) | Interaction design: affordances, signifiers, feedback (Norman) | Accepted |
 | [0013](0013-stream-liveness.md) | Stream liveness via a YouTube page proxy (local only) | Accepted |
+| [0014](0014-responsive-tiers.md) | Responsive tiers: screen sizes and orientations | Accepted |
 
 Template:
 
