@@ -1,0 +1,122 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "sel": "SEL3",
+    "utc_issued": "2025-05-05T17:25:00Z",
+    "utc_expired": "2025-05-06T01:04:00Z",
+    "type": "SVR",
+    "num": 223
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -76.3,
+        37.93
+       ],
+       [
+        -77,
+        34.87
+       ],
+       [
+        -78.94,
+        34.87
+       ],
+       [
+        -78.32,
+        37.93
+       ],
+       [
+        -76.3,
+        37.93
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "sel": "SEL7",
+    "utc_issued": "2025-05-05T20:25:00Z",
+    "utc_expired": "2025-05-06T02:03:00Z",
+    "type": "TOR",
+    "num": 227
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -104.9,
+        34.46
+       ],
+       [
+        -101.89,
+        32.71
+       ],
+       [
+        -101.89,
+        30.97
+       ],
+       [
+        -104.9,
+        32.73
+       ],
+       [
+        -104.9,
+        34.46
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "sel": "SEL8",
+    "utc_issued": "2025-05-05T22:00:00Z",
+    "utc_expired": "2025-05-06T02:43:00Z",
+    "type": "SVR",
+    "num": 228
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -75.98,
+        39.89
+       ],
+       [
+        -75.64,
+        38.02
+       ],
+       [
+        -77.85,
+        38.02
+       ],
+       [
+        -78.24,
+        39.89
+       ],
+       [
+        -75.98,
+        39.89
+       ]
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}
