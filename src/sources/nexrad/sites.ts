@@ -17,8 +17,9 @@ export interface NexradFeature {
   properties: {
     sid: string
     sname: string
-    state: string
-    country: string
+    // IEM leaves these null for non-US sites or unset fields, so read them defensively.
+    state: string | null
+    country: string | null
     online: boolean
   }
 }
@@ -37,11 +38,13 @@ export function normalizeSites(raw: NexradSitesResponse): NexradSite[] {
     const p = f.properties
     if (!p.online || !f.geometry) continue
     const [lng, lat] = f.geometry.coordinates
+    const state = (p.state ?? '').trim()
+    const country = (p.country ?? '').trim()
     sites.push({
       sid: p.sid,
       name: p.sname,
       location: [lng, lat],
-      lower48: p.country === 'US' && p.state.trim() !== '' && !OUTSIDE_LOWER_48.has(p.state.trim()),
+      lower48: country === 'US' && state !== '' && !OUTSIDE_LOWER_48.has(state),
     })
   }
   return sites

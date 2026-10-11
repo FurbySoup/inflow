@@ -113,10 +113,41 @@ interface LayerState {
   sites: NexradSite[] | null
   site: NexradSite | null
   meta: RidgeMetaEntry[] | null
-  debounce: ReturnType<typeof setTimeout> | null
+  /** Set when the map is removed (StrictMode remounts): async callbacks then do nothing. */
+  disposed: boolean
 }
 
 const states = new WeakMap<maplibregl.Map, LayerState>()
+
+/**
+ * Calls `onChange` once the AOI has been quiet for `delayMs`. The subscription and the pending timer
+ * are both torn down when the map is removed, so a remounted map is not driven by stale listeners.
+ */
+export function followAoi(
+  map: { once(type: 'remove', listener: () => void): unknown },
+  subscribe: (listener: () => void) => () => void,
+  onChange: () => void,
+  delayMs: number,
+): void {
+  let timer: ReturnType<typeof setTimeout> | null = null
+  const unsubscribe = subscribe(() => {
+    if (timer !== null) clearTimeout(timer)
+    timer = setTimeout(() => {
+      timer = null
+      onChange()
+    }, delayMs)
+  })
+  map.once('remove', () => {
+    unsubscribe()
+    if (timer !== null) clearTimeout(timer)
+    timer = null
+  })
+}
+
+// Layer zoom range while no site is known. A layer outside its zoom range never requests tiles, so the
+// source's empty `tiles` array is never used. Restored to the full range once a site is chosen.
+const HIDDEN_BY_ZOOM = 24
+const FULL_ZOOM_RANGE = 0
 
 function aoiCentre(): LngLat {
   const b = useAoi.getState().bbox
@@ -137,13 +168,14 @@ function renderView(st: LayerState): void {
  * a refresh (`bustKey` set), so the same site is re-requested rather than served from cache.
  */
 function chooseSite(st: LayerState, bustKey?: number): void {
-  if (!st.sites) return
+  if (st.disposed || !st.sites) return
   const site = nearestSite(st.sites, aoiCentre())
   if (!site) return
   if (site.sid !== st.site?.sid || bustKey !== undefined) {
     st.site = site
     const src = st.map.getSource(SOURCE_ID) as maplibregl.RasterTileSource | undefined
     src?.setTiles([srvTileUrl(site.sid, bustKey)])
+    st.map.setLayerZoomRange(SOURCE_ID, FULL_ZOOM_RANGE, HIDDEN_BY_ZOOM)
   }
   renderView(st)
 }
@@ -152,6 +184,7 @@ function loadSites(st: LayerState): void {
   // On failure the next refresh retries (loadNexradSites does not cache a failed fetch).
   loadNexradSites()
     .then((sites) => {
+      if (st.disposed) return
       st.sites = sites
       chooseSite(st)
     })
@@ -160,7 +193,9 @@ function loadSites(st: LayerState): void {
 
 async function refreshMeta(st: LayerState): Promise<void> {
   try {
-    st.meta = await fetchRidgeMeta()
+    const meta = await fetchRidgeMeta()
+    if (st.disposed) return
+    st.meta = meta
     renderView(st)
   } catch {
     // Keep the last known scan time; the readout stays as it was.
@@ -174,21 +209,24 @@ export const velocityLayer: MapLayer = {
   defaultVisible: false,
   add(map) {
     // The source and layer exist from the start so LayerControl can apply the stored visibility.
-    // Tiles arrive once the site list has loaded.
+    // The layer starts outside its zoom range (see HIDDEN_BY_ZOOM) until the first site is chosen.
     map.addSource(SOURCE_ID, { type: 'raster', tiles: [], tileSize: 256 })
-    map.addLayer({ id: SOURCE_ID, type: 'raster', source: SOURCE_ID, paint: { 'raster-opacity': OPACITY } })
+    map.addLayer({
+      id: SOURCE_ID,
+      type: 'raster',
+      source: SOURCE_ID,
+      minzoom: HIDDEN_BY_ZOOM,
+      paint: { 'raster-opacity': OPACITY },
+    })
     const control = new VelocityControl()
     map.addControl(control, 'bottom-left')
-    const st: LayerState = { map, control, sites: null, site: null, meta: null, debounce: null }
+    const st: LayerState = { map, control, sites: null, site: null, meta: null, disposed: false }
     states.set(map, st)
-
-    useAoi.subscribe(() => {
-      if (st.debounce !== null) clearTimeout(st.debounce)
-      st.debounce = setTimeout(() => {
-        st.debounce = null
-        chooseSite(st)
-      }, SITE_DEBOUNCE_MS)
+    map.once('remove', () => {
+      st.disposed = true
     })
+
+    followAoi(map, (listener) => useAoi.subscribe(listener), () => chooseSite(st), SITE_DEBOUNCE_MS)
     loadSites(st)
     void refreshMeta(st)
   },

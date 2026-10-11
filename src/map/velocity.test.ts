@@ -1,5 +1,59 @@
-import { describe, expect, it } from 'vitest'
-import { siteLabel, velocityReadout } from './velocity'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { followAoi, siteLabel, velocityReadout } from './velocity'
+
+describe('followAoi', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+
+  function harness() {
+    let listener: (() => void) | null = null
+    let removeListener: (() => void) | null = null
+    const unsubscribe = vi.fn(() => {
+      listener = null
+    })
+    const map = {
+      once(_type: 'remove', fn: () => void) {
+        removeListener = fn
+        return this
+      },
+    }
+    const subscribe = (fn: () => void) => {
+      listener = fn
+      return unsubscribe
+    }
+    return {
+      map,
+      subscribe,
+      unsubscribe,
+      emit: () => listener?.(),
+      remove: () => removeListener?.(),
+    }
+  }
+
+  it('calls onChange once after the AOI has been quiet for the delay', () => {
+    const h = harness()
+    const onChange = vi.fn()
+    followAoi(h.map, h.subscribe, onChange, 1000)
+    h.emit()
+    vi.advanceTimersByTime(600)
+    h.emit()
+    vi.advanceTimersByTime(999)
+    expect(onChange).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(1)
+    expect(onChange).toHaveBeenCalledTimes(1)
+  })
+
+  it('unsubscribes and drops the pending timer when the map is removed', () => {
+    const h = harness()
+    const onChange = vi.fn()
+    followAoi(h.map, h.subscribe, onChange, 1000)
+    h.emit()
+    h.remove()
+    expect(h.unsubscribe).toHaveBeenCalledTimes(1)
+    vi.advanceTimersByTime(5000)
+    expect(onChange).not.toHaveBeenCalled()
+  })
+})
 
 const NOW = Date.parse('2026-10-11T15:40:00Z')
 
