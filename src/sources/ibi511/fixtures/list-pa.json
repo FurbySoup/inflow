@@ -1,0 +1,46 @@
+{
+  "_note": "Trimmed from the live first page of https://www.511pa.com/List/GetData/Cameras (curl 2026-10-11). Fields the adapter never reads are dropped. Records 1-4 are real; none is disabled or blocked upstream.",
+  "recordsTotal": 1565,
+  "data": [
+    {
+      "DT_RowId": "1",
+      "id": 1,
+      "roadway": "I-176",
+      "direction": "Unknown",
+      "location": "I-176 E/B @ SR 422 Interchange Berks Co.",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-75.90045 40.30142)" } },
+      "state": null,
+      "images": [{ "id": 4691, "cameraSiteId": 1, "imageUrl": "/map/Cctv/4691", "disabled": false, "blocked": false }]
+    },
+    {
+      "DT_RowId": "2",
+      "id": 2,
+      "roadway": "I-376",
+      "direction": "Unknown",
+      "location": " I-376 W/B @ Exit 10A Churchill Allegheny Co.",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-79.827031 40.442056)" } },
+      "state": null,
+      "images": [{ "id": 4692, "cameraSiteId": 2, "imageUrl": "/map/Cctv/4692", "disabled": false, "blocked": false }]
+    },
+    {
+      "DT_RowId": "3",
+      "id": 3,
+      "roadway": "I-380",
+      "direction": "Unknown",
+      "location": "I-380 N/B @ Exit 20 Daleville Lackawanna Co.",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-75.546164 41.313519)" } },
+      "state": null,
+      "images": [{ "id": 4693, "cameraSiteId": 3, "imageUrl": "/map/Cctv/4693", "disabled": false, "blocked": false }]
+    },
+    {
+      "DT_RowId": "4",
+      "id": 4,
+      "roadway": "I-70",
+      "direction": "Unknown",
+      "location": " I-70 W/B @ Exit 156 Town Hill Fulton Co. ",
+      "latLng": { "geography": { "coordinateSystemId": 4326, "wellKnownText": "POINT (-78.2437 39.885119)" } },
+      "state": null,
+      "images": [{ "id": 4694, "cameraSiteId": 4, "imageUrl": "/map/Cctv/4694", "disabled": false, "blocked": false }]
+    }
+  ]
+}
