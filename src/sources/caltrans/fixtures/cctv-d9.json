@@ -1,0 +1,92 @@
+{
+  "data": [
+    {
+      "cctv": {
+        "index": "1",
+        "location": {
+          "district": "9",
+          "locationName": "SR-203 : Mammoth Mountain",
+          "nearbyPlace": "Mammoth Lakes",
+          "longitude": "-118.91848",
+          "latitude": "37.64111",
+          "county": "Mono",
+          "route": "SR-203"
+        },
+        "inService": "true",
+        "imageData": {
+          "streamingVideoURL": "",
+          "static": {
+            "currentImageUpdateFrequency": "5",
+            "currentImageURL": "https://cwwp2.dot.ca.gov/data/d9/cctv/image/sr203mammothmountain/sr203mammothmountain.jpg"
+          }
+        }
+      }
+    },
+    {
+      "cctv": {
+        "index": "33",
+        "location": {
+          "district": "9",
+          "locationName": "US-395 : North of SR-14 1",
+          "nearbyPlace": "Inyokern",
+          "longitude": "-117.86918",
+          "latitude": "35.72336",
+          "county": "Kern",
+          "route": "US-395"
+        },
+        "inService": "true",
+        "imageData": {
+          "streamingVideoURL": "",
+          "static": {
+            "currentImageUpdateFrequency": "20",
+            "currentImageURL": "https://cwwp2.dot.ca.gov/data/d9/cctv/image/us395northofsr141/us395northofsr141.jpg"
+          }
+        }
+      }
+    },
+    {
+      "cctv": {
+        "index": "38",
+        "location": {
+          "district": "9",
+          "locationName": "SR-14 : Silver Queen Road",
+          "nearbyPlace": "Mojave",
+          "longitude": "-118.15893",
+          "latitude": "34.98746",
+          "county": "Kern",
+          "route": "SR-14"
+        },
+        "inService": "true",
+        "imageData": {
+          "streamingVideoURL": "",
+          "static": {
+            "currentImageUpdateFrequency": "5",
+            "currentImageURL": "https://cwwp2.dot.ca.gov/data/d9/cctv/image/sr14silverqueenroad/sr14silverqueenroad.jpg"
+          }
+        }
+      }
+    },
+    {
+      "cctv": {
+        "index": "42",
+        "location": {
+          "district": "9",
+          "locationName": "SR-58 : Cameron Road",
+          "nearbyPlace": "Mojave",
+          "longitude": "-118.30306",
+          "latitude": "35.09684",
+          "county": "Kern",
+          "route": "SR-58"
+        },
+        "inService": "false",
+        "imageData": {
+          "streamingVideoURL": "",
+          "static": {
+            "currentImageUpdateFrequency": "5",
+            "currentImageURL": "https://cwwp2.dot.ca.gov/data/d9/cctv/image/sr58cameronroad/sr58cameronroad.jpg"
+          }
+        }
+      }
+    }
+  ]
+}

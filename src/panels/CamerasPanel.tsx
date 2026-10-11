@@ -24,6 +24,8 @@ import {
   pennsylvaniaCameras,
 } from '../sources/ibi511/adapter'
 import { fetchSnapshotDataUrl } from '../sources/txdot/snapshot'
+import { washingtonCameras } from '../sources/wsdot/adapter'
+import { californiaCameras } from '../sources/caltrans/adapter'
 import { useAoi } from '../state/aoi'
 import { queryStatus, type FeedState, type FeedStatus } from '../lib/feedStatus'
 import { Panel } from './Panel'
@@ -57,6 +59,8 @@ export const CAMERA_SOURCES: CameraSource[] = [
   { adapter: nevadaCameras, states: ['NV'], attribution: 'NVroads' },
   { adapter: pennsylvaniaCameras, states: ['PA'], attribution: '511PA' },
   { adapter: newEnglandCameras, states: ['VT', 'NH', 'ME'], attribution: 'New England 511' },
+  { adapter: washingtonCameras, states: ['WA'], attribution: 'WSDOT' },
+  { adapter: californiaCameras, states: ['CA'], attribution: 'Caltrans' },
 ]
 
 /** "NO DOT CAMERA COVERAGE IN AOI — COVERED: FL · GA · …" built from the source list. */
