@@ -2,60 +2,112 @@
 @import './ui/tokens.css';
 @import './ui/styles.css';
 
+/* Root: the top bar above the workspace grid. data-preset (set by App.tsx from the layout store,
+   or 'mobile' below 900 px) selects the token geometry (ADR-0015). Height is 100dvh: mobile
+   browsers' 100vh includes the collapsing address bar. Padding keeps content out of notch insets
+   (needs viewport-fit=cover). */
 .layout {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gutter);
   height: 100vh;
-  /* dvh: mobile browsers' 100vh includes the collapsing address bar. */
   height: 100dvh;
-  /* Notched phones in landscape: keep content out of the safe-area insets (needs viewport-fit=cover). */
   padding: max(4px, env(safe-area-inset-top)) max(4px, env(safe-area-inset-right))
     max(4px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
-  /* Track sizes come from the layout store (ADR-0011) via --side-w / --bottom-h. They're capped
-     against the viewport so a size saved on a big monitor can't crush the map on a small one. */
-  grid-template-columns: minmax(0, 1fr) 6px min(var(--side-w, 400px), 50vw);
-  grid-template-rows: 2.5rem minmax(0, 1fr) 6px min(var(--bottom-h, 230px), 45vh);
-  grid-template-areas:
-    'top top top'
-    'map vsplit side'
-    'hsplit vsplit side'
-    'bottom vsplit side';
-  row-gap: 0;
 }
-.topbar { margin-bottom: 4px; }
 
-/* Splitters */
-.splitter { position: relative; background: transparent; touch-action: none; outline: none; }
-.splitter::after {
-  content: '';
-  position: absolute;
-  background: var(--border);
-  transition: background 0.15s;
+/* Workspace grid. DEFAULT (ADR-0011) keeps user-resizable tracks: the feeds width, the console
+   height and the three console widths come from the layout store (--side-w, --bottom-h, --c1..--c3)
+   and the splitters are tracks themselves, so DEFAULT has no gap of its own. Its geometry is the
+   DEFAULT token shape ("map" over "alerts radio cams", feeds on the right) with splitter tracks in place
+   of the token fr/% values. */
+.workspace {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  gap: 0;
+  grid-template-columns:
+    var(--c1, minmax(0, 1fr)) var(--gutter) var(--c2, minmax(0, 1fr)) var(--gutter)
+    var(--c3, minmax(0, 1fr)) var(--gutter) min(var(--side-w, 400px), 50vw);
+  grid-template-rows: minmax(0, 1fr) var(--gutter) min(var(--bottom-h, 230px), 45vh);
+  grid-template-areas:
+    'map map map map map vsplit feeds'
+    'hsplit hsplit hsplit hsplit hsplit vsplit feeds'
+    'alerts cs1 radio cs2 cams vsplit feeds';
 }
+
+/* WALL, CHASE and mobile use the preset tokens verbatim (ADR-0015): columns and areas come from
+   --layout-cols / --layout-areas. Rows use the collapse-aware variables set by App.tsx, which equal
+   the token rows when the panels are at their preset collapse state. Splitters are hidden here
+   because the token geometry is fixed. Gutters are --gutter; panels have no borders (HANDOFF §4). */
+.layout[data-preset='wall'] .workspace,
+.layout[data-preset='chase'] .workspace,
+.layout[data-preset='mobile'] .workspace {
+  gap: var(--gutter);
+  grid-template-columns: var(--layout-cols);
+  grid-template-areas: var(--layout-areas);
+}
+/* Open sizes of the collapsible console rows, read by App.tsx through --row-audio / --row-cams. */
+.layout[data-preset='wall'] { --audio-open: minmax(0, 1fr); --cams-open: minmax(0, 1fr); }
+.layout[data-preset='chase'] { --audio-open: 190px; --cams-open: minmax(0, 1fr); }
+/* WALL: alerts column left, map centre, feeds and the collapsible radio/cams rows on the right. */
+.layout[data-preset='wall'] .workspace {
+  grid-template-rows: minmax(0, 1fr) var(--row-audio) var(--row-cams);
+}
+/* CHASE: map left, alerts / feeds / radio / cams stacked right. The radio row keeps its 190 px token height. */
+.layout[data-preset='chase'] .workspace {
+  grid-template-rows: minmax(0, 1fr) auto var(--row-audio) var(--row-cams);
+}
+.layout[data-preset='mobile'] .workspace {
+  grid-template-rows: var(--layout-rows);
+}
+
+/* Splitters. The track is the gutter; the hit area (12 px, 44 px for coarse pointers) is centred on it. */
+.splitter { position: relative; z-index: 2; background: transparent; touch-action: none; outline: none; }
+.splitter::before { content: ''; position: absolute; }
+.splitter::after { content: ''; position: absolute; background: var(--border-strong); transition: background var(--dur-fast); }
 .splitter-v { cursor: col-resize; }
-.splitter-v::after { top: 0; bottom: 0; left: 2px; width: 2px; }
+.splitter-v::before { top: 0; bottom: 0; left: 50%; width: var(--splitter-hit); transform: translateX(-50%); }
+.splitter-v::after { top: 0; bottom: 0; left: calc(50% - 0.5px); width: var(--splitter-line); }
 .splitter-h { cursor: row-resize; }
-.splitter-h::after { left: 0; right: 0; top: 2px; height: 2px; }
-.splitter:hover::after, .splitter:focus-visible::after { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
-/* Signifier (ADR-0012): a dotted grip marks the handle as draggable, not just a border. */
-.splitter::before {
-  content: '';
-  position: absolute;
-  z-index: 1;
-  background: radial-gradient(circle, var(--muted) 1px, transparent 1.5px);
+.splitter-h::before { left: 0; right: 0; top: 50%; height: var(--splitter-hit); transform: translateY(-50%); }
+.splitter-h::after { left: 0; right: 0; top: calc(50% - 0.5px); height: var(--splitter-line); }
+@media (pointer: coarse) {
+  .splitter-v::before { width: 44px; }
+  .splitter-h::before { height: 44px; }
 }
-.splitter-v::before { top: 50%; left: 1px; width: 4px; height: 24px; transform: translateY(-50%); background-size: 4px 6px; }
-.splitter-h::before { left: 50%; top: 1px; height: 4px; width: 24px; transform: translateX(-50%); background-size: 6px 4px; }
-.splitter:hover::before, .splitter:focus-visible::before { background-image: radial-gradient(circle, var(--accent) 1px, transparent 1.5px); }
+/* Grip chip (ADR-0012 signifier): three 2 px dots on the raised surface, centred on the line. */
+.splitter-grip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: var(--surface-raised);
+  background-image: radial-gradient(circle, var(--text-muted) 1px, transparent 1.2px);
+  background-size: 6px 6px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.splitter-v .splitter-grip { width: 6px; height: 18px; background-repeat: repeat-y; }
+.splitter-h .splitter-grip { width: 18px; height: 6px; background-repeat: repeat-x; }
+.splitter:hover::after, .splitter:focus-visible::after { background: var(--accent); }
+.splitter:hover .splitter-grip, .splitter:focus-visible .splitter-grip {
+  background-image: radial-gradient(circle, var(--accent) 1px, transparent 1.2px);
+}
 body.resizing { user-select: none; }
 /* Iframes swallow pointer events mid-drag; disable them while resizing. */
 body.resizing iframe { pointer-events: none; }
+/* Outside DEFAULT, and on narrow screens, splitters are hidden (see the preset rules above). */
+.layout[data-preset='wall'] .splitter,
+.layout[data-preset='chase'] .splitter,
+.layout[data-preset='mobile'] .splitter { display: none; }
 
 /* Top bar */
 .topbar {
-  grid-area: top;
+  flex: none;
   display: flex;
   align-items: center;
   gap: 24px;
+  min-height: var(--topbar-h);
   padding: 0 14px;
   background: var(--panel-head);
   border: 1px solid var(--border);
@@ -78,21 +130,16 @@ body.resizing iframe { pointer-events: none; }
 .spacer { flex: 1; }
 
 /* Map */
-.map-area { grid-area: map; position: relative; min-height: 0; border: 1px solid var(--border); }
+.map-area { grid-area: map; position: relative; min-height: 0; min-width: 0; }
 .map { width: 100%; height: 100%; }
 
-.side { grid-area: side; min-height: 0; display: flex; flex-direction: column; }
-/* Console tracks come from the layout store via --c1..--c3 (ADR-0011); the splitter tracks sit between them. */
-.bottom {
-  grid-area: bottom;
-  min-height: 0;
-  display: grid;
-  row-gap: 4px;
-  column-gap: 0;
-  grid-template-columns:
-    var(--c1, minmax(0, 1fr)) 6px var(--c2, minmax(0, 1fr)) 6px var(--c3, minmax(0, 1fr));
-}
+/* Feeds column (DEFAULT splitter track, or the token column in other presets). */
+.side { grid-area: feeds; min-height: 0; min-width: 0; display: flex; flex-direction: column; }
+/* Console cells: each panel sits in its own grid area. Widths come from --c1..--c3 in DEFAULT. */
 .console-cell { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.cell-alerts { grid-area: alerts; }
+.cell-radio { grid-area: radio; }
+.cell-cams { grid-area: cams; }
 
 /* Layer control header: a toggle, so it signifies like one (ADR-0012). */
 .layer-ctrl-head {
@@ -123,6 +170,8 @@ body.resizing iframe { pointer-events: none; }
 @media (max-width: 1280px) {
   .topbar { gap: 14px; }
   .topbar-local { display: none; }
+  /* WALL's fixed 460 px / 540 px columns would leave no map at this width: scale them with the viewport. */
+  .layout[data-preset='wall'] .workspace { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.1fr); }
 }
 
 /* Wall displays: scale rem-based type so a 4K panel reads from across the room. */
@@ -133,36 +182,28 @@ body.resizing iframe { pointer-events: none; }
   html { font-size: 150%; }
 }
 
-/* Narrow (phones, tablet portrait): stack map, feeds, console; the page scrolls. */
+/* Narrow (phones, tablet portrait): stack map, feeds, console; the page scrolls. The layout itself
+   is the mobile token set (data-preset='mobile', set by App.tsx at this breakpoint). */
 @media (max-width: 900px) {
-  .layout {
-    height: auto;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 55vh auto auto;
-    grid-template-areas: 'top' 'map' 'side' 'bottom';
-  }
-  .splitter { display: none; }
+  .layout { height: auto; }
   .topbar { flex-wrap: wrap; gap: 12px; padding: 8px 12px; }
-  .bottom { grid-template-columns: 1fr; }
   .panel-body { max-height: 320px; }
 }
 
 /* Short landscape (phones on their side, in-vehicle mounts): map and feeds side by side fill the
-   first screen; the console follows below. Comes after the narrow tier so it wins on e.g. 844x390. */
-@media (orientation: landscape) and (max-height: 500px) {
-  .layout {
-    height: auto;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    grid-template-rows: auto calc(100dvh - 84px) auto;
-    grid-template-areas: 'top top' 'map side' 'bottom bottom';
-    column-gap: 4px;
+   first screen; the console follows below as a bounded second screen with three columns. Comes after
+   the narrow tier so it wins on e.g. 844x390. Capped at 900 px wide so a short desktop window keeps its layout. */
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 900px) {
+  .layout { height: auto; }
+  .layout[data-preset] .workspace {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: calc(100dvh - 84px) calc(100dvh - 12px);
+    grid-template-areas:
+      'map map map feeds feeds feeds'
+      'alerts alerts radio radio cams cams';
   }
-  .splitter { display: none; }
   /* Wrap to two rows rather than scroll: a hidden-scrollbar overflow would hide the layout menu with no signifier (ADR-0012). */
   .topbar { flex-wrap: wrap; row-gap: 4px; gap: 10px; padding: 4px 10px; }
   .side { overflow-y: auto; }
-  /* The console is the second "screen": bounded, so each panel scrolls inside itself. */
-  .bottom { height: calc(100dvh - 12px); margin-top: 4px; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 4px; }
-  .bottom > .splitter { display: none; }
   .panel-body { max-height: none; }
 }

@@ -84,7 +84,9 @@ export function Splitter({ target, area }: SplitterProps) {
       onPointerDown={onPointerDown}
       onDoubleClick={() => reset(target)}
       onKeyDown={onKeyDown}
-    />
+    >
+      <span className="splitter-grip" aria-hidden="true" />
+    </div>
   )
 }
 
@@ -96,8 +98,9 @@ interface ConsoleSplitterProps {
 }
 
 /**
- * Vertical handle between two console panels. Sits between them in the `.bottom` grid, so its
- * neighbours are found through the DOM when measuring a drag.
+ * Vertical handle between two console panels, on grid area `cs1` or `cs2` of the DEFAULT workspace
+ * (index.css). Its neighbours are the cells on either side in the DOM, found when measuring a drag.
+ * Hidden by CSS outside DEFAULT, where the preset tokens have no splitter tracks.
  */
 export function ConsoleSplitter({ boundary, disabled }: ConsoleSplitterProps) {
   const split = useLayout((s) => s.consoleSplit)
@@ -139,7 +142,7 @@ export function ConsoleSplitter({ boundary, disabled }: ConsoleSplitterProps) {
   return (
     <div
       className="splitter splitter-v"
-      style={disabled ? { visibility: 'hidden' } : undefined}
+      style={{ gridArea: boundary === 0 ? 'cs1' : 'cs2', ...(disabled ? { visibility: 'hidden' } : undefined) }}
       role="separator"
       aria-orientation="vertical"
       aria-valuenow={leftShare}
@@ -151,6 +154,8 @@ export function ConsoleSplitter({ boundary, disabled }: ConsoleSplitterProps) {
       onPointerDown={onPointerDown}
       onDoubleClick={() => !disabled && resetConsoleSplit(boundary)}
       onKeyDown={onKeyDown}
-    />
+    >
+      <span className="splitter-grip" aria-hidden="true" />
+    </div>
   )
 }
