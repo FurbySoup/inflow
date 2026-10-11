@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import { useSource } from '../lib/useSource'
 import { spcOutlookDay } from '../sources/spc/outlook'
 import { useAoi } from '../state/aoi'
+import { Abbr } from '../ui'
 import { highestCategory, riskSummary, type RiskCategory } from './spcRisk'
 
 // Top-bar SPC risk for the AOI (Days 1–3). Read-only (ADR-0012): plain text, no border or button look.
@@ -37,14 +38,16 @@ export function OutlookRisk() {
 
   return (
     <span className="topbar-item" title="Highest SPC categorical risk in view, Days 1–3">
-      SPC{' '}
+      <Abbr term="SPC" />{' '}
       {summary.map((r, i) => (
         <span key={r.day}>
           {i > 0 && ' · '}D{r.day}{' '}
           {r.label ? (
             <>
               <span aria-hidden="true" style={swatch(r.label)} />
-              <strong>{r.label}</strong>
+              <strong>
+                <Abbr term={r.label} />
+              </strong>
             </>
           ) : (
             '—'
