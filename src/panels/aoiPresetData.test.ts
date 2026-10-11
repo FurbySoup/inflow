@@ -39,6 +39,11 @@ describe('matchPreset', () => {
     expect(matchPreset(scale(byId('dixie'), 1, 2))).toBe('dixie')
   })
 
+  it('still matches a tall preset fitted to a wide desktop map', () => {
+    // Plains (10° x 12°) on a 952x484 map: height fits, width expands ~3x. Live check 2026-10-11.
+    expect(matchPreset(scale(byId('plains'), 3.2, 1.05))).toBe('plains')
+  })
+
   it('still matches a view zoomed out by 1.5x per axis', () => {
     expect(matchPreset(scale(byId('plains'), 1.5, 1.5))).toBe('plains')
   })

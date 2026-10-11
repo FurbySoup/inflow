@@ -35,8 +35,10 @@ export const AOI_PRESETS: readonly AoiPreset[] = [
 const CENTRE_TOLERANCE = 0.05
 // Slack in degrees on the edge-coverage check, for float noise in MapLibre's bounds.
 const EDGE_SLACK = 0.05
-// A view larger than this multiple of the preset's area means the user has zoomed out past it.
-const MAX_AREA_RATIO = 3
+// fitBounds fills one axis exactly (plus padding) and expands the other to the map's aspect ratio,
+// so a preset view fits the region along at least one axis. Beyond this factor on both axes, the
+// user has zoomed out past it. (An area cap failed on wide maps: Plains at 1366x768 is >3x by area.)
+const MAX_FIT_RATIO = 1.6
 
 // Returns the preset whose region the view still shows, or null after a manual pan or zoom.
 // fitBounds adapts a preset to any aspect ratio by expanding one axis symmetrically, so the test
@@ -58,8 +60,8 @@ function isPresetView(preset: Bbox, view: Bbox): boolean {
     view.north >= preset.north - EDGE_SLACK
   if (!covers) return false
 
-  const viewArea = (view.east - view.west) * (view.north - view.south)
-  if (viewArea > presetWidth * presetHeight * MAX_AREA_RATIO) return false
+  const fit = Math.min((view.east - view.west) / presetWidth, (view.north - view.south) / presetHeight)
+  if (fit > MAX_FIT_RATIO) return false
 
   const dx = Math.abs((view.west + view.east) / 2 - (preset.west + preset.east) / 2)
   const dy = Math.abs((view.south + view.north) / 2 - (preset.south + preset.north) / 2)
