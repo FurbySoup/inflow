@@ -8,9 +8,8 @@ export function AoiPresets() {
   const requestAoi = useAoi((s) => s.requestAoi)
   const active = matchPreset(bbox)
 
-  // Inline layout only: the group is a flex row, and the buttons keep their console styling.
   return (
-    <span role="group" aria-label="Map region presets" style={{ display: 'inline-flex', gap: 4 }}>
+    <span role="group" aria-label="Map region presets" className="aoi-presets">
       {AOI_PRESETS.map((p) => (
         <ConsoleButton
           key={p.id}

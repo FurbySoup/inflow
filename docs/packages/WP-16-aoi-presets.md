@@ -5,7 +5,7 @@ Wave 4 · Depends on orchestrator prep P2 (`aoiRequest`) · ADRs: 0003, 0007, 00
 A top-bar control that jumps the map to a named region. The map's `moveend` then sets the AOI as it does today, so every panel follows.
 
 ## Owns
-`src/panels/AoiPresets.tsx`, `src/panels/aoiPresets.ts` (preset data + pure helpers), `src/panels/aoiPresets.test.ts`.
+`src/panels/AoiPresets.tsx`, `src/panels/aoiPresetData.ts` (preset data + pure helpers), `src/panels/aoiPresetData.test.ts` (renamed from `aoiPresets.ts`: a case-only clash with the component breaks TypeScript).
 Registry edits allowed:
 - `Topbar.tsx`: render `<AoiPresets />` next to the AOI readout (one line plus the import);
 - `MapPanel.tsx`: one `useEffect` that consumes `aoiRequest` (`fitBounds`, then `clearAoiRequest()`), modelled on the existing `focus` effect.

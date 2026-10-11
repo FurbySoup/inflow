@@ -9,7 +9,7 @@ Basic resizing (feeds column + console row splitters, ADR-0011), shared types, a
 - Wave 1 (WP-01, 02, 03, 05, 06, 07): **merged** 2026-10-10. Verifier caught: impure SPC normalize, CARS preflight CORS (proxied).
 - Wave 2 (WP-04, 08, 09): **merged** 2026-10-10. Verifier caught: stale focus, eager off-screen TxDOT fetches.
 - Wave 3 (WP-10): **merged** 2026-10-10. Orchestrator follow-up: collapsible wired on all panels; collapsed headers compacted.
-- Wave 4 (WP-11…16): **approved** 2026-10-11. Wave 5 (WP-17) follows.
+- Wave 4 (WP-11…16): **in progress** 2026-10-11 — WP-16 merged. Wave 5 (WP-17) follows.
 
 ## Wave 4 (v1.1 coverage polish)
 
@@ -55,7 +55,7 @@ Wave 5
 | [13](packages/WP-13-spc-mds-watches.md) | SPC MDs + watch boxes | 4 | `src/sources/iemspc/**`, `src/map/spcMesoscale.ts`, `src/map/spcWatches.ts` | `src/map/layers.ts` |
 | [14](packages/WP-14-watch-outlines.md) | Watch outlines | 4 | `src/sources/nwszones/**`, `src/map/watchOutlines.ts` | `src/map/layers.ts` |
 | [15](packages/WP-15-stream-lifecycle.md) | Stream lifecycle | 4 | `src/sources/streams/**`, `src/panels/StreamsGrid.tsx`, `config/streams.json` | `vite.config.ts` proxy entry |
-| [16](packages/WP-16-aoi-presets.md) | AOI presets | 4 | `src/panels/AoiPresets.tsx`, `src/panels/aoiPresets.ts` (+test) | `Topbar.tsx` one line, `MapPanel.tsx` one effect |
+| [16](packages/WP-16-aoi-presets.md) | AOI presets | 4 | `src/panels/AoiPresets.tsx`, `src/panels/aoiPresetData.ts` (+test) | `Topbar.tsx` one line, `MapPanel.tsx` one effect |
 | [17](packages/WP-17-wall-shortcuts.md) | Wall-display shortcuts | 5 | `src/panels/Shortcuts.tsx`, `src/panels/shortcuts.ts` (+test) | `App.tsx` mount |
 
 **Expected merge conflicts (trivial):**
