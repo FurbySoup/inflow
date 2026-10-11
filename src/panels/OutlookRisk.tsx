@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import { useSource } from '../lib/useSource'
 import { spcOutlookDay } from '../sources/spc/outlook'
 import { useAoi } from '../state/aoi'
-import { highestCategory, riskSummary, type RiskCategory } from './outlookRisk'
+import { highestCategory, riskSummary, type RiskCategory } from './spcRisk'
 
 // Top-bar SPC risk for the AOI (Days 1–3). Read-only (ADR-0012): plain text, no border or button look.
 // The swatch uses the SPC category token; the word itself carries the meaning, so the swatch is decorative.

@@ -4,8 +4,7 @@ import { LayoutMenu } from './LayoutMenu'
 import { AoiPresets } from './AoiPresets'
 import { KeysButton } from './KeyboardShortcuts'
 import { ThreatButton, WarningsHiddenChip } from './ThreatButton'
-// Explicit extension: on case-insensitive filesystems './OutlookRisk' resolves to the pure outlookRisk.ts first.
-import { OutlookRisk } from './OutlookRisk.tsx'
+import { OutlookRisk } from './OutlookRisk'
 
 // With 52 codes a wide AOI can touch 20+ states; the top bar shows the first few and a count.
 const MAX_AOI_CODES = 6

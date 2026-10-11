@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Bbox } from '../types'
-import { highestCategory, riskSummary } from './outlookRisk'
+import { highestCategory, riskSummary } from './spcRisk'
 
 const AOI: Bbox = { west: -85, south: 30, east: -80, north: 35 }
 
