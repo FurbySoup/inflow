@@ -16,6 +16,7 @@ import {
   remainingMs,
 } from './alertGeometry'
 import { AlertList, AlertRow } from '../ui'
+import { HwoStrip } from './HwoStrip'
 
 export function AlertsList() {
   const bbox = useAoi((s) => s.bbox)
@@ -62,6 +63,7 @@ export function AlertsList() {
       status={queryFeed(query, nwsAlerts.refreshMs)}
       meta={`${active} ACTIVE`}
     >
+      <HwoStrip />
       <AlertList
         ref={listRef}
         feedError={
