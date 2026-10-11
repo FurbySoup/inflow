@@ -6,8 +6,16 @@ import { coveredStates, openmhzSystems, systemsInAoi, type ScannerSystem } from 
 import { useSource } from '../lib/useSource'
 import { queryFeed } from '../lib/feedStatus'
 import { useAoi } from '../state/aoi'
-import { ConsoleButton } from '../ui'
+import { Abbr, ConsoleButton } from '../ui'
 import { Panel } from './Panel'
+
+// Tips for terms not yet in the kit glossary (ADR-0018); the glossary entries are added at merge.
+const OPENMHZ_TIP =
+  'OpenMHz: a public archive of recorded trunked-radio calls (police, fire, EMS), played here'
+const KIWISDR_TIP =
+  'KiwiSDR: a volunteer-run receiver you tune in a web browser. Opens on its own page (link-out only)'
+const MHZ_TIP = 'Megahertz: one million cycles per second. The CB band is 27 MHz'
+const KM_TIP = 'Kilometres from the centre of your area of interest'
 
 const select: CSSProperties = {
   fontFamily: 'var(--font-data)',
@@ -65,16 +73,29 @@ export function AudioPanel() {
       code="AUD-01"
       title="Radio / Scanner"
       status={queryFeed(directory, kiwisdrDirectory.refreshMs)}
-      meta={directory.data ? `${near.length} RX NEAR` : undefined}
+      meta={
+        directory.data ? (
+          <>
+            {near.length} <Abbr term="RX" /> NEAR
+          </>
+        ) : undefined
+      }
     >
-      <p className="muted">SCANNER · OPENMHZ</p>
-      {scanner.isError && <p className="error">OPENMHZ UNAVAILABLE</p>}
+      <p className="muted">
+        SCANNER · <Abbr term="OPENMHZ" title={OPENMHZ_TIP} />
+      </p>
+      {scanner.isError && (
+        <p className="error">
+          <Abbr term="OPENMHZ" title={OPENMHZ_TIP} /> UNAVAILABLE
+        </p>
+      )}
       {!scanner.isError && scanner.isPending && <p className="muted">LOADING SYSTEMS</p>}
       {scanner.data &&
         (system ? (
           <>
             <select
               aria-label="Scanner system"
+              title="OpenMHz system to listen to"
               style={select}
               value={system.shortName}
               onChange={(e) => setPicked(e.target.value)}
@@ -90,29 +111,43 @@ export function AudioPanel() {
           </>
         ) : (
           <p className="muted">
-            {covered.length > 0
-              ? `NO OPENMHZ SYSTEMS IN AOI — COVERED: ${covered.join(' · ')}`
-              : 'NO OPENMHZ SYSTEMS IN AOI'}
+            NO <Abbr term="OPENMHZ" title={OPENMHZ_TIP} /> SYSTEMS IN <Abbr term="AOI" />
+            {covered.length > 0 && ` — COVERED: ${covered.join(' · ')}`}
           </p>
         ))}
 
       <p className="muted" style={{ marginTop: 12 }}>
-        CB 19 / 2M · KIWISDR LINK-OUT
+        <Abbr term="CB" /> 19 / <Abbr term="2M" /> · <Abbr term="KIWISDR" title={KIWISDR_TIP} /> LINK-OUT
       </p>
-      {directory.isError && <p className="error">KIWISDR DIRECTORY UNAVAILABLE</p>}
+      {directory.isError && (
+        <p className="error">
+          <Abbr term="KIWISDR" title={KIWISDR_TIP} /> DIRECTORY UNAVAILABLE
+        </p>
+      )}
       {!directory.isError && directory.isPending && <p className="muted">LOADING RECEIVERS</p>}
       {directory.data && near.length === 0 && (
-        <p className="muted">NO ONLINE 27 MHZ RECEIVERS IN RANGE</p>
+        <p className="muted">
+          NO ONLINE 27 <Abbr term="MHZ" title={MHZ_TIP} /> RECEIVERS IN RANGE
+        </p>
       )}
       {near.map(({ receiver, km }) => (
         <div key={receiver.id} style={row}>
           <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {receiver.name}
           </span>
-          <span className="muted">{Math.round(km)} KM</span>
+          <span className="muted">
+            {Math.round(km)} <Abbr term="KM" title={KM_TIP} />
+          </span>
           {receiverFeeds(receiver).map((f) => (
             <a key={f.id} className="btn-console" href={f.pageUrl ?? undefined} target="_blank" rel="noopener noreferrer">
-              {f.kind === 'cb' ? 'CB 19' : '2M'} ↗
+              {f.kind === 'cb' ? (
+                <>
+                  <Abbr term="CB" /> 19
+                </>
+              ) : (
+                <Abbr term="2M" />
+              )}{' '}
+              ↗
             </a>
           ))}
         </div>
@@ -182,9 +217,12 @@ function ScannerPlayer({ shortName }: { shortName: string }) {
             {calls.slice(0, MAX_CALLS_LISTED).map((c) => (
               <li key={c.id} style={row}>
                 <ConsoleButton pressed={c.url === current} onClick={() => playCall(c)}>
-                  {new Date(c.time).toISOString().slice(11, 19)}Z
+                  {new Date(c.time).toISOString().slice(11, 19)}
+                  <Abbr term="Z" />
                 </ConsoleButton>
-                <span className="muted">{c.talkgroup !== null ? `TG ${c.talkgroup}` : 'TG —'} · {callAge(c.time)}</span>
+                <span className="muted">
+                  <Abbr term="TG" /> {c.talkgroup !== null ? c.talkgroup : '—'} · {callAge(c.time)}
+                </span>
               </li>
             ))}
           </ol>

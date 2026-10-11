@@ -105,6 +105,22 @@ describe('ThreatButton', () => {
     expect(screen.getByRole('status').textContent).toBe('')
   })
 
+  it('tags TOR, PDS and EXP with tips without changing the visible text or the accessible name', () => {
+    vi.mocked(useSource).mockReturnValue(feed([alert({ id: 'a', pds: true })]))
+    render(<ThreatButton />)
+    const button = screen.getByRole('button')
+    const tips = Object.fromEntries(
+      [...button.querySelectorAll('abbr')].map((a) => [a.textContent, a.getAttribute('title') ?? '']),
+    )
+    expect(tips.TOR?.startsWith('Tornado Warning')).toBe(true)
+    expect(tips.PDS?.startsWith('Particularly dangerous situation')).toBe(true)
+    expect(tips.EXP?.startsWith('Expires')).toBe(true)
+    expect(button.textContent).toContain('1 TOR')
+    expect(button.textContent).toContain('· 1 PDS')
+    expect(button.textContent).toContain('NEXT EXP ')
+    expect(button.getAttribute('aria-label')).toBe('1 TORNADO WARNING, focus most severe')
+  })
+
   it('shows a same-state polygon warning outside the AOI as no warnings', () => {
     // Polygon far west of the default AOI bbox, GA by state: excluded by the polygon test.
     const far = alert({

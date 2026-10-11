@@ -1,5 +1,29 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { followAoi, siteLabel, velocityReadout } from './velocity'
+import { expand } from '../ui'
+import { followAoi, readoutLabelNodes, siteLabel, velocityReadout } from './velocity'
+
+describe('readoutLabelNodes', () => {
+  function host(site: string | null): HTMLElement {
+    const el = document.createElement('span')
+    el.append(...readoutLabelNodes({ label: site, valid: null, linkUrl: null }))
+    return el
+  }
+
+  it('tips SRV and the radar id, with the same text as the readout', () => {
+    const el = host('KFFC')
+    expect(el.textContent).toBe(velocityReadout({ label: 'KFFC', valid: null, linkUrl: null }, 0).label)
+    const [srv, site] = el.querySelectorAll('abbr')
+    expect(srv.getAttribute('title')).toBe(expand('SRV'))
+    expect(site.textContent).toBe('KFFC')
+    expect(site.getAttribute('title')).toBe('NEXRAD radar site KFFC')
+  })
+
+  it('tips only SRV before a site is chosen', () => {
+    const el = host(null)
+    expect(el.textContent).toBe('SRV · ---')
+    expect(el.querySelectorAll('abbr')).toHaveLength(1)
+  })
+})
 
 describe('followAoi', () => {
   beforeEach(() => vi.useFakeTimers())
