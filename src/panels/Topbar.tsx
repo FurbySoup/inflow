@@ -7,6 +7,7 @@ import { ThreatButton, WarningsHiddenChip } from './ThreatButton'
 import { useSource } from '../lib/useSource'
 import { nwsPoint } from '../sources/nws/points'
 import { DEVICE_ZONE, sameOffset, zoneLabel } from './clock'
+import { OutlookRisk } from './OutlookRisk'
 
 // With 52 codes a wide AOI can touch 20+ states; the top bar shows the first few and a count.
 const MAX_AOI_CODES = 6
@@ -48,6 +49,7 @@ export function Topbar() {
       </span>
       <ThreatButton />
       <WarningsHiddenChip />
+      <OutlookRisk />
       <AoiPresets />
       <span className="spacer" />
       <KeysButton />
