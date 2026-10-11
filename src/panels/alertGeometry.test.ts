@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { formatRemaining, geometryBbox, isEmergencyWarning, remainingMs } from './alertGeometry'
+import {
+  alertDurationMs,
+  alertsView,
+  formatAge,
+  formatCountdown,
+  formatZulu,
+  geometryBbox,
+  isListed,
+  remainingFraction,
+  remainingMs,
+} from './alertGeometry'
 
 describe('geometryBbox', () => {
   it('covers a single polygon', () => {
@@ -27,7 +37,7 @@ describe('geometryBbox', () => {
   })
 })
 
-describe('remainingMs / formatRemaining', () => {
+describe('remainingMs / alertDurationMs', () => {
   const now = Date.parse('2026-10-10T20:00:00Z')
 
   it('is null without an expiry and negative once past', () => {
@@ -35,18 +45,82 @@ describe('remainingMs / formatRemaining', () => {
     expect(remainingMs('2026-10-10T19:59:00Z', now)).toBeLessThan(0)
   })
 
-  it('formats as T-mm:ss with zero padding', () => {
-    expect(formatRemaining(9 * 60_000 + 5_000)).toBe('T-09:05')
-    expect(formatRemaining(75 * 60_000)).toBe('T-75:00')
-    expect(formatRemaining(-1000)).toBe('T-00:00')
+  it('measures the onset→expires window, or null when either end is missing', () => {
+    expect(alertDurationMs('2026-10-10T19:00:00Z', '2026-10-10T20:45:00Z')).toBe(105 * 60_000)
+    expect(alertDurationMs(null, '2026-10-10T20:45:00Z')).toBeNull()
+    expect(alertDurationMs('2026-10-10T19:00:00Z', null)).toBeNull()
   })
 })
 
-describe('isEmergencyWarning', () => {
-  it('flags tornado warnings with PDS or emergency in the headline only', () => {
-    expect(isEmergencyWarning('Tornado Warning', 'Tornado Warning (PDS) issued for Bibb County')).toBe(true)
-    expect(isEmergencyWarning('Tornado Warning', 'TORNADO EMERGENCY for Macon')).toBe(true)
-    expect(isEmergencyWarning('Tornado Warning', 'Tornado Warning issued for Bibb County')).toBe(false)
-    expect(isEmergencyWarning('Severe Thunderstorm Warning', 'Emergency management notice')).toBe(false)
+describe('formatCountdown', () => {
+  it('formats as T-mm:ss with zero padding under an hour', () => {
+    expect(formatCountdown(9 * 60_000 + 5_000)).toBe('T-09:05')
+    expect(formatCountdown(59 * 60_000 + 59_000)).toBe('T-59:59')
+  })
+
+  it('switches to T-h:mm:ss from one hour', () => {
+    expect(formatCountdown(60 * 60_000)).toBe('T-1:00:00')
+    expect(formatCountdown(75 * 60_000)).toBe('T-1:15:00')
+    expect(formatCountdown(3 * 3_600_000 + 4 * 60_000 + 5_000)).toBe('T-3:04:05')
+  })
+
+  it('clamps at zero', () => {
+    expect(formatCountdown(-1000)).toBe('T-00:00')
+  })
+})
+
+describe('remainingFraction', () => {
+  it('is the remaining share of the window, clamped to 0..1', () => {
+    expect(remainingFraction(30 * 60_000, 60 * 60_000)).toBe(0.5)
+    expect(remainingFraction(-5_000, 60 * 60_000)).toBe(0)
+    expect(remainingFraction(90 * 60_000, 60 * 60_000)).toBe(1)
+  })
+
+  it('is null when the window is unknown or empty', () => {
+    expect(remainingFraction(1000, null)).toBeNull()
+    expect(remainingFraction(1000, 0)).toBeNull()
+  })
+})
+
+describe('isListed (expired retention)', () => {
+  it('keeps active, open-ended and rows expired less than 60 s ago', () => {
+    expect(isListed(null)).toBe(true)
+    expect(isListed(1_000)).toBe(true)
+    expect(isListed(0)).toBe(true)
+    expect(isListed(-59_000)).toBe(true)
+  })
+
+  it('drops rows expired 60 s or more ago', () => {
+    expect(isListed(-60_000)).toBe(false)
+    expect(isListed(-120_000)).toBe(false)
+  })
+})
+
+describe('alertsView (error / last-known chooser)', () => {
+  it('shows live rows, or the empty state only when the feed is healthy', () => {
+    expect(alertsView({ isError: false, hasData: true, rows: 2 })).toBe('live')
+    expect(alertsView({ isError: false, hasData: true, rows: 0 })).toBe('empty')
+  })
+
+  it('shows degraded (banner + last-known rows) when an error follows good data', () => {
+    expect(alertsView({ isError: true, hasData: true, rows: 3 })).toBe('degraded')
+    expect(alertsView({ isError: true, hasData: true, rows: 0 })).toBe('degraded')
+  })
+
+  it('never shows the empty state while in error', () => {
+    expect(alertsView({ isError: true, hasData: false, rows: 0 })).toBe('unavailable')
+  })
+})
+
+describe('formatAge / formatZulu', () => {
+  it('formats the header age in seconds, then minutes', () => {
+    expect(formatAge(42_000)).toBe('42s')
+    expect(formatAge(5 * 60_000 + 7_000)).toBe('5m07s')
+    expect(formatAge(-1)).toBe('--')
+  })
+
+  it('formats UTC times as HH:mm:ssZ, or a placeholder when unknown', () => {
+    expect(formatZulu(Date.parse('2026-10-10T21:47:12Z'))).toBe('21:47:12Z')
+    expect(formatZulu(null)).toBe('--:--:--Z')
   })
 })

@@ -1,46 +1,226 @@
-/* Alerts */
-.alerts { list-style: none; margin: 0; padding: 0; font-family: var(--font-data); font-size: 0.75rem; }
-.alerts li {
+/* Alerts (INFLOW v1 §6 severity row, §9.3 and §9.10). Tokens only; no hex here. */
+.alert-list { display: flex; flex-direction: column; min-height: 0; }
+.alerts { list-style: none; margin: 0; padding: 0; font-family: var(--font-data); }
+
+/* Item (listitem): carries state (focus, PDS outline, expired, last-known) and the divider. */
+.alert-item { border-bottom: 1px solid var(--border-default); }
+
+/* Row: chip | main | signifier | countdown. Fills the item; the interactive element for clickable rows. */
+.alert-row {
+  display: grid;
+  grid-template-columns: var(--chip-w) minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--sp-4);
+  min-height: var(--row-h);
+  padding: 0 var(--sp-4) 0 var(--sp-3);
+  box-sizing: border-box;
+  background: transparent;
+  font-family: var(--font-ui);
+}
+
+/* Hazard chip: fixed width (--chip-w). Colour comes from --chip-hz / --chip-ink set per code below. */
+.alert-chip {
+  --chip-hz: var(--border-strong);
+  --chip-ink: var(--text-primary);
+  height: calc(var(--row-h) - 14px);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font: 700 var(--fs-data-s) / 1 var(--font-data);
+  letter-spacing: var(--tr-code);
+  white-space: nowrap;
+}
+.alert-chip[data-hz='TOR'] { --chip-hz: var(--hz-tor); --chip-ink: var(--hz-tor-ink); }
+.alert-chip[data-hz='SVR'] { --chip-hz: var(--hz-svr); --chip-ink: var(--hz-svr-ink); }
+.alert-chip[data-hz='FFW'] { --chip-hz: var(--hz-ffw); --chip-ink: var(--hz-ffw-ink); }
+.alert-chip[data-hz='TOA'] { --chip-hz: var(--hz-toa); --chip-ink: var(--hz-toa-ink); }
+.alert-chip[data-hz='SVA'] { --chip-hz: var(--hz-sva); --chip-ink: var(--hz-sva-ink); }
+.alert-chip[data-hz='SPS'] { --chip-hz: var(--hz-sps); --chip-ink: var(--hz-sps-ink); }
+
+.alert-chip-warning { background: var(--chip-hz); color: var(--chip-ink); }
+/* Unclassified hazards: neutral, never a solid fill. */
+.alert-chip-warning[data-hz='OTHER'] { background: var(--surface-raised); color: var(--text-primary); }
+/* Watch: raised surface with a 2 px dashed hazard border (no fill). */
+.alert-chip-watch { background: var(--surface-raised); color: var(--text-primary); border: 2px dashed var(--chip-hz); }
+.alert-chip-watch .alert-glyph { color: var(--chip-hz); }
+.alert-chip-watch[data-hz='OTHER'] { border-color: var(--border-strong); }
+/* PDS: inset 2 px white ring on the chip. */
+.alert-chip-pds { box-shadow: inset 0 0 0 2px var(--hz-pds-mark); }
+.alert-glyph { font: 400 var(--fs-data-s) / 1 var(--font-data); }
+
+.alert-main { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.alert-line { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.alert-event {
+  min-width: 0;
+  font: 500 var(--fs-ui-m) / 1.15 var(--font-ui);
+  color: var(--text-bright);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.alert-item[data-hz='TOR'] .alert-event { font-weight: 600; }
+.alert-area {
+  font: 400 var(--fs-ui-s) / 1.15 var(--font-ui);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.alert-pds {
+  flex: none;
+  padding: 2px 5px;
+  background: var(--badge-pds-bg);
+  color: var(--badge-pds-fg);
+  font: 700 var(--fs-data-xs) / 1 var(--font-data);
+}
+.alert-zone {
+  flex: none;
+  padding: 3px 5px;
+  background: var(--badge-zone-bg);
+  color: var(--badge-zone-fg);
+  font: 600 var(--fs-data-xs) / 1 var(--font-data);
+  letter-spacing: var(--tr-code);
+}
+
+/* Signifier column: ZONE badge, or the ⌖ box on clickable polygon rows (ADR-0012). */
+.alert-slot { min-width: 22px; display: flex; justify-content: center; }
+.alert-target {
+  width: 22px;
+  height: 22px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--accent);
+  font: 400 14px / 1 var(--font-data);
+}
+
+.alert-time {
+  min-width: 68px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 5px 8px;
-  margin-bottom: 4px;
-  border-left: 3px solid var(--offline);
-  background: var(--surface-head);
+  align-items: flex-end;
+  gap: 3px;
+  color: var(--text-primary);
 }
-.alerts .sev-extreme { border-color: var(--extreme); background: color-mix(in srgb, var(--hz-tor) 8%, var(--surface-panel)); }
-.alerts .sev-severe { border-color: var(--severe); }
-.alerts .sev-moderate { border-color: var(--moderate); }
-/* Signifiers (ADR-0012): actionable rows carry a persistent ⌖ "focus on map" glyph and react to hover/focus;
-   zone rows (not actionable) carry neither, so the difference is visible without hovering. */
-.alerts li[role='button'] { cursor: pointer; position: relative; padding-right: 24px; }
-.alerts li[role='button']::after {
-  content: '⌖';
-  position: absolute;
-  top: 5px;
-  right: 8px;
-  color: var(--muted);
-  font-size: 0.85rem;
-  line-height: 1;
+.alert-count {
+  font: 500 var(--fs-data-m) / 1 var(--font-data);
+  font-variant-numeric: tabular-nums slashed-zero;
 }
-.alerts li[role='button']:hover { background: var(--accent-fill); }
-.alerts li[role='button']:hover::after,
-.alerts li[role='button']:focus-visible::after,
-.alerts li.alert-selected::after { color: var(--accent); }
-.alerts li[role='button']:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-.alerts li.alert-selected { background: var(--panel-head); box-shadow: inset 3px 0 0 var(--accent); }
-.alerts li.alert-emergency { outline: 2px solid var(--error); outline-offset: -2px; animation: sc-flash 0.8s ease-in-out infinite alternate; }
-.alert-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.alert-countdown { font-variant-numeric: tabular-nums; }
-.alert-countdown-low { color: var(--error); }
-@keyframes sc-flash { from { outline-color: transparent; } to { outline-color: var(--error); } }
+.alert-time-low { color: var(--hz-tor-text); }
+.alert-time-low .alert-count { font-weight: 700; }
+.alert-bar { display: block; width: 100%; height: 2px; background: var(--border-default); }
+.alert-bar-fill { display: block; height: 2px; background: var(--text-secondary); }
+.alert-time-low .alert-bar-fill { background: var(--hz-tor-text); }
 
-/* Touch (ADR-0014): controls grow to a usable target; hover-only cues never carry meaning (ADR-0012). */
+/* Interaction (ADR-0012): hover, focus-visible and pressed feedback on clickable rows. */
+.alert-clickable { cursor: pointer; }
+.alert-clickable:hover { background: var(--surface-raised); }
+.alert-clickable:hover .alert-target { border-color: var(--accent); }
+.alert-clickable:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.alert-clickable:active { box-shadow: inset 0 0 0 1px var(--ink-dark); }
+
+/* Focused: accent fill and 1 px accent outline on the item, filled ⌖ box. Hover keeps the focused fill. */
+.alert-selected { background: var(--accent-fill); outline: 1px solid var(--accent); outline-offset: -1px; }
+.alert-selected > .alert-clickable:hover { background: var(--accent-fill-hover); }
+.alert-selected .alert-target { background: var(--accent); border-color: var(--accent); color: var(--ink-dark); }
+
+/* PDS: 2 px outline alternating TOR and white at 1 Hz; static double outline under reduced motion.
+   Keyboard focus inside the item stops the flash so the focus ring stays readable. */
+.alert-emergency { outline: 2px solid var(--hz-tor); outline-offset: -2px; animation: inflow-flash 1000ms linear infinite; }
+.alert-emergency:focus-within { animation: none; outline: 2px solid var(--focus-ring); }
+
+/* Expired: kept 60 s at 60% opacity with strike-through, then the panel drops it. */
+.alert-expired { opacity: 0.6; }
+.alert-expired .alert-event { text-decoration: line-through; }
+
+/* Last-known rows while the feed is in error. */
+.alert-degraded { opacity: 0.72; }
+
+/* Feed-error banner (§9.10): a failed feed never reads as "no warnings". */
+.alert-banner {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--surface-raised);
+  border-bottom: 2px solid var(--status-error);
+}
+.alert-banner-title {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font: 700 var(--fs-ui-xs) / 1 var(--font-ui);
+  letter-spacing: var(--tr-label);
+  color: var(--status-error);
+}
+.alert-banner-mark { flex: none; width: 9px; height: 9px; background: var(--status-error); }
+.alert-banner-note {
+  font: 400 var(--fs-ui-s) / 1.4 var(--font-data);
+  color: var(--text-secondary);
+}
+.alert-banner-actions { display: flex; gap: var(--sp-3); }
+.alert-retry {
+  min-width: 96px;
+  min-height: 26px;
+  padding: 0 var(--sp-4);
+  background: transparent;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
+  color: var(--text-primary);
+  font: 600 var(--fs-ui-xs) / 1 var(--font-ui);
+  letter-spacing: var(--tr-label);
+  cursor: pointer;
+}
+.alert-retry:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-strong); }
+.alert-retry:active:not(:disabled) { box-shadow: inset 0 0 0 1px var(--ink-dark); }
+.alert-retry:focus-visible,
+.alert-weathergov:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.alert-retry:disabled { color: var(--text-disabled); border-color: var(--border-default); cursor: progress; }
+.alert-weathergov {
+  display: flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-control);
+  color: var(--accent);
+  font: 500 var(--fs-data-xs) / 1 var(--font-data);
+  text-decoration: none;
+}
+.alert-weathergov:hover { border-color: var(--accent); color: var(--accent-strong); }
+.alert-weathergov:active { box-shadow: inset 0 0 0 1px var(--ink-dark); }
+
+/* Empty state: label + one sentence. */
+.alert-empty {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-6) var(--sp-4);
+}
+.alert-empty-label {
+  font: 600 var(--fs-ui-s) / 1 var(--font-ui);
+  letter-spacing: var(--tr-label);
+  color: var(--text-secondary);
+}
+.alert-empty-note { font: 400 var(--fs-ui-m) / 1.4 var(--font-ui); color: var(--text-muted); }
+
+/* Touch: rows grow to a usable target (ADR-0014). */
 @media (pointer: coarse) {
-  .alerts li[role='button'] { min-height: 36px; }
+  .alert-row { min-height: max(var(--row-h), 44px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .alerts li.alert-emergency { animation: none !important; }
+  .alert-emergency {
+    animation: none;
+    box-shadow: inset 0 0 0 2px var(--hz-pds-mark);
+  }
 }
