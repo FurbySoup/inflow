@@ -11,6 +11,14 @@ describe('normalizeStreams', () => {
     expect(c.embedUrl).toContain('live_stream?channel=UC123')
   })
 
+  it('pins the video but keeps the channel as fallback', () => {
+    const [both] = normalizeStreams([
+      { id: 'a', title: 'A', youtube: { videoId: 'abc', channelId: 'UC123' }, states: ['GA'] },
+    ])
+    expect(both.embedUrl).toContain('/embed/abc')
+    expect(both.youtube).toEqual({ videoId: 'abc', channelId: 'UC123' })
+  })
+
   it('defaults context to false and carries the flag when set', () => {
     const [plain, ctx] = normalizeStreams([
       { id: 'a', title: 'A', youtube: { videoId: 'abc' }, states: [] },

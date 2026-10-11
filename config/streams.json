@@ -2,79 +2,79 @@
   {
     "id": "proof-ga-sc-2026-10-10",
     "title": "Live proofing: GA/SC tornado outbreak (2026-10-10)",
-    "youtube": { "videoId": "7kQACmPd6Io" },
+    "youtube": { "videoId": "7kQACmPd6Io", "channelId": "UCZSDkxJS7PRw9V0_Sm6U7jg" },
     "states": ["GA", "SC"]
   },
   {
     "id": "tornado-paigeyy-ga-sc-2026-10-10",
     "title": "Tornado Paigeyy: GA & SC tornado threat (2026-10-10)",
-    "youtube": { "videoId": "4cS5_IGsNnY" },
+    "youtube": { "videoId": "4cS5_IGsNnY", "channelId": "UCCzfjxXs0o9h1cOgnnmc2Zw" },
     "states": ["GA", "SC"]
   },
   {
     "id": "brandon-copic-ga-sc-2026-10-10",
     "title": "Brandon Copic: tropical tornado threat, E GA & SC",
-    "youtube": { "videoId": "Syyvt9aidlQ" },
+    "youtube": { "videoId": "Syyvt9aidlQ", "channelId": "UCPqLI_AohMn1jnFg8ocMyHA" },
     "states": ["GA", "SC"]
   },
   {
     "id": "connor-croff-ga-sc-2026-10-10",
     "title": "Connor Croff: Isaias tornado threat GA/SC",
-    "youtube": { "videoId": "MoyPGCuPjiM" },
+    "youtube": { "videoId": "MoyPGCuPjiM", "channelId": "UCb0U1g5r4kH_NDMGiGRhysA" },
     "states": ["GA", "SC"]
   },
   {
     "id": "corey-gerken-ga-sc-2026-10-10",
     "title": "Corey Gerken: increasing tornado threat GA/SC",
-    "youtube": { "videoId": "hvn71J7v1-0" },
+    "youtube": { "videoId": "hvn71J7v1-0", "channelId": "UCx5ex9rJumpj-oKgVJrP4hA" },
     "states": ["GA", "SC"]
   },
   {
     "id": "jaden-pappenheim-ga-2026-10-10",
     "title": "Jaden Pappenheim: supercell tornado threat GA",
-    "youtube": { "videoId": "vfBsA5ZJH1w" },
+    "youtube": { "videoId": "vfBsA5ZJH1w", "channelId": "UC6lUxl1KxmI7TWnAA6go1EQ" },
     "states": ["GA"]
   },
   {
     "id": "stormrunner-ga-2026-10-10",
     "title": "StormRunner Media: tornado threat across GA",
-    "youtube": { "videoId": "VRQFHJHWfak" },
+    "youtube": { "videoId": "VRQFHJHWfak", "channelId": "UCBmOfiL9LC3dT4Ps2veVCoQ" },
     "states": ["GA"]
   },
   {
     "id": "jayjack-ga-2026-10-10",
     "title": "Jayjack Storm Trax: tornado chase GA",
-    "youtube": { "videoId": "PAUKC0_XzUk" },
+    "youtube": { "videoId": "PAUKC0_XzUk", "channelId": "UC8QZ-OIqfWKek1CpMvs2O3g" },
     "states": ["GA"]
   },
   {
     "id": "mikes-weather-isaias-2026-10-10",
     "title": "Mikes Weather Page: chasing Isaias",
-    "youtube": { "videoId": "xERSsW9bMnI" },
+    "youtube": { "videoId": "xERSsW9bMnI", "channelId": "UCQDC0j2oiSRSbQ5sSalzFYA" },
     "states": ["GA", "SC"]
   },
   {
     "id": "wrdw-augusta-2026-10-10",
     "title": "WRDW News 12 (Augusta TV): Screven County tornado",
-    "youtube": { "videoId": "QaOKJLeJwDY" },
+    "youtube": { "videoId": "QaOKJLeJwDY", "channelId": "UCTU2nwebYm3QBuCG3_I0rQw" },
     "states": ["GA", "SC"]
   },
   {
     "id": "wltx-columbia-2026-10-10",
     "title": "News 19 WLTX (Columbia TV): tracking Isaias",
-    "youtube": { "videoId": "2bdgSCa9jms" },
+    "youtube": { "videoId": "2bdgSCa9jms", "channelId": "UCVaXclURQZlakiTMzuwHvRw" },
     "states": ["SC"]
   },
   {
     "id": "fox5-atlanta-2026-10-10",
     "title": "FOX 5 Atlanta (TV): Isaias across Georgia",
-    "youtube": { "videoId": "OpOu11VNp0M" },
+    "youtube": { "videoId": "OpOu11VNp0M", "channelId": "UCjHWv2DU5-HLpogAAr386DQ" },
     "states": ["GA"]
   },
   {
     "id": "11alive-atlanta-2026-10-10",
     "title": "11Alive (Atlanta TV): tracking Isaias",
-    "youtube": { "videoId": "PcFoQ_x0U8s" },
+    "youtube": { "videoId": "PcFoQ_x0U8s", "channelId": "UCzF4Ryn8TKn64md77gS5Q5Q" },
     "states": ["GA"]
   }
 ]
