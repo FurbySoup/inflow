@@ -1,57 +1,106 @@
+import { useState } from 'react'
+
 import { Badge } from './Badge'
+import { StatusLed, type FeedStatus } from './StatusLed'
+
+/** A thumbnail's still image and its age label. Only the primary feed plays video (HANDOFF §9.10). */
+export interface StreamSnapshot {
+  /** Still image URL, or null to show `placeholder` instead. A URL that fails to load also shows `placeholder`. */
+  src: string | null
+  /** Copy shown in place of a still, e.g. `◐ STALE`, `○ OFFLINE`, `connecting…`. */
+  placeholder: string
+  /** Read-only age label, e.g. `THUMB ≤5m`. Omit when there is no still. */
+  ageLabel?: string
+  /** Stale label (still not re-fetched for over 3 min): sand, with a ◐ prefix in the label text. */
+  stale?: boolean
+}
 
 export interface StreamTileProps {
   /** Feed title, e.g. "Brandon Copic: tropical tornado threat, E GA & SC". */
   title: string
-  /** iframe-ready embed URL (YouTube `/embed/...`). Never add referrerpolicy="no-referrer" — YouTube then fails with Error 153. */
-  embedUrl: string
-  /** Public watch page opened by the ↗ link. */
-  watchUrl?: string
   /** 0-based position; shown as `CAM 01`, `CAM 02`, ... */
   index: number
+  /** Public watch page opened by the ↗ link. */
+  watchUrl?: string
   /** Shows the IN AOI badge. */
   inAoi?: boolean
   /** Ambient context feed (e.g. NASA ISS Earth view): shows the CTX badge. */
   context?: boolean
-  /** Marks this tile as the large primary feed (aria-current). */
+  /** Feed health, drawn as the caption's status LED. Defaults to `loading` (not checked yet). */
+  ledStatus?: FeedStatus
+  /** ENDED / OFFLINE tag next to the caption. */
+  statusLabel?: string
+  /** Marks this tile as the large primary feed (aria-current). Only the primary has an iframe. */
   primary?: boolean
-  /** Makes this the primary feed. Wired to the caption and, on non-primary tiles, the "⇱ MAIN" swap button. */
+  /** Makes this the primary feed. Wired to the caption and, on thumbnails, the ▲ MAIN button. */
   onSelect?: () => void
+  /** Primary only: iframe-ready embed URL (YouTube `/embed/...`). Never add referrerpolicy="no-referrer": YouTube then fails with Error 153. */
+  embedUrl?: string
   /** Primary only: whether the main feed plays with sound. Shown as a 🔇/🔊 toggle on the video corner. */
   soundOn?: boolean
   /** Primary only: toggles main-feed sound. Omit to hide the toggle. */
   onToggleSound?: () => void
+  /** Thumbnail only: the still image shown instead of a player. */
+  snapshot?: StreamSnapshot
 }
 
 /**
- * Live video feed: 16:9 embed with a console caption (CAM nn, title, badges, link-out). Lay several out in `.stream-grid`.
- * Affordance: become the main feed. Signifier: a persistent "⇱ MAIN" button on the video corner of non-primary tiles
- * (clicking the video itself only plays/pauses inside the player). Feedback: the primary tile shows a read-only MAIN tag
- * and an accent caption.
+ * Chaser feed tile (16:9 frame + console caption with status LED, badges and link-out). The primary
+ * tile plays its embed; other tiles show a still image that the app refreshes (no iframe, no decode).
+ * Lay several out in `.stream-grid`.
+ * Affordance: become the main feed. Signifier: a persistent "▲ MAIN" button on the frame corner of
+ * thumbnails (the video itself only plays/pauses inside the player). Feedback: the primary tile shows a
+ * read-only MAIN tag and an accent caption. The THUMB age is read-only: no border, no pointer.
  */
 export function StreamTile({
   title,
-  embedUrl,
-  watchUrl,
   index,
+  watchUrl,
   inAoi,
   context,
+  ledStatus = 'loading',
+  statusLabel,
   primary,
   onSelect,
+  embedUrl,
   soundOn = false,
   onToggleSound,
+  snapshot,
 }: StreamTileProps) {
+  // A still that fails to load (e.g. 404 for an unknown id) gives way to the placeholder until the next fetch changes its URL.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null)
+  const still = snapshot?.src && snapshot.src !== failedSrc ? snapshot.src : null
+
   return (
     <figure className="stream-tile">
       <div className="stream-frame">
-        <iframe
-          src={embedUrl}
-          title={title}
-          // Off-screen feeds load only when scrolled into view; 10+ eager embeds starve the map.
-          loading="lazy"
-          allow="autoplay; encrypted-media; picture-in-picture"
-          allowFullScreen
-        />
+        {embedUrl ? (
+          <iframe
+            src={embedUrl}
+            title={title}
+            // Off-screen feeds load only when scrolled into view; 10+ eager embeds starve the map.
+            loading="lazy"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <div className="stream-still">
+            {still ? (
+              <img
+                className="stream-still-img"
+                src={still}
+                alt={title}
+                decoding="async"
+                onError={() => setFailedSrc(still)}
+              />
+            ) : (
+              <span className="stream-still-empty">{snapshot?.placeholder ?? 'connecting…'}</span>
+            )}
+            {snapshot?.ageLabel && (
+              <span className={snapshot.stale ? 'stream-age stream-age-stale' : 'stream-age'}>{snapshot.ageLabel}</span>
+            )}
+          </div>
+        )}
         {primary && onToggleSound && (
           <button
             type="button"
@@ -68,13 +117,14 @@ export function StreamTile({
           <span className="stream-main-tag">MAIN</span>
         ) : (
           onSelect && (
-            <button type="button" className="stream-swap" onClick={onSelect} aria-label={`Make ${title} the main feed`} title="Make this the main feed">
-              ⇱ MAIN
+            <button type="button" className="stream-promote" onClick={onSelect} aria-label={`Make ${title} the main feed`} title="Make this the main feed">
+              ▲ MAIN
             </button>
           )
         )}
       </div>
       <figcaption>
+        <StatusLed status={ledStatus} />
         <button
           type="button"
           className="stream-select"
@@ -84,6 +134,7 @@ export function StreamTile({
         >
           <span className="panel-code">CAM {String(index + 1).padStart(2, '0')}</span> {title}
         </button>
+        {statusLabel && <Badge variant="ctx">{statusLabel}</Badge>}
         {inAoi && <Badge variant="aoi" />}
         {context && <Badge variant="ctx" />}
         {watchUrl && (

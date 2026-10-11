@@ -13,6 +13,8 @@ export interface FeedResolution {
   status: FeedStatus
   /** Set when a pinned video has ended and its channel is live on another video. */
   fallbackVideoId?: string
+  /** The video a snapshot should show (see currentVideoId). Not used by the embed. */
+  videoId?: string
 }
 
 /** `status` is absent until the feed has been checked; `unknown` means checked and the check failed. */
@@ -55,6 +57,16 @@ export function resolveFeed(youtube: YoutubeRef, result: LivenessResult | undefi
   if (result.channel === 'offline') return { status: 'offline' }
   if (result.channel === undefined || result.channel === 'unknown') return { status: 'unknown' }
   return { status: 'live' }
+}
+
+/**
+ * The video whose still image stands in for a feed: the pin (or its channel fallback), or a channel's
+ * current video once a live check has named one. Undefined when nothing is known.
+ */
+export function currentVideoId(youtube: YoutubeRef, result: LivenessResult | undefined): string | undefined {
+  if (!result) return undefined
+  if ('videoId' in youtube) return resolveFeed(youtube, result).fallbackVideoId ?? youtube.videoId
+  return typeof result.channel === 'object' ? result.channel.videoId : undefined
 }
 
 /** Applies a resolution: a fallback swaps the embed and link-out to the channel's current video. No resolution = not checked yet. */
