@@ -6,7 +6,8 @@ export const MAX_TOASTS = 3
 
 /**
  * Tornado warnings (and emergencies, which are TOR events with a catastrophic damage threat) that are new in the AOI.
- * `seen` is the set of ids already known; null means the first call after load: it seeds nothing and returns [].
+ * Keyed by `eventKey` (VTEC), so an NWS update (new id, same event) never toasts again.
+ * `seen` is the set of eventKeys already known; null means the first call after load: it seeds nothing and returns [].
  * Remember what was seen with `rememberTornadoWarnings`, so existing warnings never toast.
  */
 export function diffNewTornadoWarnings(
@@ -18,16 +19,22 @@ export function diffNewTornadoWarnings(
   return alerts.filter(
     (a) =>
       hazardCode(a.event) === 'TOR' &&
-      !seen.has(a.id) &&
+      a.messageType !== 'Cancel' &&
+      !seen.has(a.eventKey) &&
       a.states.some((s) => aoiStates.includes(s)),
   )
 }
 
-/** Ids to remember after a check: everything already seen plus every tornado warning in the feed, whatever its region. */
+/** EventKeys to remember after a check: everything already seen plus every tornado warning in the feed, whatever its region. */
 export function rememberTornadoWarnings(seen: ReadonlySet<string> | null, alerts: Alert[]): Set<string> {
   const next = new Set(seen ?? [])
-  for (const a of alerts) if (hazardCode(a.event) === 'TOR') next.add(a.id)
+  for (const a of alerts) if (hazardCode(a.event) === 'TOR') next.add(a.eventKey)
   return next
+}
+
+/** The current version of an open event in the feed (an update replaces the alert, the eventKey stays). Null once it's gone or cancelled. */
+export function findCurrent(alerts: Alert[], eventKey: string): Alert | null {
+  return alerts.find((a) => a.eventKey === eventKey && a.messageType !== 'Cancel') ?? null
 }
 
 /** Keeps the newest `max` entries of an arrival-ordered list (oldest first). */

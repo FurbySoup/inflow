@@ -6,10 +6,11 @@ import { useAoi } from '../state/aoi'
 import type { Alert } from '../types'
 import { Toast } from '../ui/Toast'
 import { geometryBbox, remainingMs } from './alertGeometry'
-import { capStack, diffNewTornadoWarnings, rememberTornadoWarnings, zuluTime } from './newAlerts'
+import { capStack, diffNewTornadoWarnings, findCurrent, rememberTornadoWarnings, zuluTime } from './newAlerts'
 
-/** An alert is live until its expiry; alerts without an expiry stay live until the feed drops them. */
+/** Live until expiry, and not cancelled. Alerts without an expiry stay live until the feed drops them. */
 const isLive = (a: Alert, t: number) => {
+  if (a.messageType === 'Cancel') return false
   const left = remainingMs(a.expires, t)
   return left === null || left > 0
 }
@@ -22,7 +23,8 @@ const isTyping = () => {
 
 /**
  * New-tornado-warning toasts over the map (INFLOW v1 §6). Max three; the oldest drops.
- * A toast closes when its warning expires, is cancelled (leaves the feed), or is dismissed or focused.
+ * Toasts are keyed by eventKey (VTEC): an NWS update refreshes the open toast's expiry and area, it never re-toasts.
+ * A toast closes when its warning expires, is cancelled or leaves the feed, or is dismissed or focused.
  * It never times out while the warning is active.
  */
 export function ToastRegion() {
@@ -32,8 +34,8 @@ export function ToastRegion() {
   const setFocus = useAoi((s) => s.setFocus)
   const seenRef = useRef<Set<string> | null>(null)
   const newestRef = useRef<HTMLButtonElement | null>(null)
-  const [ids, setIds] = useState<string[]>([])
-  const [focusId, setFocusId] = useState<string | null>(null)
+  const [keys, setKeys] = useState<string[]>([])
+  const [focusKey, setFocusKey] = useState<string | null>(null)
   const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
@@ -47,23 +49,30 @@ export function ToastRegion() {
     const fresh = diffNewTornadoWarnings(seenRef.current, alerts, states).filter((a) => isLive(a, t))
     seenRef.current = rememberTornadoWarnings(seenRef.current, alerts)
     if (fresh.length === 0) return
-    setIds((prev) =>
-      capStack([...prev.filter((id) => alerts.some((a) => a.id === id && isLive(a, t))), ...fresh.map((a) => a.id)]),
+    setKeys((prev) =>
+      capStack([
+        ...prev.filter((key) => {
+          const a = findCurrent(alerts, key)
+          return a !== null && isLive(a, t)
+        }),
+        ...fresh.map((a) => a.eventKey),
+      ]),
     )
-    setFocusId(fresh[fresh.length - 1].id)
+    setFocusKey(fresh[fresh.length - 1].eventKey)
   }, [alerts, states])
 
   useEffect(() => {
-    if (focusId && !isTyping()) newestRef.current?.focus({ preventScroll: true })
-  }, [focusId])
+    if (focusKey && !isTyping()) newestRef.current?.focus({ preventScroll: true })
+  }, [focusKey])
 
-  const visible = ids.flatMap((id) => {
-    const a = alerts?.find((x) => x.id === id)
+  // Current version of each open event (updates replace the alert object, the key stays).
+  const visible = keys.flatMap((key) => {
+    const a = alerts ? findCurrent(alerts, key) : null
     return a && isLive(a, now) ? [a] : []
   })
   if (visible.length === 0) return null
 
-  const dismiss = (id: string) => setIds((prev) => prev.filter((x) => x !== id))
+  const dismiss = (key: string) => setKeys((prev) => prev.filter((x) => x !== key))
 
   return (
     <div className="toast-region">
@@ -71,10 +80,10 @@ export function ToastRegion() {
         const bbox = geometryBbox(a.geometry)
         return (
           <Toast
-            key={a.id}
+            key={a.eventKey}
             pds={isPds(a)}
             emergency={isEmergency(a)}
-            issued={zuluTime(a.onset) ?? '--:--Z'}
+            issued={zuluTime(a.sent ?? a.onset) ?? '--:--Z'}
             title={a.event}
             area={a.areaDesc}
             remainingMs={remainingMs(a.expires, now)}
@@ -83,12 +92,12 @@ export function ToastRegion() {
               bbox
                 ? () => {
                     setFocus({ id: a.id, bbox })
-                    dismiss(a.id)
+                    dismiss(a.eventKey)
                   }
                 : undefined
             }
-            onDismiss={() => dismiss(a.id)}
-            focusRef={a.id === focusId ? newestRef : undefined}
+            onDismiss={() => dismiss(a.eventKey)}
+            focusRef={a.eventKey === focusKey ? newestRef : undefined}
           />
         )
       })}

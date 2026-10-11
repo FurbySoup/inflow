@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import type { Alert } from '../types'
-import { MAX_TOASTS, capStack, diffNewTornadoWarnings, rememberTornadoWarnings, zuluTime } from './newAlerts'
+import {
+  MAX_TOASTS,
+  capStack,
+  diffNewTornadoWarnings,
+  findCurrent,
+  rememberTornadoWarnings,
+  zuluTime,
+} from './newAlerts'
 
 function alert(over: Partial<Alert> & Pick<Alert, 'id'>): Alert {
   return {
@@ -9,7 +16,10 @@ function alert(over: Partial<Alert> & Pick<Alert, 'id'>): Alert {
     headline: '',
     areaDesc: 'Moore, OK',
     onset: '2026-10-10T21:46:00Z',
+    sent: '2026-10-10T21:46:00Z',
     expires: '2026-10-10T22:30:00Z',
+    messageType: 'Alert',
+    eventKey: `KOUN.TO.W.${over.id}`,
     geometry: null,
     states: ['GA'],
     zones: [],
@@ -30,40 +40,76 @@ describe('diffNewTornadoWarnings', () => {
   it('returns one new tornado warning in the AOI', () => {
     const seen = rememberTornadoWarnings(null, [alert({ id: 'a' })])
     const feed = [alert({ id: 'a' }), alert({ id: 'b' })]
-    const fresh = diffNewTornadoWarnings(seen, feed, AOI)
-    expect(fresh.map((a) => a.id)).toEqual(['b'])
+    expect(diffNewTornadoWarnings(seen, feed, AOI).map((a) => a.id)).toEqual(['b'])
   })
 
   it('ignores a new tornado warning outside the AOI', () => {
-    const seen = new Set<string>()
     const feed = [alert({ id: 'far', states: ['OK'] })]
-    expect(diffNewTornadoWarnings(seen, feed, AOI)).toEqual([])
+    expect(diffNewTornadoWarnings(new Set(), feed, AOI)).toEqual([])
   })
 
   it('ignores severe thunderstorm warnings', () => {
-    const seen = new Set<string>()
     const feed = [alert({ id: 'svr', event: 'Severe Thunderstorm Warning' })]
-    expect(diffNewTornadoWarnings(seen, feed, AOI)).toEqual([])
+    expect(diffNewTornadoWarnings(new Set(), feed, AOI)).toEqual([])
   })
 
-  it('does not toast the same id twice', () => {
+  it('does not toast the same eventKey twice', () => {
     const feed = [alert({ id: 'a' })]
-    const first = diffNewTornadoWarnings(new Set(), feed, AOI)
-    expect(first).toHaveLength(1)
+    expect(diffNewTornadoWarnings(new Set(), feed, AOI)).toHaveLength(1)
     const seen = rememberTornadoWarnings(new Set(), feed)
     expect(diffNewTornadoWarnings(seen, feed, AOI)).toEqual([])
   })
 
-  it('includes tornado emergencies', () => {
+  it('does not toast an NWS update for a known event (new id, same eventKey)', () => {
+    const original = alert({ id: 'orig', eventKey: 'KFFC.TO.W.0123' })
+    const seen = rememberTornadoWarnings(null, [original])
+    const update = alert({ id: 'con-2', eventKey: 'KFFC.TO.W.0123', messageType: 'Update' })
+    expect(diffNewTornadoWarnings(seen, [update], AOI)).toEqual([])
+  })
+
+  it('toasts a different eventKey even when the id is reused in the same area', () => {
+    const seen = rememberTornadoWarnings(null, [alert({ id: 'a' })])
+    const other = alert({ id: 'a', eventKey: 'KFFC.TO.W.0124' })
+    expect(diffNewTornadoWarnings(seen, [other], AOI)).toEqual([other])
+  })
+
+  it('does not toast a cancellation', () => {
     const seen = new Set<string>()
+    expect(diffNewTornadoWarnings(seen, [alert({ id: 'c', messageType: 'Cancel' })], AOI)).toEqual([])
+  })
+
+  it('includes tornado emergencies', () => {
     const feed = [alert({ id: 'e', damageThreat: 'catastrophic', pds: true })]
-    expect(diffNewTornadoWarnings(seen, feed, AOI).map((a) => a.id)).toEqual(['e'])
+    expect(diffNewTornadoWarnings(new Set(), feed, AOI).map((a) => a.id)).toEqual(['e'])
   })
 
   it('remembers warnings from outside the AOI so panning in does not toast them', () => {
-    const seen = rememberTornadoWarnings(null, [alert({ id: 'far', states: ['OK'] })])
-    expect(seen.has('far')).toBe(true)
-    expect(diffNewTornadoWarnings(seen, [alert({ id: 'far', states: ['OK'] })], AOI)).toEqual([])
+    const far = alert({ id: 'far', states: ['OK'] })
+    const seen = rememberTornadoWarnings(null, [far])
+    expect(seen.has(far.eventKey)).toBe(true)
+    expect(diffNewTornadoWarnings(seen, [far], AOI)).toEqual([])
+  })
+})
+
+describe('findCurrent', () => {
+  it('returns the updated version so the open toast picks up a refreshed expiry', () => {
+    const key = 'KFFC.TO.W.0123'
+    const update = alert({
+      id: 'con-2',
+      eventKey: key,
+      messageType: 'Update',
+      expires: '2026-10-10T22:50:00Z',
+      areaDesc: 'Moore, OK; Norman, OK',
+    })
+    const current = findCurrent([update], key)
+    expect(current?.expires).toBe('2026-10-10T22:50:00Z')
+    expect(current?.areaDesc).toBe('Moore, OK; Norman, OK')
+  })
+
+  it('returns null once the event is cancelled or gone from the feed', () => {
+    const key = alert({ id: 'x' }).eventKey
+    expect(findCurrent([alert({ id: 'x', messageType: 'Cancel' })], key)).toBeNull()
+    expect(findCurrent([], key)).toBeNull()
   })
 })
 
