@@ -13,6 +13,9 @@ export interface ZoneShapeDeps {
   now?: () => number
 }
 
+/** `ok: false` is a failure (skip, don't cache). `ok: true` with a null shape is a zone with no polygon (cache it). */
+type FetchResult = { ok: true; shape: ZoneShape | null } | { ok: false }
+
 let sharedCache: ZoneCache | null = null
 
 const defaultFetch = (url: string, signal?: AbortSignal) =>
@@ -20,8 +23,8 @@ const defaultFetch = (url: string, signal?: AbortSignal) =>
 
 const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
 
-/** Fetches one zone, backing off on 429. Returns null on any failure so the zone is skipped. */
-async function fetchOne(url: string, deps: Required<Omit<ZoneShapeDeps, 'cache'>>, signal?: AbortSignal): Promise<ZoneShape | null> {
+/** Fetches one zone, backing off on 429. */
+async function fetchOne(url: string, deps: Required<Omit<ZoneShapeDeps, 'cache'>>, signal?: AbortSignal): Promise<FetchResult> {
   for (let attempt = 0; ; attempt++) {
     try {
       const res = await deps.fetchZone(url, signal)
@@ -29,18 +32,19 @@ async function fetchOne(url: string, deps: Required<Omit<ZoneShapeDeps, 'cache'>
         await deps.sleep(RETRY_AFTER_429_MS)
         continue
       }
-      if (!res.ok) return null
+      if (!res.ok) return { ok: false }
       const raw = (await res.json()) as NwsZoneResponse
-      return normalizeZone(raw)
+      return { ok: true, shape: normalizeZone(raw) }
     } catch {
-      return null
+      return { ok: false }
     }
   }
 }
 
 /**
- * Resolves zone URLs to shapes, keyed by `<type>/<id>` (see zoneKeyFromUrl). Cached shapes (30-day TTL)
- * skip the network; misses are fetched with concurrency ≤ 4. A zone that fails is left out of the result.
+ * Resolves zone URLs to shapes, keyed by `<type>/<id>` (see zoneKeyFromUrl). Cached entries (30-day TTL)
+ * skip the network, including cached "no polygon" answers; misses are fetched with concurrency ≤ 4.
+ * A zone that fails is left out of the result and not cached.
  */
 export async function getZoneShapes(urls: string[], signal?: AbortSignal, deps: ZoneShapeDeps = {}): Promise<Map<string, ZoneShape>> {
   sharedCache ??= defaultZoneCache()
@@ -58,8 +62,11 @@ export async function getZoneShapes(urls: string[], signal?: AbortSignal, deps: 
   await Promise.all(
     [...keys].map(async ([key, url]) => {
       const hit = await cache.get(key)
-      if (hit && resolved.now() - hit.storedAt < ZONE_TTL_MS) out.set(key, hit.shape)
-      else misses.push([key, url])
+      if (hit && resolved.now() - hit.storedAt < ZONE_TTL_MS) {
+        if (hit.shape) out.set(key, hit.shape)
+      } else {
+        misses.push([key, url])
+      }
     }),
   )
 
@@ -67,11 +74,10 @@ export async function getZoneShapes(urls: string[], signal?: AbortSignal, deps: 
   const worker = async () => {
     while (next < misses.length && !signal?.aborted) {
       const [key, url] = misses[next++]
-      const shape = await fetchOne(url, resolved, signal)
-      if (shape) {
-        out.set(key, shape)
-        await cache.put(key, { shape, storedAt: resolved.now() })
-      }
+      const res = await fetchOne(url, resolved, signal)
+      if (!res.ok) continue
+      if (res.shape) out.set(key, res.shape)
+      await cache.put(key, { shape: res.shape, storedAt: resolved.now() })
     }
   }
   await Promise.all(Array.from({ length: Math.min(CONCURRENCY, misses.length) }, worker))

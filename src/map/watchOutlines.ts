@@ -7,7 +7,7 @@ import type { MapLayer } from './layers'
 
 const SOURCE_ID = 'watch-outlines'
 const REFRESH_MS = 120_000
-// Literal paint values matching the --extreme / --severe / --moderate tokens (MapLibre can't read CSS vars).
+// Literal paint values matching the --extreme / --severe / --moderate / --offline tokens (MapLibre can't read CSS vars).
 const SEVERITY_COLOR: maplibregl.ExpressionSpecification = [
   'match',
   ['get', 'severity'],
@@ -17,7 +17,7 @@ const SEVERITY_COLOR: maplibregl.ExpressionSpecification = [
   '#ff8c1a',
   'Moderate',
   '#ffd23f',
-  '#ffffff',
+  '#3a4a5a',
 ]
 
 const EMPTY: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] }

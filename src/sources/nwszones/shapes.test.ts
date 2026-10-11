@@ -72,6 +72,27 @@ describe('getZoneShapes', () => {
     expect(shapes.has('county/GAC033')).toBe(true)
   })
 
+  it('caches a zone with no polygon so it is not re-requested within the TTL', async () => {
+    const cache = createMemoryZoneCache()
+    const noPolygon = (url: string) =>
+      ({ ok: true, status: 200, json: async () => ({ ...county, id: url, geometry: null }) }) as unknown as Response
+    const fetchZone = vi.fn(async (url: string) => noPolygon(url))
+    const first = await getZoneShapes([A], undefined, { cache, fetchZone, now: () => 0 })
+    expect(first.size).toBe(0)
+    await getZoneShapes([A], undefined, { cache, fetchZone, now: () => ZONE_TTL_MS - 1 })
+    expect(fetchZone).toHaveBeenCalledTimes(1)
+    await getZoneShapes([A], undefined, { cache, fetchZone, now: () => ZONE_TTL_MS + 1 })
+    expect(fetchZone).toHaveBeenCalledTimes(2)
+  })
+
+  it('does not cache a failed fetch, so the next refresh retries it', async () => {
+    const cache = createMemoryZoneCache()
+    const fetchZone = vi.fn(async () => status(500))
+    await getZoneShapes([A], undefined, { cache, fetchZone })
+    await getZoneShapes([A], undefined, { cache, fetchZone })
+    expect(fetchZone).toHaveBeenCalledTimes(2)
+  })
+
   it('backs off 5 s on 429 and retries', async () => {
     const sleep = vi.fn(async () => {})
     const fetchZone = vi.fn().mockResolvedValueOnce(status(429)).mockImplementationOnce(async () => okResponse(A))
