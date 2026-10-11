@@ -17,15 +17,16 @@ const NARROW_QUERY = '(max-width: 900px)'
 
 // Below the narrow breakpoint the mobile token set always applies (ADR-0015): it is automatic,
 // not a stored preset, so the root's data-preset switches here rather than in CSS.
+// Module-scope so the subscribe and snapshot functions are stable across renders.
+const subscribeNarrow = (onChange: () => void) => {
+  const mq = window.matchMedia(NARROW_QUERY)
+  mq.addEventListener('change', onChange)
+  return () => mq.removeEventListener('change', onChange)
+}
+const isNarrow = () => window.matchMedia(NARROW_QUERY).matches
+
 function useNarrow(): boolean {
-  return useSyncExternalStore(
-    (onChange) => {
-      const mq = window.matchMedia(NARROW_QUERY)
-      mq.addEventListener('change', onChange)
-      return () => mq.removeEventListener('change', onChange)
-    },
-    () => window.matchMedia(NARROW_QUERY).matches,
-  )
+  return useSyncExternalStore(subscribeNarrow, isNarrow)
 }
 
 export default function App() {

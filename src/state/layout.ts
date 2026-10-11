@@ -213,6 +213,9 @@ export const useLayout = create<LayoutState>((set, get) => {
       const pair = consoleSplit[boundary] + consoleSplit[boundary + 1]
       commit({ consoleSplit: resizeConsoleSplit(consoleSplit, boundary, pair / 2) })
     },
+    // Collapsing or expanding a panel does not change `preset`, so in WALL or CHASE the top bar can
+    // still show that preset label after a manual toggle. This is intentional: the label records the
+    // last applied preset, not the current collapse state.
     toggleHidden: (code) => {
       const { hidden } = get()
       commit({

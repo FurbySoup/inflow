@@ -170,7 +170,9 @@ body.resizing iframe { pointer-events: none; }
 @media (max-width: 1280px) {
   .topbar { gap: 14px; }
   .topbar-local { display: none; }
-  /* WALL's fixed 460 px / 540 px columns would leave no map at this width: scale them with the viewport. */
+  /* Deliberate deviation from token geometry: WALL's fixed 460 px / 540 px columns would leave no map
+     at this width (1024 px leaves about 0), so the columns scale with the viewport here.
+     Note: CHASE's single-stream behaviour is not in this file. It is handled in StreamsGrid (after WP-25 merge). */
   .layout[data-preset='wall'] .workspace { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.1fr); }
 }
 
