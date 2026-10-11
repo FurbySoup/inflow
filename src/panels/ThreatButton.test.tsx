@@ -62,6 +62,14 @@ describe('ThreatButton', () => {
     expect(button.getAttribute('aria-label')?.startsWith(visible)).toBe(true)
   })
 
+  it('renders the idle note with no text node so it matches :empty', () => {
+    vi.mocked(useSource).mockReturnValue(feed([alert({ id: 'a' })]))
+    render(<ThreatButton />)
+    const note = screen.getByRole('status')
+    expect(note.childNodes.length).toBe(0)
+    expect(note.matches('.threat-note:empty')).toBe(true)
+  })
+
   it('uses the singular for one warning', () => {
     vi.mocked(useSource).mockReturnValue(feed([alert({ id: 'a' })]))
     render(<ThreatButton />)

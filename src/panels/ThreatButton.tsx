@@ -79,7 +79,7 @@ export function ThreatButton() {
       </ConsoleButton>
       {/* Mounted with the button, so the live region already exists when the note is written into it. */}
       <span className="threat-note" role="status">
-        {zoneNoteAt !== null ? 'ZONE ALERT · NO POLYGON' : ''}
+        {zoneNoteAt !== null ? 'ZONE ALERT · NO POLYGON' : null}
       </span>
     </>
   )
