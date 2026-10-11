@@ -1,0 +1,14 @@
+/* LIVE NOW chips and the Spotter Network footer (WP-36). ConsoleButton supplies the base (.btn-console). */
+.live-now {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.live-now-label { font: 600 var(--fs-ui-xs) / 1 var(--font-ui); letter-spacing: var(--tr-label); color: var(--text-bright); margin-right: var(--sp-1); }
+.btn-console.live-now-chip { display: inline-flex; align-items: center; gap: var(--sp-2); max-width: 100%; text-align: left; }
+.btn-console.live-now-chip[aria-current='true'] { background: var(--accent); color: var(--bg); }
+.live-now-coverage { font: 600 var(--fs-ui-xs) / 1 var(--font-ui); letter-spacing: var(--tr-label); color: var(--muted); }
+.live-now-empty { margin: 0 0 var(--sp-3); }
+.streams-footer { margin-top: var(--sp-3); }
