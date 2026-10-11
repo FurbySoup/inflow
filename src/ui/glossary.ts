@@ -53,6 +53,17 @@ export const GLOSSARY: Readonly<Record<string, string>> = {
   RX: 'Receiver: an online radio you can listen through',
   TG: 'Talkgroup: one channel on a digital trunked radio system',
   SDR: 'Software-defined radio: a receiver you tune in a web browser',
+  KIWISDR: 'KiwiSDR: volunteer-run radio receivers you tune in a web browser. They open on their own page.',
+  OPENMHZ: 'OpenMHz: a public archive of recorded trunked-radio calls (police, fire, EMS), played here',
+  MHZ: 'Megahertz: radio frequency. CB is around 27 MHz; the 2-metre band is 144–148 MHz.',
+  KM: 'Kilometres from the centre of your area of interest',
+  EXP: 'Expires: time left until the soonest tornado warning ends',
+  SN: 'Spotter Network: a service where chasers share live GPS positions. Opens their map.',
+  THUMBS: 'Thumbnails: still images refreshed about every 5 minutes. ▶ WATCH plays one.',
+  // AOI presets (src/panels/aoiPresetData.ts)
+  PLAINS: 'Preset: the Great Plains, Texas to the Dakotas border (104°–94° W)',
+  DIXIE: 'Preset: Dixie Alley, the tornado-prone Deep South from Louisiana to Tennessee',
+  SE: 'Preset: the Southeast, Georgia and South Carolina (the default area)',
 }
 
 /** Console panel designators (the code before a panel title, e.g. `WX-02`). */

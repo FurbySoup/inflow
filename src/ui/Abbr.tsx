@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
+import { Fragment, type ReactNode } from 'react'
 
-import { expand } from './glossary'
+import { GLOSSARY, expand } from './glossary'
 
 export interface AbbrProps {
   /** The on-screen acronym or abbreviation, e.g. `TOR`, `AOI`, `WX-02`. Looked up in the glossary. */
@@ -23,5 +23,24 @@ export function Abbr({ term, children, title }: AbbrProps) {
     <abbr className="abbr" title={tip}>
       {children ?? term}
     </abbr>
+  )
+}
+
+// Glossary keys that are also ordinary words: auto-tagging them inside running text would underline plain English.
+const NOT_AUTO_TAGGED = new Set(['LOCAL', 'OTHER', 'HIGH', 'ZONE', 'EMERGENCY', 'CAM', 'THUMB', 'Z', 'T-'])
+
+/**
+ * Renders a label string with every glossary acronym in it wrapped in `Abbr` (e.g. "NWS Alerts", "DOT Cameras",
+ * "NO ACTIVE ALERTS IN AOI"). Kit components use it for string props (Panel title, empty labels) that must stay
+ * strings for aria-labels and native tooltips. Ordinary words that happen to be glossary keys are left alone.
+ */
+export function TaggedText({ text }: { text: string }) {
+  const parts = text.split(/(\s+)/)
+  return (
+    <>
+      {parts.map((part, i) =>
+        GLOSSARY[part] && !NOT_AUTO_TAGGED.has(part) ? <Abbr key={i} term={part} /> : <Fragment key={i}>{part}</Fragment>,
+      )}
+    </>
   )
 }

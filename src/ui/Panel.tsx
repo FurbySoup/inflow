@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { StatusLed, type FeedStatus } from './StatusLed'
-import { Abbr } from './Abbr'
+import { Abbr, TaggedText } from './Abbr'
 
 export interface PanelProps {
   /** Uppercase-tracked panel title, e.g. "NWS Alerts". */
@@ -46,7 +46,9 @@ export function Panel({
         <span className="panel-code">
           <Abbr term={code} />
         </span>
-        <h2>{title}</h2>
+        <h2>
+          <TaggedText text={title} />
+        </h2>
         {hasTail && (
           <span className="panel-tail">
             {hasMeta && <span className="panel-meta">{meta}</span>}

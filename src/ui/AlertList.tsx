@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components -- pure time formatters sit beside the row that uses them; format.ts is orchestrator-owned */
 import type { ReactNode, Ref } from 'react'
 import { hazardCode, isWatch, type HazardCode } from './hazard'
-import { Abbr } from './Abbr'
+import { Abbr, TaggedText } from './Abbr'
 import { GLOSSARY } from './glossary'
 
 export type AlertSeverity = 'Extreme' | 'Severe' | 'Moderate' | 'Minor' | 'Unknown'
@@ -69,7 +69,9 @@ export function AlertList({ children, ref, feedError, empty }: AlertListProps) {
       </ul>
       {empty && (
         <div className="alert-empty">
-          <span className="alert-empty-label">{empty.label}</span>
+          <span className="alert-empty-label">
+            <TaggedText text={empty.label} />
+          </span>
           <span className="alert-empty-note">{empty.note}</span>
         </div>
       )}
