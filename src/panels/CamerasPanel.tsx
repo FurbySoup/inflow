@@ -2,7 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { useQueries } from '@tanstack/react-query'
 import type { CameraFeed } from '../types'
 import type { SourceAdapter } from '../sources/types'
-import { kansasCameras, nebraskaCameras } from '../sources/cars/adapter'
+import {
+  indianaCameras,
+  iowaCameras,
+  kansasCameras,
+  minnesotaCameras,
+  nebraskaCameras,
+} from '../sources/cars/adapter'
 import { southCarolinaCameras } from '../sources/sc511/adapter'
 import { isTxdotFeed, txdotCameras } from '../sources/txdot/adapter'
 import { floridaCameras, georgiaCameras } from '../sources/ibi511/adapter'
@@ -29,6 +35,9 @@ export const CAMERA_SOURCES: CameraSource[] = [
   { adapter: georgiaCameras, states: ['GA'], attribution: '511GA' },
   { adapter: floridaCameras, states: ['FL'], attribution: 'FL511' },
   { adapter: southCarolinaCameras, states: ['SC'], attribution: '511SC' },
+  { adapter: iowaCameras, states: ['IA'], attribution: '511IA' },
+  { adapter: minnesotaCameras, states: ['MN'], attribution: '511MN' },
+  { adapter: indianaCameras, states: ['IN'], attribution: '511IN' },
 ]
 
 /** "NO DOT CAMERA COVERAGE IN AOI — COVERED: FL · GA · …" built from the source list. */

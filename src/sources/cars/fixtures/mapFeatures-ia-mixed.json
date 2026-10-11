@@ -1,0 +1,125 @@
+{
+  "data": {
+    "mapFeaturesQuery": {
+      "mapFeatures": [
+        {
+          "bbox": [
+            -93.83366,
+            41.57987,
+            -93.83366,
+            41.57987
+          ],
+          "title": "I-80: I-80 @ MM 119.7",
+          "tooltip": "I-80: I-80 @ MM 119.7",
+          "uri": "camera/59634616",
+          "features": [
+            {
+              "id": "camera/59634616-3215795502",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  -93.83366,
+                  41.57987
+                ]
+              },
+              "properties": {
+                "icon": {
+                  "url": "/images/icon-video/fill-solid.svg",
+                  "scaledSize": {
+                    "width": 26,
+                    "height": 26
+                  }
+                }
+              },
+              "type": "Feature"
+            }
+          ],
+          "__typename": "Camera",
+          "active": true,
+          "views": [
+            {
+              "uri": "camera/59634616/2585544681",
+              "url": "https://atmsqf.iowadot.gov/SNAPSHOTS/PUBLIC/Metro/80tv120hd.jpeg",
+              "category": "VIDEO"
+            }
+          ]
+        },
+        {
+          "bbox": [
+            -93.82202,
+            41.54136,
+            -93.67437,
+            41.65232
+          ],
+          "title": "Show 33 cameras",
+          "tooltip": "Show 33 cameras",
+          "uri": "cluster/-93748204159684",
+          "features": [
+            {
+              "id": "undefined-110432995",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  -93.7482,
+                  41.59684
+                ]
+              },
+              "properties": {
+                "icon": {
+                  "url": "/images/clusters/icon-cluster-camera-20plus-solid.svg",
+                  "scaledSize": {
+                    "width": 30,
+                    "height": 30
+                  }
+                },
+                "zIndex": 102,
+                "clustered": []
+              },
+              "type": "Feature"
+            }
+          ],
+          "maxZoom": null,
+          "__typename": "Cluster"
+        },
+        {
+          "bbox": [
+            -93.78565,
+            41.68825,
+            -93.77406,
+            41.74418
+          ],
+          "title": "Show five cameras",
+          "tooltip": "Show five cameras",
+          "uri": "cluster/-93779854171621",
+          "features": [
+            {
+              "id": "undefined-2859660330",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  -93.77985,
+                  41.71621
+                ]
+              },
+              "properties": {
+                "icon": {
+                  "url": "/images/clusters/icon-cluster-camera-5-solid.svg",
+                  "scaledSize": {
+                    "width": 30,
+                    "height": 30
+                  }
+                },
+                "zIndex": 102,
+                "clustered": []
+              },
+              "type": "Feature"
+            }
+          ],
+          "maxZoom": null,
+          "__typename": "Cluster"
+        }
+      ],
+      "error": null
+    }
+  }
+}
