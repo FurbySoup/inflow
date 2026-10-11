@@ -4,6 +4,8 @@ import { StreamTile } from 'storm-chasers'
 const embed = (id: string) => `https://www.youtube.com/embed/${id}?mute=1`
 const watch = (id: string) => `https://www.youtube.com/watch?v=${id}`
 const still = (id: string) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg?t=1`
+// A thumbnail's WATCH embed: sound off, started by the press (ADR-0017).
+const playEmbed = (id: string) => `https://www.youtube.com/embed/${id}?autoplay=1&mute=1`
 
 /** Primary feed: read-only MAIN tag, 🔇 MUTED sound toggle (outlined), accent caption, IN AOI badge, link-out. */
 export const Primary = () => (
@@ -107,5 +109,57 @@ export const OfflineAndEnded = () => (
         snapshot={{ src: still('4cS5_IGsNnY'), placeholder: 'connecting…', ageLabel: 'THUMB ≤5m' }}
       />
     </div>
+  </div>
+)
+
+/** Live thumbnail, still: ● LIVE solid phosphor tag, ▶ WATCH beside ▲ MAIN. Read-only tag, no pointer. */
+export const LiveStillWatch = () => (
+  <div style={{ width: 380, padding: 10, background: 'var(--surface-panel)' }}>
+    <StreamTile
+      title="Brandon Copic: tropical tornado threat, E GA & SC"
+      watchUrl={watch('Syyvt9aidlQ')}
+      index={1}
+      inAoi
+      ledStatus="live"
+      liveKind="live"
+      onPlay={() => {}}
+      onSelect={() => {}}
+      snapshot={{ src: still('Syyvt9aidlQ'), placeholder: 'connecting…', ageLabel: 'THUMB ≤5m' }}
+    />
+  </div>
+)
+
+/** Replay thumbnail, playing: ↺ REPLAY outline tag, ■ STILL filled, PLAYING · MUTED in place of the THUMB label. The embed is muted. */
+export const ReplayPlaying = () => (
+  <div style={{ width: 380, padding: 10, background: 'var(--surface-panel)' }}>
+    <StreamTile
+      title="Tornado Paigeyy: GA & SC tornado threat (2026-10-10)"
+      watchUrl={watch('4cS5_IGsNnY')}
+      index={5}
+      inAoi
+      ledStatus="offline"
+      liveKind="replay"
+      playing
+      embedUrl={playEmbed('4cS5_IGsNnY')}
+      onStop={() => {}}
+      onSelect={() => {}}
+    />
+  </div>
+)
+
+/** Offline thumbnail: ○ OFFLINE tag, placeholder still, and no WATCH button (offline cannot be started). */
+export const OfflineNoWatch = () => (
+  <div style={{ width: 380, padding: 10, background: 'var(--surface-panel)' }}>
+    <StreamTile
+      title="WRDW News 12 (Augusta TV): Screven County tornado"
+      watchUrl={watch('QaOKJLeJwDY')}
+      index={4}
+      inAoi
+      ledStatus="offline"
+      liveKind="offline"
+      onPlay={() => {}}
+      onSelect={() => {}}
+      snapshot={{ src: null, placeholder: '○ OFFLINE' }}
+    />
   </div>
 )
