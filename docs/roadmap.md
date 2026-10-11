@@ -3,6 +3,11 @@
 v1 = local-only, keyless, client-only (ADR-0001). This plans the path to a hosted product. Each phase gets its own ADRs when started.
 
 ## v1.1 — Coverage polish (still local)
+Scheduled as Wave 4 (WP-11…16) and Wave 5 (WP-17); see `work-plan.md`. Not scheduled:
+- AL cameras: ALGO is behind a bot wall.
+- OK cameras.
+- Twitch/Kick streams.
+
 - GA/SC/FL/AL DOT camera adapters (511GA, SC511, FL511, ALGO) — the 2026-10-10 live-proofing storm exposed the Plains-only camera gap.
 - Oklahoma cameras once verifiable from a US network.
 - Watch outlines: resolve zone-based alerts' `affectedZones` to geometry (cache zone shapes in IndexedDB).
@@ -20,7 +25,7 @@ v1 = local-only, keyless, client-only (ADR-0001). This plans the path to a hoste
 | Proxy | Worker routes mirror `vite.config.ts` proxy table one-to-one (`/api/nws`, `/api/kiwisdr`, `/api/txdot`). `src/` unchanged (ADR-0005). |
 | Upstream protection | Worker caches responses with the Cache API at upstream cadence (NWS 60 s, SPC 120–300 s, cameras 60 s) so N viewers ≈ 1 upstream request. Per-IP rate limits. |
 | HTTPS | KiwiSDR stays link-out (HTTP receivers). Audit every `http://` asset for mixed content. |
-| Terms gate | **Before going public**: confirm redistribution terms for IEM, OpenMHz, each DOT feed, KiwiSDR directory; drop RainViewer entirely (personal/educational only). Add an `/about` attributions page. |
+| Terms gate | **Before going public**: confirm redistribution terms for IEM, OpenMHz, each DOT feed (511GA, 511SC, FL511 had no findable terms page as of 2026-10-10), KiwiSDR directory; replace the `/api/youtube` page scraping (ADR-0013) with the Data API; drop RainViewer entirely (personal/educational only). Add an `/about` attributions page. |
 | Secrets | YouTube Data API key as a Worker secret → live "storm chase" stream discovery, merged with the curated list (supersedes ADR-0009). |
 | Observability | Worker logs + per-source health endpoint (`/api/health`) feeding the panel LEDs; alert on sustained upstream failure. |
 | Perf | Code-split panels, lazy-load MapLibre, pause off-screen iframes/audio, cap concurrent camera refreshes. |

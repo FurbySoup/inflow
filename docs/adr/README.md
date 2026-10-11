@@ -16,6 +16,7 @@ Short, numbered, immutable. To change a decision, add a new ADR that supersedes 
 | [0010](0010-parallel-subagent-factory.md) | Parallel build via Haiku sub-agent factory | Accepted |
 | [0011](0011-layout-customization.md) | Layout customization | Accepted |
 | [0012](0012-affordances-and-signifiers.md) | Interaction design: affordances, signifiers, feedback (Norman) | Accepted |
+| [0013](0013-stream-liveness.md) | Stream liveness via a YouTube page proxy (local only) | Accepted |
 
 Template:
 

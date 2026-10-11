@@ -4,7 +4,7 @@ import { StreamTile } from 'storm-chasers'
 const embed = (id: string) => `https://www.youtube.com/embed/${id}?mute=1`
 const watch = (id: string) => `https://www.youtube.com/watch?v=${id}`
 
-/** Primary feed: full width, accent caption, IN AOI badge, link-out. */
+/** Primary feed: read-only MAIN tag, 🔇 MUTED sound toggle (outlined), accent caption, IN AOI badge, link-out. */
 export const Primary = () => (
   <div style={{ width: 380, padding: 10, background: 'var(--panel)' }}>
     <StreamTile
@@ -15,11 +15,30 @@ export const Primary = () => (
       inAoi
       primary
       onSelect={() => {}}
+      soundOn={false}
+      onToggleSound={() => {}}
     />
   </div>
 )
 
-/** Thumbnail grid of secondary feeds, one context feed sorted last. */
+/** Primary feed with sound on: the toggle reads 🔊 SOUND and fills solid accent (aria-pressed). */
+export const PrimarySoundOn = () => (
+  <div style={{ width: 380, padding: 10, background: 'var(--panel)' }}>
+    <StreamTile
+      title="Live proofing: GA/SC tornado outbreak"
+      embedUrl={embed('7kQACmPd6Io')}
+      watchUrl={watch('7kQACmPd6Io')}
+      index={0}
+      inAoi
+      primary
+      onSelect={() => {}}
+      soundOn
+      onToggleSound={() => {}}
+    />
+  </div>
+)
+
+/** Thumbnail grid of secondary feeds, each with a persistent "⇱ MAIN" swap button; one context feed sorted last. */
 export const ThumbnailGrid = () => (
   <div style={{ width: 380, padding: 10, background: 'var(--panel)' }}>
     <div className="stream-grid">
