@@ -44,6 +44,21 @@ function startCollapsed(): boolean {
   return typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia(SMALL_SCREEN).matches
 }
 
+// The mounted control, so code without the DOM (keyboard shortcuts, WP-17) can toggle layers
+// through the same path as a click: same persistence, same LED/aria feedback.
+const mounted = new Set<LayerControl>()
+const current = (): LayerControl | undefined => [...mounted].pop()
+
+/** Overlay ids the control lists (registry layers + NWS alerts), in display order. Empty before the map loads. */
+export function layerIds(): string[] {
+  return current()?.ids() ?? []
+}
+
+/** Toggles an overlay as if its row were clicked. Returns false when no control is mounted or the id is unknown. */
+export function toggleLayer(id: string): boolean {
+  return current()?.toggleById(id) ?? false
+}
+
 /** Console-style layer switchboard. Each row toggles every style layer its overlay id prefixes. */
 export class LayerControl implements maplibregl.IControl {
   private readonly rows: Toggleable[]
@@ -59,6 +74,7 @@ export class LayerControl implements maplibregl.IControl {
 
   onAdd(map: maplibregl.Map): HTMLElement {
     this.map = map
+    mounted.add(this)
     const root = document.createElement('div')
     Object.assign(root.style, {
       background: 'var(--panel)',
@@ -97,7 +113,18 @@ export class LayerControl implements maplibregl.IControl {
     return root
   }
 
+  ids(): string[] {
+    return this.rows.map((r) => r.id)
+  }
+
+  toggleById(id: string): boolean {
+    if (!this.rows.some((r) => r.id === id)) return false
+    this.toggle(id)
+    return true
+  }
+
   onRemove(): void {
+    mounted.delete(this)
     this.container?.remove()
     this.container = null
     this.map = null

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { normalizeStreams } from './curated'
-import { applyResolution, mergeLiveness, resolveFeed, withAutoplay } from './resolve'
+import { applyResolution, mergeLiveness, resolveFeed, shouldAutoplay, withAutoplay } from './resolve'
 
 const pinnedWithChannel = { videoId: 'Syyvt9aidlQ', channelId: 'UCPqLI_AohMn1jnFg8ocMyHA' }
 const pinnedOnly = { videoId: 'vGA' }
@@ -111,6 +111,16 @@ describe('applyResolution', () => {
     expect(feed.embedUrl).toBe(stream!.embedUrl)
     expect(feed.watchUrl).toBe(stream!.watchUrl)
     expect(feed.status).toBe('ended')
+  })
+})
+
+describe('shouldAutoplay', () => {
+  it('autoplays only feeds confirmed live', () => {
+    expect(shouldAutoplay('live')).toBe(true)
+    expect(shouldAutoplay(undefined)).toBe(false)
+    expect(shouldAutoplay('unknown')).toBe(false)
+    expect(shouldAutoplay('ended')).toBe(false)
+    expect(shouldAutoplay('offline')).toBe(false)
   })
 })
 

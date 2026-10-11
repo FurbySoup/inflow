@@ -19,9 +19,15 @@ describe('parseWatchPage', () => {
     expect(parseWatchPage(removedHtml)).toBe('removed')
   })
 
-  it('treats an upcoming stream (no endTimestamp yet) and an empty page as unknown', () => {
-    const upcoming = '"liveBroadcastDetails":{"isLiveNow":false,"startTimestamp":"2026-10-11T01:00:00+00:00"}'
-    expect(parseWatchPage(upcoming)).toBe('unknown')
+  it('reads a scheduled stream as upcoming (markers from a real page, 2026-10-11)', () => {
+    const upcoming =
+      '"isUpcoming":true,"liveBroadcastDetails":{"isLiveNow":false,"startTimestamp":"2026-10-11T15:00:00+00:00"}'
+    expect(parseWatchPage(upcoming)).toBe('upcoming')
+  })
+
+  it('treats a page without end or upcoming markers, and an empty page, as unknown', () => {
+    const noEnd = '"liveBroadcastDetails":{"isLiveNow":false,"startTimestamp":"2026-10-11T01:00:00+00:00"}'
+    expect(parseWatchPage(noEnd)).toBe('unknown')
     expect(parseWatchPage('<html></html>')).toBe('unknown')
   })
 })
@@ -64,10 +70,28 @@ describe('checkLiveness', () => {
   const channel = '/api/youtube/embed/live_stream?channel=UCPqLI_AohMn1jnFg8ocMyHA'
 
   it('checks the channel only for a pinned video that has ended', async () => {
-    const calls = stubProxy({ [watch]: endedHtml, [channel]: embedLiveHtml })
+    const fallback = '/api/youtube/watch?v=6nTCsMwGwoY'
+    const calls = stubProxy({ [watch]: endedHtml, [channel]: embedLiveHtml, [fallback]: liveHtml })
     const result = await checkLiveness({ videoId: 'Syyvt9aidlQ', channelId: 'UCPqLI_AohMn1jnFg8ocMyHA' })
     expect(result).toEqual({ watch: 'ended', channel: { videoId: '6nTCsMwGwoY' } })
-    expect(calls).toEqual([watch, channel])
+    expect(calls).toEqual([watch, channel, fallback])
+  })
+
+  it("treats a channel's scheduled (upcoming) video as offline, not live", async () => {
+    const fallback = '/api/youtube/watch?v=6nTCsMwGwoY'
+    stubProxy({
+      [watch]: endedHtml,
+      [channel]: embedLiveHtml,
+      [fallback]: '"isUpcoming":true,"liveBroadcastDetails":{"isLiveNow":false}',
+    })
+    const result = await checkLiveness({ videoId: 'Syyvt9aidlQ', channelId: 'UCPqLI_AohMn1jnFg8ocMyHA' })
+    expect(result).toEqual({ watch: 'ended', channel: 'offline' })
+  })
+
+  it("leaves the channel unknown when its named video can't be checked", async () => {
+    stubProxy({ [watch]: endedHtml, [channel]: embedLiveHtml })
+    const result = await checkLiveness({ videoId: 'Syyvt9aidlQ', channelId: 'UCPqLI_AohMn1jnFg8ocMyHA' })
+    expect(result).toEqual({ watch: 'ended', channel: 'unknown' })
   })
 
   it('skips the channel request while the pin is live or has no channelId', async () => {

@@ -70,6 +70,14 @@ export function applyResolution(stream: ChaserStream, resolution: FeedResolution
   }
 }
 
+/**
+ * Only a feed confirmed live may autoplay. An unchecked pin (every feed on a fresh load) or an
+ * ENDED/OFFLINE one would otherwise start the finished broadcast's replay before liveness answers.
+ */
+export function shouldAutoplay(status: FeedStatus | undefined): boolean {
+  return status === 'live'
+}
+
 /** Adds or removes `autoplay=1`. Off-screen feeds drop it so they stay paused and do not decode. */
 export function withAutoplay(embedUrl: string, on: boolean): string {
   const url = new URL(embedUrl)

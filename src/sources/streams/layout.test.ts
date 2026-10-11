@@ -109,6 +109,19 @@ describe('layoutStreams', () => {
   it('handles an empty list', () => {
     expect(layoutStreams([], 'x')).toEqual({ primary: undefined, thumbs: [] })
   })
+
+  it("ignores a stored primary that is known to be over (yesterday's ended broadcast)", () => {
+    const withStatus = sorted.map((s) => (s.id === 'tx' ? { ...s, status: 'ended' as const } : s))
+    expect(layoutStreams(withStatus, 'tx').primary?.id).toBe('ga')
+    const offline = sorted.map((s) => (s.id === 'tx' ? { ...s, status: 'offline' as const } : s))
+    expect(layoutStreams(offline, 'tx').primary?.id).toBe('ga')
+  })
+
+  it('keeps a stored primary that is live or not checked yet', () => {
+    const live = sorted.map((s) => (s.id === 'tx' ? { ...s, status: 'live' as const } : s))
+    expect(layoutStreams(live, 'tx').primary?.id).toBe('tx')
+    expect(layoutStreams(sorted, 'tx').primary?.id).toBe('tx')
+  })
 })
 
 describe('primary persistence', () => {

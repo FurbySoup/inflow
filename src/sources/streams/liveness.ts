@@ -2,14 +2,15 @@
 import type { YoutubeRef } from './curated'
 import type { LivenessResult } from './resolve'
 
-export type WatchState = 'live' | 'ended' | 'removed' | 'unknown'
+export type WatchState = 'live' | 'ended' | 'removed' | 'upcoming' | 'unknown'
 export type ChannelState = { videoId: string } | 'offline' | 'unknown'
 
 const VIDEO_ID = /^[A-Za-z0-9_-]{11}$/
 
-/** Classifies a `/watch?v=` page. Upcoming (no endTimestamp yet) and unrecognised pages are `unknown`. */
+/** Classifies a `/watch?v=` page. A scheduled stream is `upcoming`; unrecognised pages are `unknown`. */
 export function parseWatchPage(html: string): WatchState {
   if (html.includes('"playabilityStatus":{"status":"ERROR"')) return 'removed'
+  if (html.includes('"isUpcoming":true')) return 'upcoming'
   const details = /"liveBroadcastDetails":\{([^}]*)\}/.exec(html)?.[1]
   if (details === undefined) return 'unknown'
   if (details.includes('"isLiveNow":true')) return 'live'
@@ -51,13 +52,25 @@ export async function fetchChannelState(channelId: string, signal?: AbortSignal)
   return html === null ? 'unknown' : parseLiveStreamEmbed(html)
 }
 
+/**
+ * The channel embed can name a *scheduled* stream, not only a live one (verified 2026-10-11: Connor
+ * Croff's channel returned an `isUpcoming` video hours before start). A video it names only counts
+ * once its own watch page says live; upcoming/ended/removed mean the channel is not live now.
+ */
+async function confirmChannel(state: ChannelState, signal?: AbortSignal): Promise<ChannelState> {
+  if (typeof state === 'string') return state
+  const watch = await fetchWatchState(state.videoId, signal)
+  if (watch === 'live') return state
+  return watch === 'unknown' ? 'unknown' : 'offline'
+}
+
 /** Checks only what the resolution needs: the channel is fetched only when a pin has ended or the entry is channel-only. */
 export async function checkLiveness(youtube: YoutubeRef, signal?: AbortSignal): Promise<LivenessResult> {
   if (!('videoId' in youtube)) {
-    return { channel: await fetchChannelState(youtube.channelId, signal) }
+    return { channel: await confirmChannel(await fetchChannelState(youtube.channelId, signal), signal) }
   }
   const watch = await fetchWatchState(youtube.videoId, signal)
   const pinEnded = watch === 'ended' || watch === 'removed'
   if (!youtube.channelId || !pinEnded) return { watch }
-  return { watch, channel: await fetchChannelState(youtube.channelId, signal) }
+  return { watch, channel: await confirmChannel(await fetchChannelState(youtube.channelId, signal), signal) }
 }

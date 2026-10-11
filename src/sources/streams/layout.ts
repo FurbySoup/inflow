@@ -45,12 +45,18 @@ export function isInAoi(stream: ChaserStream, aoiStates: string[]): boolean {
   return stream.states.some((st) => aoiStates.includes(st))
 }
 
-/** Primary is the stored id if still present, otherwise the first feed in sorted order. */
-export function layoutStreams<T extends ChaserStream>(
+/**
+ * Primary is the stored id if still present and not known to be over, otherwise the first feed in
+ * sorted order (live feeds sort first). A stored choice from an earlier session that has since
+ * ENDED/gone OFFLINE no longer takes the main slot; the stored id is kept, so it returns if it goes live.
+ */
+export function layoutStreams<T extends ChaserStream & { status?: FeedStatus }>(
   sorted: T[],
   primaryId: string | null,
 ): { primary: T | undefined; thumbs: T[] } {
-  const primary = sorted.find((s) => s.id === primaryId) ?? sorted[0]
+  const stored = sorted.find((s) => s.id === primaryId)
+  const over = stored?.status === 'ended' || stored?.status === 'offline'
+  const primary = (stored && !over ? stored : undefined) ?? sorted[0]
   return { primary, thumbs: sorted.filter((s) => s !== primary) }
 }
 

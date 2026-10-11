@@ -5,15 +5,14 @@ import {
   isInAoi,
   layoutStreams,
   loadMainSound,
-  loadPrimaryId,
   saveMainSound,
-  savePrimaryId,
   sortStreams,
   withSound,
 } from '../sources/streams/layout'
-import { applyResolution, withAutoplay, type FeedStatus, type LiveFeed } from '../sources/streams/resolve'
+import { applyResolution, shouldAutoplay, withAutoplay, type FeedStatus, type LiveFeed } from '../sources/streams/resolve'
 import { useLiveness } from '../sources/streams/useLiveness'
 import { useAoi } from '../state/aoi'
+import { useStreams } from '../state/streams'
 import { Badge, StreamTile } from '../ui'
 import { Panel } from './Panel'
 
@@ -71,7 +70,9 @@ function StatusBadge({ status }: { status?: FeedStatus }) {
 
 export function StreamsGrid() {
   const states = useAoi((s) => s.states)
-  const [primaryId, setPrimaryId] = useState<string | null>(() => loadPrimaryId())
+  const primaryId = useStreams((s) => s.primaryId)
+  const setPrimary = useStreams((s) => s.setPrimary)
+  const setOrder = useStreams((s) => s.setOrder)
   const [soundOn, setSoundOn] = useState(() => loadMainSound())
   const activated = useUserActivated()
   const [onScreen, setOnScreen] = useState<ReadonlySet<string>>(() => new Set())
@@ -95,10 +96,13 @@ export function StreamsGrid() {
   const { primary, thumbs } = layoutStreams(sorted, primaryId)
   if ((primary?.id ?? null) !== checkedPrimary) setCheckedPrimary(primary?.id ?? null)
 
-  const choose = (id: string) => {
-    setPrimaryId(id)
-    savePrimaryId(id)
-  }
+  // Publish display order (primary first) so shortcuts can cycle the main feed.
+  const orderKey = [primary, ...thumbs].map((s) => s?.id ?? '').join('|')
+  useEffect(() => {
+    setOrder(orderKey ? orderKey.split('|').filter(Boolean) : [])
+  }, [orderKey, setOrder])
+
+  const choose = setPrimary
 
   const toggleSound = () => {
     setSoundOn((on) => {
@@ -114,7 +118,8 @@ export function StreamsGrid() {
           <StatusBadge status={primary.status} />
           <StreamTile
             title={primary.title}
-            embedUrl={withSound(primary.embedUrl, soundOn && activated)}
+            // Autoplay only once confirmed live: an unchecked or ENDED pin would replay the finished broadcast.
+            embedUrl={withAutoplay(withSound(primary.embedUrl, soundOn && activated), shouldAutoplay(primary.status))}
             watchUrl={primary.watchUrl}
             index={sorted.indexOf(primary)}
             inAoi={isInAoi(primary, states)}
@@ -128,12 +133,12 @@ export function StreamsGrid() {
       )}
       <div className="stream-grid">
         {thumbs.map((s) => (
-          // Off-screen thumbs drop autoplay, so they stay paused and do not decode (ADR-0013).
+          // Off-screen or not-live thumbs drop autoplay, so they stay paused and do not decode (ADR-0013).
           <FeedSlot key={s.id} id={s.id} onVisible={setVisible}>
             <StatusBadge status={s.status} />
             <StreamTile
               title={s.title}
-              embedUrl={withAutoplay(s.embedUrl, onScreen.has(s.id))}
+              embedUrl={withAutoplay(s.embedUrl, onScreen.has(s.id) && shouldAutoplay(s.status))}
               watchUrl={s.watchUrl}
               index={sorted.indexOf(s)}
               inAoi={isInAoi(s, states)}
