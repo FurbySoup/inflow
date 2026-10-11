@@ -15,6 +15,9 @@ const alert = (over: Partial<Alert>): Alert => ({
   zones: [],
   damageThreat: null,
   pds: false,
+  sent: null,
+  messageType: null,
+  eventKey: 'x',
   ...over,
 })
 

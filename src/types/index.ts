@@ -29,6 +29,16 @@ export interface Alert {
   damageThreat: 'considerable' | 'catastrophic' | null
   /** "Particularly dangerous situation" in the product text (PDS watches and warnings). */
   pds: boolean
+  /** When NWS sent this version of the product (ISO). */
+  sent: string | null
+  /** CAP message type: a new product, an update (CON/EXT/EXA/…) of an earlier one, or a cancellation. */
+  messageType: 'Alert' | 'Update' | 'Cancel' | null
+  /**
+   * Stable identity of the hazard event across updates: VTEC office.phenomenon.significance.eventNumber
+   * (e.g. "KFFC.TO.W.0123"). Updates get a new `id` but keep this key, so de-dupe toasts/notifications on it.
+   * Falls back to `id` when the product has no VTEC (e.g. Special Weather Statements).
+   */
+  eventKey: string
 }
 
 export interface LiveStream {

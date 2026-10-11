@@ -5,6 +5,7 @@ import { spcMesoscaleLayer } from './spcMesoscale'
 import { spcOutlookLayer } from './spcOutlook'
 import { spcWatchesLayer } from './spcWatches'
 import { stormReportsLayer } from './stormReports'
+import { velocityLayer } from './velocity'
 import { watchOutlinesLayer } from './watchOutlines'
 
 /**
@@ -28,6 +29,7 @@ export const mapLayers: MapLayer[] = [
   satelliteLayer,
   spcOutlookLayer,
   radarLayer,
+  velocityLayer,
   watchOutlinesLayer,
   spcMesoscaleLayer,
   spcWatchesLayer,

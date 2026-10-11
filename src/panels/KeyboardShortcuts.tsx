@@ -135,6 +135,7 @@ const ROWS: readonly { keys: readonly string[]; label: ReactNode }[] = [
   { keys: ['1', '2', '3'], label: 'AOI preset: Plains, Dixie Alley, Southeast' },
   { keys: ['Shift+1', 'Shift+2', 'Shift+3'], label: 'Layout preset: DEFAULT, WALL, CHASE' },
   { keys: ['R'], label: 'Toggle radar' },
+  { keys: ['V'], label: 'Toggle velocity (SRV, nearest radar)' },
   { keys: ['S'], label: 'Toggle satellite' },
   { keys: ['W'], label: 'Toggle watch outlines (SPC and NWS)' },
   { keys: ['F'], label: 'Toggle fullscreen' },
