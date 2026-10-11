@@ -1,6 +1,7 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { KeyboardShortcuts, KeysButton } from '../KeyboardShortcuts'
+import helpCss from './help.css?raw'
 
 vi.mock('../../map/LayerControl', () => ({ toggleLayer: vi.fn() }))
 // A glossary term that is not in the group map: it must show under Other.
@@ -37,6 +38,14 @@ describe('HelpDialog', () => {
     cleanup()
     vi.restoreAllMocks()
     delete (window as { matchMedia?: unknown }).matchMedia
+  })
+
+  it('the help panel body has no max-height cap, at any width (index.css caps .panel-body at 900 px)', () => {
+    openHelp()
+    expect(screen.getByRole('dialog').querySelector('.panel-body')).not.toBeNull()
+    // jsdom does not load index.css, so check the rule that overrides the cap in help.css (higher specificity).
+    const rule = /\.help-dialog \.panel-body \{([^}]*)\}/.exec(helpCss)?.[1] ?? ''
+    expect(rule).toMatch(/max-height:\s*none;/)
   })
 
   it('opens on SHORTCUTS with a fine pointer, with the Help panel code and close button first', () => {

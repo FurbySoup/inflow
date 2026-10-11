@@ -135,6 +135,8 @@ export function KeyboardShortcuts() {
       }
       // Esc closes the help even while the search box has focus (a typing target, so it is handled before that guard).
       if (helpOpen && e.key === 'Escape') {
+        // Stops the native search-clear that Esc would otherwise trigger in the search box.
+        e.preventDefault()
         setHelpOpen(false)
         return
       }

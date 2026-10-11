@@ -17,9 +17,11 @@
   min-height: 0;
 }
 /* The kit Panel body scrolls by default; here the tabs must stay put, so the inner .help-body scrolls instead. */
+/* max-height: none beats the narrow-tier cap (index.css `.panel-body { max-height: 320px }`) at every width. */
 .help-dialog .panel-body {
   display: flex;
   flex-direction: column;
+  max-height: none;
   padding: 0;
   overflow: hidden;
 }
@@ -104,7 +106,6 @@
 
 /* Group headings: UPPERCASE, muted. In terms grids they span the full row. */
 .help-group-title {
-  grid-column: 1 / -1;
   margin: var(--sp-3) 0 0;
   font-family: var(--font-ui);
   font-size: var(--fs-ui-xs);
@@ -128,6 +129,8 @@
   grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
   gap: var(--sp-3) var(--sp-4);
 }
+/* Headings span the full row only inside the terms grid. */
+.help-grid > .help-group-title { grid-column: 1 / -1; }
 .help-entry {
   min-width: 0;
   border-left: 2px solid var(--border-default);
