@@ -4,10 +4,15 @@ import { StreamTile } from 'storm-chasers'
 const embed = (id: string) => `https://www.youtube.com/embed/${id}?mute=1`
 const watch = (id: string) => `https://www.youtube.com/watch?v=${id}`
 const still = (id: string) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg?t=1`
-// A thumbnail's WATCH embed: sound off, started by the press (ADR-0017).
-const playEmbed = (id: string) => `https://www.youtube.com/embed/${id}?autoplay=1&mute=1`
+// A thumbnail's WATCH embed: sound off (ADR-0017). The app adds autoplay=1 on the press; the preview leaves it off,
+// because a streaming player never lets the capture page reach network idle.
+const playEmbed = (id: string) => `https://www.youtube.com/embed/${id}?mute=1`
 
-/** Primary feed: read-only MAIN tag, 🔇 MUTED sound toggle (outlined), accent caption, IN AOI badge, link-out. */
+/**
+ * Primary feed: ● LIVE tag, read-only MAIN tag, 🔇 MUTED sound toggle (outlined; with `soundOn` it reads 🔊 SOUND and
+ * fills solid accent), accent caption, IN AOI badge, link-out. One sound-on cell was dropped: a third YouTube player
+ * kept the capture page from ever reaching network idle (NOTES.md).
+ */
 export const Primary = () => (
   <div style={{ width: 380, padding: 10, background: 'var(--surface-panel)' }}>
     <StreamTile
@@ -17,27 +22,10 @@ export const Primary = () => (
       index={0}
       inAoi
       ledStatus="live"
+      liveKind="live"
       primary
       onSelect={() => {}}
       soundOn={false}
-      onToggleSound={() => {}}
-    />
-  </div>
-)
-
-/** Primary feed with sound on: the toggle reads 🔊 SOUND and fills solid accent (aria-pressed). */
-export const PrimarySoundOn = () => (
-  <div style={{ width: 380, padding: 10, background: 'var(--surface-panel)' }}>
-    <StreamTile
-      title="Live proofing: GA/SC tornado outbreak"
-      embedUrl={embed('7kQACmPd6Io')}
-      watchUrl={watch('7kQACmPd6Io')}
-      index={0}
-      inAoi
-      ledStatus="live"
-      primary
-      onSelect={() => {}}
-      soundOn
       onToggleSound={() => {}}
     />
   </div>

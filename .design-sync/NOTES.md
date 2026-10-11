@@ -15,6 +15,9 @@
 - 2026-10-11 Wave 7 re-sync: Toast added (`cardMode: column`, it was wider than grid cells). AlertList/AlertRow/Panel/StatusLed/StreamTile previews were rewritten by the design wave and graded good.
 - The kit must not import app code: `src/ui/hazard.ts` holds the event → hazard code mapping; `src/lib/hazards.ts` re-exports it. `npm run build:ui` fails (TS6059 rootDir) if a kit file imports `src/lib`.
 
+- 2026-10-11 Wave 8 re-sync: StreamTile gained `liveKind`/`playing`/`onPlay`/`onStop` (WP-33) and the Badge PDS variant is white-filled; 9 components, StreamTile regraded good, the other 8 verified-by-upload.
+- **StreamTile previews and YouTube:** `package-capture.mjs` waits for `networkidle` (20 s). An embed with `autoplay=1` streams forever and times out every capture (`[CAPTURE] page.goto: Timeout`). Preview embeds therefore never autoplay; keep at most 2 YouTube players in the file (Primary + ReplayPlaying), and the sound-on primary cell was dropped for that reason.
+
 ## Known render warns
 - `[FONT_REMOTE]` for IBM Plex: expected (Google Fonts import).
 

@@ -92,10 +92,8 @@ After merge: update the kit previews where builders didn't, then re-sync Claude 
   - the 3-tile stream cap silently stopping feeds (user report: no cap now, ADR-0017 amended);
   - the OutlookDayControl head had no `:focus-visible` style (it now uses `layer-ctrl-head`).
 - **Viewport matrix:** passes at all 7 sizes (no page scroll, map on the first screen, 28 px touch buttons).
-- **Still open:**
-  - real-click check of the WeatherWise link, Layers toggle and day buttons with the browser pane visible (the pane was hidden, so the map never loaded);
-  - Claude Design re-sync for StreamTile + Badge (run `/design-sync`);
-  - D4–8 render and the D1→D3 switch on a live map.
+- **Closed after merge:** the user confirmed the map controls and the WeatherWise link take real clicks; Claude Design re-synced (StreamTile + Badge, 9 components).
+- **Still open:** D4–8 render and the D1→D3 switch on a live map.
 - **Follow-ups (minor, from verifiers):**
   - OutlookRisk refetches 3 SPC files on every pan (query key includes the bbox);
   - the panel LED ignores OpenMHz list errors;
