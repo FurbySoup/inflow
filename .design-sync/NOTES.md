@@ -18,6 +18,8 @@
 - 2026-10-11 Wave 8 re-sync: StreamTile gained `liveKind`/`playing`/`onPlay`/`onStop` (WP-33) and the Badge PDS variant is white-filled; 9 components, StreamTile regraded good, the other 8 verified-by-upload.
 - **StreamTile previews and YouTube:** `package-capture.mjs` waits for `networkidle` (20 s). An embed with `autoplay=1` streams forever and times out every capture (`[CAPTURE] page.goto: Timeout`). Preview embeds therefore never autoplay; keep at most 2 YouTube players in the file (Primary + ReplayPlaying), and the sound-on primary cell was dropped for that reason.
 
+- 2026-10-12 Wave 9 re-sync: new `Abbr` and `TaggedText` (ADR-0018 acronym tips), both `cardMode: column` (their cells clipped in the grid). The kit components that gained tips (Badge, Panel, AlertRow, Toast, StreamTile) kept their grades: the dotted underline is a style change, and the contact sheet was checked.
+
 ## Known render warns
 - `[FONT_REMOTE]` for IBM Plex: expected (Google Fonts import).
 

@@ -29,6 +29,12 @@
     },
     "Toast": {
       "cardMode": "column"
+    },
+    "Abbr": {
+      "cardMode": "column"
+    },
+    "TaggedText": {
+      "cardMode": "column"
     }
   }
 }
