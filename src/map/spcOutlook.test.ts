@@ -118,6 +118,17 @@ describe('spcOutlookLayer day emphasis', () => {
     expect(getOutlookLoaded()?.day).toBe(1)
   })
 
+  it('drops a busy flag at once when switching back to the day already on the map', async () => {
+    setup()
+    await flush()
+    setOutlookDay(2)
+    expect(getOutlookLoading()).toBe(2)
+    // Back to D1 before D2 answers: D1 is loaded, so nothing is busy.
+    setOutlookDay(1)
+    expect(getOutlookLoading()).toBeNull()
+    await flush()
+  })
+
   it('reports the empty Day 4 placeholder with its label and VALID window, and paints no polygons', async () => {
     const f = setup()
     await flush()

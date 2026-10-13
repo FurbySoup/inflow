@@ -36,6 +36,10 @@ export const GLOSSARY: Readonly<Record<string, string>> = {
   ENH: 'SPC outlook level 3 of 5, Enhanced: numerous severe storms possible',
   MDT: 'SPC outlook level 4 of 5, Moderate: widespread severe storms likely',
   HIGH: 'SPC outlook level 5 of 5, High: a widespread severe-weather outbreak is expected',
+  // SPC Day 4–8 empty-day labels (wording from spc.noaa.gov/products/exper/day4-8, checked 2026-10-13)
+  'PREDICTABILITY TOO LOW':
+    'SPC Day 4–8: severe storms are possible in some models, but where or whether is too uncertain to draw an area',
+  'POTENTIAL TOO LOW': 'SPC Day 4–8: a 15% or greater chance of severe storms looks highly unlikely that day',
   // Radar and satellite
   NEXRAD: 'The US network of weather radars (WSR-88D)',
   SRV: 'Storm-relative velocity: radar winds with the storm’s motion removed, so rotation stands out',

@@ -98,7 +98,7 @@ describe('outlookCaption', () => {
   it('says why a Day 4–8 outlook is empty, with its VALID date', () => {
     const c = outlookCaption(5, d5Empty, null)
     expect(text(c)).toBe('D5 · THU 15 OCT · PREDICTABILITY TOO LOW')
-    expect(c.term).toBeNull()
+    expect(c.term).toBe('PREDICTABILITY TOO LOW')
   })
 
   it('reads LOADING for the day in flight, even when another day is on the map', () => {

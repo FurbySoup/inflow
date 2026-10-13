@@ -67,7 +67,7 @@ describe('OutlookDayControl', () => {
     expect(abbr?.title).toBe(expand('SLGT'))
   })
 
-  it('explains an empty Day 5 with its label', () => {
+  it('explains an empty Day 5 with its label, tipped from the glossary', () => {
     const root = mount()
     setOutlookDay(5)
     setOutlookLoaded({
@@ -77,7 +77,9 @@ describe('OutlookDayControl', () => {
       emptyLabel: 'Predictability Too Low',
     })
     expect(caption(root)?.textContent).toBe('D5 · THU 15 OCT · PREDICTABILITY TOO LOW')
-    expect(caption(root)?.querySelector('abbr')).toBeNull()
+    const abbr = caption(root)?.querySelector('abbr')
+    expect(abbr?.textContent).toBe('PREDICTABILITY TOO LOW')
+    expect(abbr?.title).toMatch(/too uncertain/)
   })
 
   it('moves the pressed state when a button is pressed', () => {

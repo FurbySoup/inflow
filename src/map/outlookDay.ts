@@ -111,6 +111,9 @@ export function outlookCaption(
   if (loadedOutlook.highest) {
     return { before: `${[...parts, 'HIGHEST'].join(' · ')} `, term: loadedOutlook.highest }
   }
-  const why = (loadedOutlook.emptyLabel ?? 'NO POLYGONS').toUpperCase()
-  return { before: [...parts, why].join(' · '), term: null }
+  // An SPC empty-day label is a glossary term (the control tips it); our own NO POLYGONS is not.
+  if (loadedOutlook.emptyLabel) {
+    return { before: `${parts.join(' · ')} · `, term: loadedOutlook.emptyLabel.toUpperCase() }
+  }
+  return { before: [...parts, 'NO POLYGONS'].join(' · '), term: null }
 }

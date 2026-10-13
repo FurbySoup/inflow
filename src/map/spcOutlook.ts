@@ -96,7 +96,8 @@ function placeOutlook(map: maplibregl.Map, day: OutlookDay): void {
 async function load(map: maplibregl.Map, day: OutlookDay) {
   if (!map.getSource(SOURCE_ID)) return
   // A refresh of the day already on the map keeps its polygons on screen; only a change of day shows LOADING.
-  if (getOutlookLoaded()?.day !== day) setOutlookLoading(day)
+  // Back to the loaded day: a request for a day pressed in between is no longer selected, so drop its busy flag.
+  setOutlookLoading(getOutlookLoaded()?.day !== day ? day : null)
   const adapter = spcOutlookDay(day)
   // On failure keep the last good outlook on the map.
   try {

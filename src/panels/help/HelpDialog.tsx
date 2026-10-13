@@ -46,7 +46,7 @@ const GLOSSARY_GROUPS: readonly { group: string; terms: readonly string[] }[] = 
   { group: 'Area & time', terms: ['AOI', 'IN AOI', 'UTC', 'Z', 'LOCAL', 'T-'] },
   { group: 'Agencies & products', terms: ['NWS', 'SPC', 'MD', 'HWO', 'CWA'] },
   { group: 'NWS alerts', terms: ['TOR', 'SVR', 'FFW', 'TOA', 'SVA', 'SPS', 'OTHER', 'PDS', 'EMERGENCY', 'ZONE'] },
-  { group: 'SPC risk', terms: ['TSTM', 'MRGL', 'SLGT', 'ENH', 'MDT', 'HIGH'] },
+  { group: 'SPC risk', terms: ['TSTM', 'MRGL', 'SLGT', 'ENH', 'MDT', 'HIGH', 'PREDICTABILITY TOO LOW', 'POTENTIAL TOO LOW'] },
   { group: 'Radar & satellite', terms: ['NEXRAD', 'SRV', 'GOES', 'IR'] },
   { group: 'Streams & cameras', terms: ['CTX', 'THUMB', 'CAM', 'DOT', 'CCTV'] },
   { group: 'Radio', terms: ['CB', '2M', 'RX', 'TG', 'SDR'] },
