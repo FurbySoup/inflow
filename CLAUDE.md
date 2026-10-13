@@ -24,7 +24,7 @@ In the desktop app, `.claude/launch.json` defines the `dev` server for live chec
 - **One cross-panel state:** `useAoi` (`src/state/aoi.ts`) — map writes bbox + derived state codes on `moveend`; every panel filters by it. Panels never import each other. Default AOI is GA/SC (live-proofing storm 2026-10-10).
 - **Map overlays** are `MapLayer` modules in `src/map/` registered in `src/map/layers.ts` (array order = draw order). Don't add layers inside `MapPanel.tsx`; NWS alerts are drawn there, always on top.
 - **Proxy:** sources without CORS or needing a User-Agent go through same-origin `/api/<source>` paths in `vite.config.ts` (later a Cloudflare Worker with identical routes). Adapters must use the `/api/…` path, not the upstream host. OpenMHz must be fetched directly from the browser (Cloudflare blocks server-side).
-- **UI kit (`src/ui/`):** presentational primitives with no data or app state: `Panel`, `StatusLed`, `Badge`, `ConsoleButton`, `AlertList`/`AlertRow`, `StreamTile`, `CameraTile`.
+- **UI kit (`src/ui/`):** presentational primitives with no data or app state: `Panel`, `StatusLed`, `Badge`, `ConsoleButton`, `AlertList`/`AlertRow`, `StreamTile`, `CameraTile`, `Toast`, `Abbr`/`TaggedText` (+ `glossary.ts`).
   - **Tokens and classes:** all tokens and component classes live in `src/ui/styles.css`. `src/index.css` imports it and holds only the app layout (grid, splitters, map).
   - **Styling rules:** no hardcoded colours except MapLibre paint values. Data values use `--font-data`.
   - **App wiring:** `src/panels/` composes the kit with data. `src/panels/Panel.tsx` is a thin wrapper that binds collapse state to the layout store. Status comes from `queryStatus()` (`src/lib/feedStatus.ts`).
@@ -41,6 +41,8 @@ In the desktop app, `.claude/launch.json` defines the `dev` server for live chec
   - Every interactive element needs a persistent signifier, plus hover, `:focus-visible` and visible feedback.
   - Read-only elements must not look clickable.
   - Examples: the ⌖ glyph on focusable alert rows, the splitter grips, the solid-accent pressed buttons.
+- **Acronyms (ADR-0018):** every static on-screen acronym uses `<Abbr term>` (DOM code: `abbr` class + `title` from `expand()`), and every new term gets a `src/ui/glossary.ts` entry in the same change. `? HELP` lists the glossary and chaser terms.
+- **Notifications (ADR-0019):** sources emit to `src/state/notify.ts`; only `src/notify/` delivers. Never call the Notification API elsewhere.
 - **Claude Design:** the kit is synced to the "Storm Chasers UI" project. Config, previews and conventions live in `.design-sync/`. Re-sync steps are in `.design-sync/NOTES.md`. After changing `src/ui/`, re-sync so designs stay on-brand.
 
 ## Data-source gotchas (verified; full table in ADR-0004)
@@ -54,7 +56,7 @@ In the desktop app, `.claude/launch.json` defines the `dev` server for live chec
 - The desktop browser pane runs `requestAnimationFrame` at 0/s when unfocused: a black MapLibre map there is the environment, not a bug (inspect via dev-only `window.__map`).
 
 ## Parallel work (ADR-0010)
-Features are specified as self-contained work packages in `docs/packages/`, scheduled in waves in `docs/work-plan.md`. Waves 1–7 (WP-01…25) are merged. Wave 8 (any area) and Wave 9 (notifications + chaser roster) are outlined in `docs/work-plan.md`.
+Features are specified as self-contained work packages in `docs/packages/`, scheduled in waves in `docs/work-plan.md`. Waves 1–9 (WP-01…40) are merged.
 - **Agents:** packages are built by the `wp-builder` agent (Haiku, one per package, `isolation: "worktree"`) and checked by `wp-verifier`. Both are custom agent types in `.claude/agents/`.
 - **Shared files:** `src/types/index.ts`, `src/state/*`, `src/lib/*`, `src/ui/*`, `src/index.css`, `vite.config.ts` and `package.json` are changed only by the orchestrating session. Builders report needed changes instead.
 - **Wave hygiene:**
@@ -62,10 +64,11 @@ Features are specified as self-contained work packages in `docs/packages/`, sche
   - Builders must not start dev servers or use the browser pane.
   - Merge only after a verifier PASS.
   - Run checks with `set -o pipefail`.
-- **Next steps:** start from `docs/next-session-wave8.md` (handoff, research and a paste-in prompt for Waves 8–9). The schedule is in `docs/work-plan.md`; the post-v1 hosting plan is in `docs/roadmap.md`.
+- **Next steps:** start from `docs/next-session.md` (handoff, open live checks, Wave 10 backlog and a paste-in prompt). The schedule is in `docs/work-plan.md`; the post-v1 hosting plan is in `docs/roadmap.md`.
 
 ## Adding things
 - New source: folder in `src/sources/`, adapter + trimmed real-response fixture + `normalize` test. Add a proxy route only if CORS/headers require it. Verify CORS for the *actual* request (JSON POSTs preflight; CARS failed that).
 - New visual primitive: add it to `src/ui/` (export from `src/ui/index.ts`, classes in `src/ui/styles.css`, a JSDoc that states its affordance/signifier/feedback) plus a `.design-sync/previews/<Name>.tsx`, then re-sync.
 - New chaser stream: entry in `config/streams.json` (`channelId` for "whatever is live", `videoId` to pin a broadcast). Never guess IDs.
+- Roster chaser: `config/chasers.json` is orchestrator-owned. Only add a channel after confirming its ID on the channel's own `/streams` page.
 - New decision that changes the above: add an ADR rather than editing an accepted one.
