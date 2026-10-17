@@ -33,21 +33,26 @@ Handoff from the 2026-10-17 Wave 11 session. Supersedes the post-Wave-10 handoff
 - **Live check passed, image on port 8097:** every feed returned 200 through the container (NWS, 6 DOT proxies, KiwiSDR, YouTube, plus direct IEM/SPC/OpenMHz/basemap); ABOUT renders with no horizontal scroll at 375 px.
 
 ## Remaining before 2026-10-30
-Claude can do (ask first where marked):
-- **Labels** `source-broken` and `post-1.0` in the repo, so the issue forms apply them. (`gh label create`; repo change, ask first.)
-- **Secret scan:** run `gitleaks` over the history (pulls the `zricethezav/gitleaks` image; ask first).
-- **`actionlint`** on the workflows (pulls `rhysd/actionlint`; ask first). The first real test of `release.yml` is the tag itself, so consider a dry run: tag `v0.9.0-rc.1` after setting that version, watch it, then delete the release, tag and image.
+Done 2026-10-17 (after Wave 12):
+- labels `source-broken` and `post-1.0` created;
+- stale branch deleted (its commit is kept as tag `archive/design-sync-wave-4`);
+- `gitleaks` over 163 commits: 3 false positives (NWS zone codes in test fields named `key`), now in `.gitleaksignore`, and a rescan is clean;
+- `actionlint`: 0 errors.
+- **Test release `v0.9.0-rc.1`:** both jobs passed (image job ~4 min). The zip unpacked to one folder (CRLF `.cmd`, 755 `.command`/`.sh`) and ran with no build. The GHCR image is amd64+arm64, non-root and healthy, and the NWS proxy answered.
+  - The release, tag and package were deleted afterwards. GHCR made the package **public automatically** (linked to the public repo), so there's no "make it public" step.
+  - `package.json` is still `0.9.0-rc.1`; set it to `1.0.0` on release day.
+
+Claude can do:
 - **Screenshot** for the README and the social preview (1280×640): needs a day with active warnings. `docs/screenshot.png` is referenced but not added yet.
 - **Release day:**
-  - set `package.json` version to `1.0.0`, commit, tag `v1.0.0`, push the tag;
-  - check `docker pull ghcr.io/furbysoup/storm-chasers` and the release zip;
-  - make the GHCR package **public** (Packages → storm-chasers → settings; new GHCR packages start private). This is a user step.
+  - `npm version 1.0.0 --no-git-tag-version`, commit, push, then `git tag v1.0.0 && git push origin v1.0.0`;
+  - watch the run, then check `docker pull ghcr.io/furbysoup/storm-chasers` and the zip;
+  - in Git Bash, `gh api` paths need no leading slash.
 
 Only the user can do (launch-plan §3):
 - Git identity (noreply email) and GitHub email privacy settings.
 - GitHub settings: secret scanning + push protection, Dependabot security updates only, private vulnerability reporting, branch protection on `main` requiring CI.
 - Repo description, topics, social preview image.
-- The remote branch `claude/design-sync-wave-4-9pjgq8` is an old Wave 4 planning commit, superseded. Delete it.
 - Posting (launch-posts.md): r/selfhosted on **Friday 2026-10-30**.
 
 ## Post-1.0 (file as `post-1.0` issues, don't build)

@@ -65,7 +65,7 @@ How it is distributed: [ADR-0020](adr/0020-self-run-distribution.md), self-run, 
   - stream liveness reads public YouTube pages (ADR-0013), so it can break and is best-effort.
 
 ### Security
-- [ ] **Secret scan of the full history:**
+- [x] **Secret scan of the full history** (2026-10-17: clean after 3 documented false positives, `.gitleaksignore`):
   `docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest detect --source=/repo -v`
   A grep on 2026-10-17 found no keys or tokens, but the gitleaks run is the real check.
 - [ ] **Your email.** Every commit's author is your Gmail address, and it's already public in history. Rewriting history isn't worth the breakage. Instead, from now on:
@@ -92,7 +92,7 @@ How it is distributed: [ADR-0020](adr/0020-self-run-distribution.md), self-run, 
 ### Repo hygiene
 - [ ] Keep `.claude/agents`, `docs/packages`, `docs/adr` and `.design-sync`. The build process is a story for the AI-community posts (section 6). Add one README line pointing to it.
 - [x] Remove or archive the old `docs/next-session-wave*.md` handoffs (moved to `docs/history/`).
-- [ ] The remote branch `claude/design-sync-wave-4-9pjgq8` holds 1 commit not on `main`. Merge it or delete it.
+- [x] The remote branch `claude/design-sync-wave-4-9pjgq8` was deleted 2026-10-17 (kept as tag `archive/design-sync-wave-4`).
 - [ ] **Repo metadata:**
   - description: "Self-hosted storm-chasing situation room: radar, warnings, livestreams, scanners and DOT cameras on one screen";
   - topics: `weather`, `storm-chasing`, `nexrad`, `nws`, `self-hosted`, `maplibre`, `react`, `mission-control`;
