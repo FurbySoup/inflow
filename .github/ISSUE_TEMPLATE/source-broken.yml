@@ -1,0 +1,64 @@
+name: Data source broken
+description: A panel shows no data, stale data or an error
+labels: ['source-broken']
+body:
+  - type: dropdown
+    id: panel
+    attributes:
+      label: Panel
+      description: Which panel is affected?
+      options:
+        - radar
+        - alerts
+        - streams
+        - cameras
+        - audio
+        - SPC
+        - satellite
+        - other
+    validations:
+      required: true
+
+  - type: input
+    id: area
+    attributes:
+      label: State(s) or area
+      description: Which states or map area were you looking at?
+      placeholder: e.g. GA, SC
+    validations:
+      required: true
+
+  - type: textarea
+    id: light
+    attributes:
+      label: What the panel light shows
+      description: The status light on the panel (green, amber, red, grey) and any message next to it.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: INFLOW version
+      description: Open ? HELP, then ABOUT, and copy the version shown there.
+      placeholder: e.g. v1.0.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: how-run
+    attributes:
+      label: How you run it
+      options:
+        - Docker
+        - npm start
+        - Release zip
+        - Other (describe below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Anything else
+      description: Steps to reproduce, time of day, browser, and anything you tried.

@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-server
+
+.git
+.claude
+.design-sync
+ds-bundle
+.ds-sync
+
+docs
+*.log
