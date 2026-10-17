@@ -8,7 +8,7 @@ import type { CachedResponse, ResponseCache } from './cache'
 export const UPSTREAM_TIMEOUT_MS = 15_000
 export const MAX_REQUEST_BODY_BYTES = 64 * 1024
 
-export const DEFAULT_USER_AGENT = `INFLOW storm-chasers (${REPO_URL})`
+export const DEFAULT_USER_AGENT = `INFLOW (${REPO_URL})`
 
 export type FetchLike = (url: string, init: RequestInit) => Promise<Response>
 

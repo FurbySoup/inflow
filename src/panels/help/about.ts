@@ -103,6 +103,6 @@ export const CAMERA_CREDITS: readonly { site: string; agency: string; states: st
 export const PROJECT = {
   name: 'INFLOW',
   descriptor: 'storm situation room',
-  repo: 'https://github.com/FurbySoup/storm-chasers',
+  repo: 'https://github.com/FurbySoup/inflow',
   licence: 'MIT',
 } as const

@@ -23,7 +23,7 @@ export interface ProxyRoute {
   cacheSeconds: number
 }
 
-export const REPO_URL = 'https://github.com/FurbySoup/storm-chasers'
+export const REPO_URL = 'https://github.com/FurbySoup/inflow'
 
 // NWS's CDN blocks by exact User-Agent (seen 2026-10-17: one UA string got 403s while others passed). If every
 // install sent the same default, one misbehaving copy could get NWS blocked for all of them. So the default carries

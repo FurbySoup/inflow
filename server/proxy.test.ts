@@ -84,7 +84,7 @@ describe('handleProxy', () => {
     await handleProxy(input('/api/nws/alerts'), deps)
     await handleProxy(input('/api/txdot/x'), deps)
     expect(seen[0].init.headers).toMatchObject({ 'user-agent': 'INFLOW (ops@example.test)' })
-    expect(seen[1].init.headers).toMatchObject({ 'user-agent': `INFLOW storm-chasers (${REPO_URL})` })
+    expect(seen[1].init.headers).toMatchObject({ 'user-agent': `INFLOW (${REPO_URL})` })
   })
 
   it('forwards only allowlisted request headers', async () => {

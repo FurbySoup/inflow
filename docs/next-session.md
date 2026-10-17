@@ -46,7 +46,7 @@ Claude can do:
 - **Screenshot** for the README and the social preview (1280×640): needs a day with active warnings. `docs/screenshot.png` is referenced but not added yet.
 - **Release day:**
   - `npm version 1.0.0 --no-git-tag-version`, commit, push, then `git tag v1.0.0 && git push origin v1.0.0`;
-  - watch the run, then check `docker pull ghcr.io/furbysoup/storm-chasers` and the zip;
+  - watch the run, then check `docker pull ghcr.io/furbysoup/inflow` and the zip;
   - in Git Bash, `gh api` paths need no leading slash.
 
 Only the user can do (launch-plan §3):

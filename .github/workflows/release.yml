@@ -88,7 +88,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/furbysoup/storm-chasers
+          images: ghcr.io/furbysoup/inflow
           tags: |
             type=semver,pattern={{version}}
             type=raw,value=latest

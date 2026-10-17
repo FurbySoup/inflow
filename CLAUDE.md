@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## What this is
-Storm Chasers: a single-screen, mission-control style dashboard combining live US storm data — NEXRAD radar, NWS alerts, chaser livestreams, scanner/ham/CB audio, DOT traffic cameras, SPC outlooks, GOES satellite. v1 is a **local-only, client-only, keyless** prototype (Vite + React + TS). Repo: https://github.com/FurbySoup/storm-chasers
+INFLOW: a single-screen, mission-control style situation room combining live US storm data — NEXRAD radar, NWS alerts, chaser livestreams, scanner/ham/CB audio, DOT traffic cameras, SPC outlooks, GOES satellite. v1 is a **local-only, client-only, keyless** prototype (Vite + React + TS). Repo: https://github.com/FurbySoup/inflow (renamed from storm-chasers 2026-10-17; internal storage keys and the npm package name keep `storm-chasers`)
 
 ## Commands
 ```bash

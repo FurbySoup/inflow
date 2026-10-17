@@ -9,7 +9,7 @@ Radar, warnings, chaser livestreams, scanner audio and DOT traffic cameras for o
 
 ### Easiest: no terminal needed (Windows, Mac, Linux)
 1. Install **Node.js** (free): download the **LTS** version from [nodejs.org](https://nodejs.org) and click through the installer.
-2. Download `inflow-….zip` from the [latest release](https://github.com/FurbySoup/storm-chasers/releases/latest) and unzip it.
+2. Download `inflow-….zip` from the [latest release](https://github.com/FurbySoup/inflow/releases/latest) and unzip it.
 3. Open the unzipped folder and double-click **Start INFLOW** (the Windows or Mac file).
 
 Your browser opens on INFLOW. Leave the small window that appeared open while you use it, and close it to stop INFLOW.
@@ -20,13 +20,13 @@ The first time only:
 
 ### Docker (home servers, NAS, Raspberry Pi)
 ```bash
-docker run -d --restart unless-stopped --name inflow -p 127.0.0.1:8080:8080 ghcr.io/furbysoup/storm-chasers
+docker run -d --restart unless-stopped --name inflow -p 127.0.0.1:8080:8080 ghcr.io/furbysoup/inflow
 ```
 Then open **http://localhost:8080**. If port 8080 is taken, change the first number: `-p 127.0.0.1:8090:8080`.
 
 ### From source (developers)
 ```bash
-git clone https://github.com/FurbySoup/storm-chasers.git && cd storm-chasers
+git clone https://github.com/FurbySoup/inflow.git && cd inflow
 npm ci
 npm start
 ```

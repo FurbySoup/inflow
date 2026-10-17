@@ -50,8 +50,8 @@ How it is distributed: [ADR-0020](adr/0020-self-run-distribution.md), self-run, 
     - no weather, radar or storm product named INFLOW turned up;
     - "inflow" is also an everyday meteorology term (storm inflow), so it fits but is weak as a registrable mark.
   - **So:** don't try to register it; never style it like inFlow Inventory (no "inFlow" casing, no inventory or business wording).
-  - **Do not** use "Storm Chasers" as the product name: it's the Discovery Channel series (ADR-0015). The repo slug `storm-chasers` stays as a descriptive name.
-  - **Package names:** npm `inflow` is taken (an InfluxDB helper); `inflow-wx` is free, if `npx` ever happens. The Docker image follows the repo: `ghcr.io/furbysoup/storm-chasers`.
+  - **Do not** use "Storm Chasers" as the product name: it's the Discovery Channel series (ADR-0015). The repo was renamed from `storm-chasers` to `inflow` on 2026-10-17, before launch.
+  - **Package names:** npm `inflow` is taken (an InfluxDB helper); `inflow-wx` is free, if `npx` ever happens. The Docker image follows the repo: `ghcr.io/furbysoup/inflow`.
 - [x] **Disclaimer** in the README and the app (`? HELP` → ABOUT): "Not for life-safety decisions. Follow official NWS warnings and local officials."
 - [x] **Attributions** (`src/panels/help/about.ts`, shown in ABOUT and the README):
   - NWS/SPC (public domain);
@@ -103,7 +103,7 @@ How it is distributed: [ADR-0020](adr/0020-self-run-distribution.md), self-run, 
 ## 4. README structure (the landing page)
 1. **Name + one line + screenshot or GIF** of a real outbreak with radar, warnings and streams. This is the single biggest factor in posts doing well.
 2. **Run it:**
-   - Docker one-liner: `docker run -p 8080:8080 ghcr.io/furbysoup/storm-chasers`;
+   - Docker one-liner: `docker run -p 8080:8080 ghcr.io/furbysoup/inflow`;
    - from source: `git clone … && npm ci && npm start`.
    - Then "open http://localhost:8080".
 3. **What's on screen:** a 6-bullet panel tour. The `? HELP` dialog covers the rest.

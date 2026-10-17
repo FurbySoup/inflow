@@ -13,7 +13,7 @@ Radar, NWS warnings, chaser livestreams, scanner audio and DOT traffic cameras f
 
 **Run it**
 - **No terminal:** install Node.js LTS from nodejs.org, download `inflow-v1.0.0.zip` below, unzip it and double-click **Start INFLOW**. Your browser opens on it.
-- **Docker:** `docker run -d --restart unless-stopped -p 127.0.0.1:8080:8080 ghcr.io/furbysoup/storm-chasers`, then open http://localhost:8080
+- **Docker:** `docker run -d --restart unless-stopped -p 127.0.0.1:8080:8080 ghcr.io/furbysoup/inflow`, then open http://localhost:8080
 - **Source:** `git clone`, `npm ci`, `npm start`
 
 Follow a streamer who isn't on the built-in list: **+ CHASER** in the Chaser Feeds panel, then paste their YouTube link.
@@ -37,14 +37,14 @@ Not for life-safety decisions. Follow official NWS warnings.
 
 I made this for watching severe weather days on a spare monitor. It puts NEXRAD radar, NWS warnings, chaser YouTube livestreams, OpenMHz scanner audio and state DOT traffic cameras on one screen. Everything follows whatever area the map is showing.
 
-- `docker run -d --restart unless-stopped -p 127.0.0.1:8080:8080 ghcr.io/furbysoup/storm-chasers`
+- `docker run -d --restart unless-stopped -p 127.0.0.1:8080:8080 ghcr.io/furbysoup/inflow`
 - Not a Docker person? There's a zip with a double-click start too.
 - No accounts, no API keys, no telemetry. Your server fetches the public feeds directly.
 - It has a WALL layout for a TV or wall display; set `HOST=0.0.0.0` or publish the port on your LAN.
 - amd64 and arm64 images (it runs on a Pi).
 - MIT licence.
 
-Repo: https://github.com/FurbySoup/storm-chasers
+Repo: https://github.com/FurbySoup/inflow
 
 I'm the author. It's maintained best-effort. The data sources are public and occasionally change, and a broken one just shows on its panel light.
 
@@ -53,7 +53,7 @@ I'm the author. It's maintained best-effort. The data sources are public and occ
 ## Show HN (weekday, ~8–10am US Eastern)
 **Title:** Show HN: INFLOW – a self-hosted storm-chasing situation room
 
-**URL:** https://github.com/FurbySoup/storm-chasers
+**URL:** https://github.com/FurbySoup/inflow
 
 **First comment (post it yourself right away):**
 I built this to follow severe-weather days on one screen: radar, NWS warnings, chaser livestreams, scanner audio and DOT traffic cameras, all filtered to the area the map shows.
@@ -80,7 +80,7 @@ It's a situation room you run on your own computer. Pick an area and every panel
 - OpenMHz scanners;
 - state DOT traffic cameras.
 
-It's free and open source, with no account or keys. Install Node.js, unzip, and double-click to start: https://github.com/FurbySoup/storm-chasers
+It's free and open source, with no account or keys. Install Node.js, unzip, and double-click to start: https://github.com/FurbySoup/inflow
 
 I'm the author, posting in case it's useful to anyone here. It's a companion screen, not a radar app replacement, and not for life-safety decisions. Corrections to the chaser list are welcome.
 
@@ -106,7 +106,7 @@ INFLOW is a mission-control style situation room for storm chasing (radar, warni
 - a verifier agent checks each branch against its acceptance list before merge;
 - content that must be correct (meteorology terms, verified channel IDs) is written by the orchestrator and marked "never edit".
 
-The agent definitions are in `.claude/agents`, and the packages are in `docs/packages`: https://github.com/FurbySoup/storm-chasers
+The agent definitions are in `.claude/agents`, and the packages are in `docs/packages`: https://github.com/FurbySoup/inflow
 
 I'm the author. Happy to answer process questions.
 
