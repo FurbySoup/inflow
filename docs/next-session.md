@@ -33,10 +33,10 @@ Handoff from the 2026-10-11…13 session. Supersedes `docs/next-session-wave8.md
   - `? HELP`: tabs, search, and 78 chaser terms in `src/panels/help/chaserTerms.ts` (orchestrator-written, never generated).
 - **Dev server:** another session sometimes holds port 5173. The `.claude/launch.json` config `dev-alt` runs on 5174.
 
-## Open live checks (not yet confirmed)
-1. **SPC D1–D8 on a rendered map:** press D2, D3 and D5. Polygons should change visibly above radar, and D5 should show "PREDICTABILITY/POTENTIAL TOO LOW".
-2. **A real background-tab notification:** NOTIFY → allow → background the tab, then wait for something new or inject one in DevTools: `(await import('/src/state/notify.ts')).emitNotify({ kind: 'nws-alert', key: 'test-1', title: 'TEST', body: 'Test.', at: Date.now(), level: 'TOR' })`.
-3. **The HWO strip for an office with an HWO:** done for FFC. The default AOI centre is CHS, which has none.
+## Live checks (all closed 2026-10-17)
+1. **SPC D1–D8:** D2/D3 visibly differ above radar; D5 renders nothing with "POTENTIAL TOO LOW" (now glossary-tipped).
+2. **Background-tab notification:** confirmed by the user in Chrome. Gotcha: Chrome showed "Blocked by an extension" until a blocking extension was switched off entirely (restricting its site access is not enough, since its content-settings rule persists).
+3. **HWO strip:** done for FFC. The default AOI centre is CHS, which has none.
 
 ## Wave 10 backlog (polish; each item is small)
 - Roster scheduler: re-arm on `visibilitychange`. Up to 60 s of lag after the tab becomes visible again.
