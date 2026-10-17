@@ -68,7 +68,11 @@ describe('useWarningTitle', () => {
     useAoi.setState({ ...AOI, focus: null, aoiRequest: null })
     document.title = 'INFLOW'
     delete document.documentElement.dataset.tor
-    document.head.innerHTML = `<link rel="icon" type="image/svg+xml" href="${ORIGINAL_HREF}">`
+    const icon = document.createElement('link')
+    icon.rel = 'icon'
+    icon.type = 'image/svg+xml'
+    icon.href = ORIGINAL_HREF
+    document.head.replaceChildren(icon)
     resetFaviconCacheForTests()
     vi.stubGlobal(
       'fetch',
@@ -79,7 +83,7 @@ describe('useWarningTitle', () => {
     cleanup()
     vi.unstubAllGlobals()
     vi.mocked(useSource).mockReset()
-    document.head.innerHTML = ''
+    document.head.replaceChildren()
   })
 
   it('keeps the plain title while the feed is pending', () => {
