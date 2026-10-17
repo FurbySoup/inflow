@@ -37,8 +37,8 @@ export function createApp({
 
   async function answer(req: IncomingMessage): Promise<CachedResponse> {
     const raw = req.url ?? ''
-    // Origin-form only. `//host/...` would parse as a different host, so it is refused too.
-    if (!raw.startsWith('/') || raw.startsWith('//')) return text(400, 'Bad request')
+    // Origin-form only. `//host/...` and backslashes (WHATWG URL reads `/\host` as protocol-relative) are refused too.
+    if (!raw.startsWith('/') || raw.startsWith('//') || raw.includes('\\')) return text(400, 'Bad request')
 
     const { pathname, search } = new URL(raw, 'http://localhost')
     const method = req.method ?? 'GET'

@@ -68,6 +68,13 @@ describe('upstreamUrl', () => {
       expect(out === null || new URL(out).origin === 'https://api.weather.gov').toBe(true)
     }
   })
+
+  it('refuses a path that would turn the target into userinfo (the origin assertion)', () => {
+    const nws = routes.find((r) => r.prefix === '/api/nws')!
+    // Without the origin check these become https://evil.example/x ("api.weather.gov" parsed as a username).
+    expect(upstreamUrl(nws, '/api/nws@evil.example/x', '')).toBeNull()
+    expect(upstreamUrl(nws, '/api/nws:80@evil.example/x', '')).toBeNull()
+  })
 })
 
 describe('handleProxy', () => {

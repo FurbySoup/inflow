@@ -129,6 +129,12 @@ describe('static', () => {
     expect(res.body).toBe('console.log("app")')
   })
 
+  it('does not mark a file reached through assets/.. as immutable', async () => {
+    const res = await raw({ path: '/assets/..%2findex.html' })
+    expect(res.status).toBe(200)
+    expect(res.headers['cache-control']).toBe('no-cache')
+  })
+
   it('answers HEAD without a body', async () => {
     const res = await raw({ path: '/', method: 'HEAD' })
     expect(res.status).toBe(200)
@@ -181,8 +187,8 @@ describe('proxy routing', () => {
     await raw({ path: '//evil.example/x' })
     expectOnlyAllowedOrigins()
     expect(seen.map((c) => new URL(c.url).hostname)).not.toContain('evil.example')
-    // Only the four /api/nws paths reach upstream; the rest are refused before any fetch.
-    expect(seen).toHaveLength(4)
+    // Only the three /api/nws paths without a backslash reach upstream; the rest are refused before any fetch.
+    expect(seen).toHaveLength(3)
   })
 
   it('400s absolute-form and protocol-relative request targets without calling upstream', async () => {
@@ -190,6 +196,18 @@ describe('proxy routing', () => {
     const rel = await raw({ path: '//evil.example/api/nws/x' })
     expect(abs.status).toBe(400)
     expect(rel.status).toBe(400)
+    expect(seen).toHaveLength(0)
+  })
+
+  it('400s a backslash request target (WHATWG URL reads /\\host as protocol-relative)', async () => {
+    expect((await raw({ path: '/\\evil.example/api/nws/x' })).status).toBe(400)
+    expect((await raw({ path: '/api/nws/\\evil.example' })).status).toBe(400)
+    expect(seen).toHaveLength(0)
+  })
+
+  it('405s HEAD on a GET-only proxy route', async () => {
+    const res = await raw({ path: '/api/nws/alerts', method: 'HEAD' })
+    expect(res.status).toBe(405)
     expect(seen).toHaveLength(0)
   })
 

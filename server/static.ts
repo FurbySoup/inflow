@@ -21,8 +21,9 @@ export function contentTypeFor(file: string): string {
   return CONTENT_TYPES[path.extname(file).toLowerCase()] ?? 'application/octet-stream'
 }
 
-export function cacheControlFor(urlPath: string): string {
-  if (urlPath.startsWith('/assets/')) return 'public, max-age=31536000, immutable'
+/** Cache policy by the file's path relative to the dist root (resolved, so `/assets/..%2findex.html` is not immutable). */
+export function cacheControlFor(relPath: string): string {
+  if (relPath.split(path.sep).join('/').startsWith('assets/')) return 'public, max-age=31536000, immutable'
   return 'no-cache'
 }
 
@@ -57,7 +58,7 @@ export async function readStaticFile(distDir: string, urlPath: string): Promise<
       status: 200,
       headers: {
         'content-type': contentTypeFor(full),
-        'cache-control': cacheControlFor(target),
+        'cache-control': cacheControlFor(path.relative(root, full)),
         'content-length': String(body.byteLength),
       },
       body,
