@@ -37,6 +37,12 @@ function browserPermission(): PermissionState | null {
   return Notification.permission
 }
 
+/** Copies the browser's live permission into prefs when it differs. Read-only: never prompts. */
+function syncPermission(): void {
+  const live = browserPermission()
+  if (live !== null && live !== getPrefs().permission) updatePrefs({ permission: live })
+}
+
 /** Asks for permission. Only called from a click handler (Chrome, Firefox and Safari require a user gesture). */
 function askPermission(): void {
   if (typeof Notification === 'undefined') return
@@ -68,10 +74,23 @@ export function NotifyControl() {
   const dialogId = useId()
   const groupName = useId()
 
-  // Refresh the stored permission once per load (a read, never a prompt), so a change made in browser settings shows.
+  // Mount: a change made in browser settings while the app was closed shows up.
   useEffect(() => {
-    const live = browserPermission()
-    if (live !== null && live !== getPrefs().permission) updatePrefs({ permission: live })
+    syncPermission()
+  }, [])
+
+  // Opening: the user may have just come back from the browser's site settings.
+  useEffect(() => {
+    if (open) syncPermission()
+  }, [open])
+
+  // Tab visible again: the user may have changed the permission on another page and returned here.
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') syncPermission()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [])
 
   useEffect(() => {
