@@ -61,6 +61,16 @@ describe('matchPreset', () => {
     expect(matchPreset(scale(byId('dixie'), 2, 2))).toBeNull()
   })
 
+  it('matches the measured default view at 1440x900 as PLAINS (WP-52)', () => {
+    // The first view the map shows: its south edge sits 0.054° above PLAINS' south edge.
+    expect(matchPreset({ west: -105.2, south: 31.054, east: -92.8, north: 42.946 })).toBe('plains')
+  })
+
+  it('misses a 0.2° pan of the PLAINS view on either axis', () => {
+    expect(matchPreset(shift(byId('plains'), 0.2, 0))).toBeNull()
+    expect(matchPreset(shift(byId('plains'), 0, 0.2))).toBeNull()
+  })
+
   it('misses an unrelated view', () => {
     expect(matchPreset({ west: -120, south: 35, east: -115, north: 40 })).toBeNull()
   })

@@ -33,8 +33,9 @@ export const AOI_PRESETS: readonly AoiPreset[] = [
 
 // The view centre may drift this far (as a fraction of the preset's span) before the preset un-presses.
 const CENTRE_TOLERANCE = 0.05
-// Slack in degrees on the edge-coverage check, for float noise in MapLibre's bounds.
-const EDGE_SLACK = 0.05
+// Slack in degrees on the edge-coverage check, for float noise in MapLibre's bounds and fitBounds padding. The default
+// view's south edge measured 31.054 against PLAINS' 31 at 1440x900, so 0.05 was too tight (WP-52). A real pan is far larger.
+const EDGE_SLACK = 0.1
 // fitBounds fills one axis exactly (plus padding) and expands the other to the map's aspect ratio,
 // so a preset view fits the region along at least one axis. Beyond this factor on both axes, the
 // user has zoomed out past it. (An area cap failed on wide maps: Plains at 1366x768 is >3x by area.)

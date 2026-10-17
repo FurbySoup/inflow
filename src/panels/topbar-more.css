@@ -5,6 +5,9 @@
 .btn-console.topbar-more-btn { display: none; }
 .topbar-more { display: contents; }
 
+/* LAYOUT label (WP-52): only inside the MORE popover. Muted and read-only: no hover, cursor or focus. */
+.topbar-more-label { display: none; }
+
 /* Disclosure look: the kit's pressed style (button.css), driven by aria-expanded, since MORE is not a toggle. */
 .btn-console.topbar-more-btn[aria-expanded='true'] { background: var(--accent); color: var(--bg); }
 
@@ -12,6 +15,13 @@
   .topbar-more-root { position: relative; display: inline-flex; align-items: center; }
   .btn-console.topbar-more-btn { display: inline-flex; }
   .topbar-more { display: none; }
+  .topbar-more-label {
+    display: block;
+    font-family: var(--font-data);
+    font-size: var(--fs-data-xs);
+    letter-spacing: var(--tr-label);
+    color: var(--muted);
+  }
   .topbar-more[data-open='true'] {
     display: flex;
     flex-direction: column;

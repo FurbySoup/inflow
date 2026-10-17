@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
+import { LayoutMenu } from './LayoutMenu'
 import { clampLeft, TopbarMore } from './TopbarMore'
 
 // jsdom cannot evaluate the ≤ 900 px media query, so these tests check behaviour and markup only.
@@ -102,6 +103,18 @@ describe('TopbarMore', () => {
     // Zero rects and a zero-width popover: top is the 6 px gap, left is the 12 px gutter.
     expect(menu.style.top).toBe('6px')
     expect(menu.style.left).toBe('12px')
+  })
+
+  it('renders the LAYOUT label once, as plain text that is not focusable', () => {
+    render(
+      <TopbarMore>
+        <LayoutMenu />
+      </TopbarMore>,
+    )
+    const labels = screen.getAllByText('LAYOUT')
+    expect(labels).toHaveLength(1)
+    expect(labels[0]?.matches('button, a[href], input, [tabindex]')).toBe(false)
+    expect(labels[0]?.tagName).toBe('SPAN')
   })
 
   it('renders each child once', () => {
