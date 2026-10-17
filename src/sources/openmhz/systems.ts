@@ -52,12 +52,23 @@ export function normalizeSystems(raw: OpenMhzSystemsRaw): ScannerSystem[] {
           shortName: s.shortName,
           name: s.name,
           state: s.state,
-          place: s.city ?? s.county ?? '',
+          // Trimmed: the live list has a county of "Florence " (trailing space) on fireems.
+          place: (s.city ?? '').trim() || (s.county ?? '').trim(),
           lastActive: new Date(t).toISOString(),
         },
       ]
     })
     .sort((a, b) => a.state.localeCompare(b.state) || a.name.localeCompare(b.name))
+}
+
+/**
+ * Picker label: `name · place (ST)`, or `name (ST)` with no place. OpenMHz reuses names, so when another system in `all`
+ * has the same name, the shortName is appended to tell them apart.
+ */
+export function systemLabel(system: ScannerSystem, all: ScannerSystem[]): string {
+  const base = system.place ? `${system.name} · ${system.place} (${system.state})` : `${system.name} (${system.state})`
+  const clash = all.some((s) => s.shortName !== system.shortName && s.name === system.name)
+  return clash ? `${base} · ${system.shortName}` : base
 }
 
 /** Systems whose state is in the AOI, in list order. */
