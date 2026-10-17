@@ -3,9 +3,27 @@
 Handoff from the 2026-10-17 Wave 11 session. Supersedes the post-Wave-10 handoff.
 
 **State at handoff:** `main` is pushed. There are no agent worktrees and no local branches besides `main`.
-- **Merged:** Waves 1–12 (WP-01…49). Gate: typecheck, lint, test (872) and build:ui all pass. CI (`ci.yml`) runs on every push and PR.
+- **Merged:** Waves 1–13 (WP-01…54). Gate: typecheck, lint, test (931) and build:ui all pass. CI (`ci.yml`) runs on every push and PR.
 - **Plan of record:** [`docs/launch-plan.md`](launch-plan.md). Its ticked boxes are done.
 - **Launch posts and release notes:** [`docs/launch-posts.md`](launch-posts.md), ready to paste.
+
+## Wave 13 (merged 2026-10-17): pre-launch polish
+This wave came from a four-reviewer UX pass. The plan and findings are in `docs/polish-plan.md`.
+- **Repo renamed to `FurbySoup/inflow`** (ADR-0021). The image is `ghcr.io/furbysoup/inflow`. Internal storage keys and the npm package name stay `storm-chasers`.
+- **WP-50 trust:**
+  - `CHECKING NWS…` until the first answer (no more false "no alerts" on load);
+  - no YouTube embed when nobody is live: a slate that says `CHECKING CHASERS…` until checked;
+  - the scanner opens on the nearest state's system.
+- **WP-51 layout (orchestrator):**
+  - no sideways scroll at 390;
+  - alert names readable at 1024 and 1366 (container query: countdown under the name);
+  - the feeds column shrinks below 1280;
+  - 44 px touch hit areas, a 12 px text floor, a taller narrow map, and the footer disclaimer.
+- **WP-52:** START HERE help tab (default), layout tooltips, RESET outlined, PLAINS pressed on load.
+- **WP-53 copy:** FEED slots, no emoji, `T-2h18` countdowns, glossary fixes, README quiet-day line, post titles.
+- **WP-54:** the tab title and favicon show `(n TOR · n SVR)` for your area; panel lights flash once on arrival (never during a tornado warning, never with reduced motion).
+- **Live check:** fresh visitor at 1440, plus the 390/768/1024/1366/1920/3840 measurements; no horizontal scroll anywhere.
+- **Needs you:** `led.css`, `alerts.css`, `stream.css`, `StreamTile` and `Abbr` changed in the kit, so run `/design-sync` to update the Claude Design project.
 
 ## Wave 12 (merged 2026-10-17, from the user's review)
 - **WP-48 + CHASER:** paste a YouTube channel link, video link or @handle; the app resolves it through YouTube, so it never trusts an ID from the input alone. The channel then joins roster liveness and went-live notifications.
@@ -46,7 +64,7 @@ Claude can do:
 - **Screenshot** for the README and the social preview (1280×640): needs a day with active warnings. `docs/screenshot.png` is referenced but not added yet.
 - **Release day:**
   - `npm version 1.0.0 --no-git-tag-version`, commit, push, then `git tag v1.0.0 && git push origin v1.0.0`;
-  - watch the run, then check `docker pull ghcr.io/furbysoup/inflow` and the zip;
+  - watch the run, then check `docker pull ghcr.io/furbysoup/inflow` and the zip (the repo was renamed; the image path is new);
   - in Git Bash, `gh api` paths need no leading slash.
 
 Only the user can do (launch-plan §3):

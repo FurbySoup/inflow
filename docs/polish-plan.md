@@ -1,5 +1,7 @@
 # Pre-launch polish plan (Wave 13)
 
+**Status: done and merged 2026-10-17.** WP-50 to WP-54 are on `main`; the stretch list and the post-1.0 list below are not started.
+
 Written 2026-10-17 from a four-reviewer UX pass. The reviewers covered devices and readability across the 7-size matrix, first-time users (a self-hoster and a chaser, from a cleared browser on a quiet day), an "AI slop" audit and delight ideas. All four worked read-only, each in its own browser tab.
 
 **Verdict:** the product mostly does *not* read as AI-made. The voice is terse, there's no template gloss, and the glyph system, panel codes and chaser glossary all feel considered.

@@ -319,3 +319,7 @@
   font-size: var(--fs-data-xs);
   color: var(--accent);
 }
+
+/* Readable line length for prose in the help dialog (about 200 characters per line at 1920 before). */
+.help-body p,
+.help-body li { max-width: 72ch; }

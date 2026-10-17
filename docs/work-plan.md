@@ -80,7 +80,7 @@ Expected conflicts:
 
 After merge: update the kit previews where builders didn't, then re-sync Claude Design.
 
-## Wave 13 (pre-launch polish): in progress 2026-10-17
+## Wave 13 (pre-launch polish): merged 2026-10-17
 From the four-reviewer UX pass (`docs/polish-plan.md`). The repo was renamed to `inflow` first (ADR-0021).
 
 | WP | Title | Wave | Owns (exclusive) | Registry edits allowed |
