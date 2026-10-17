@@ -9,7 +9,7 @@ import { createApp } from './app'
 import { listenWithFallback } from './listen'
 import { browserUrl, openBrowser, wantsBrowser } from './openBrowser'
 
-const rawPort = process.env.PORT
+const rawPort = process.env.PORT?.trim()
 const explicitPort = rawPort !== undefined && rawPort !== ''
 const port = explicitPort ? Number(rawPort) : 8080
 const host = process.env.HOST || '127.0.0.1'
