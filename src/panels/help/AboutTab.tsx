@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { TaggedText } from '../../ui'
+import { Abbr, TaggedText } from '../../ui'
 import { CAMERA_CREDITS, CREDITS, DATA_TERMS, DISCLAIMER, PROJECT } from './about'
 
 // The ABOUT tab of `? HELP` (WP-47): disclaimer, identity and version, data terms, and source credits.
@@ -86,12 +86,16 @@ export function AboutTab() {
         <h3 className="help-group-title" id="about-cams-title">
           Traffic cameras
         </h3>
-        <p className="about-cams-lead">Images belong to each state&apos;s DOT.</p>
+        <p className="about-cams-lead">
+          Images belong to each state&apos;s <Abbr term="DOT" />.
+        </p>
         <ul className="about-cameras">
           {CAMERA_CREDITS.map((c) => (
             <li key={c.site} className="about-camera">
               <span className="about-camera-site">{c.site}</span>
-              <span className="about-camera-agency">{c.agency}</span>
+              <span className="about-camera-agency">
+                <TaggedText text={c.agency} />
+              </span>
               <span className="about-camera-states">{c.states}</span>
             </li>
           ))}

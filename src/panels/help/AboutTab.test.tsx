@@ -56,4 +56,13 @@ describe('AboutTab', () => {
     const spc = screen.getByText('SPC', { selector: 'abbr' })
     expect(spc.getAttribute('title')).toBeTruthy()
   })
+
+  it('tips DOT in the camera lead and in each agency name', () => {
+    const { container } = render(<AboutTab />)
+    const lead = container.querySelector('.about-cams-lead abbr')
+    expect(lead?.textContent).toBe('DOT')
+    expect(lead?.getAttribute('title')).toBeTruthy()
+    const agencyTips = container.querySelectorAll('.about-camera-agency abbr')
+    expect(agencyTips.length).toBeGreaterThan(10)
+  })
 })
