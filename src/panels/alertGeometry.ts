@@ -1,4 +1,5 @@
 import type { Bbox } from '../types'
+import { formatZulu } from '../ui/AlertList'
 
 const EMPTY_BBOX: Bbox = { west: Infinity, south: Infinity, east: -Infinity, north: -Infinity }
 
@@ -39,15 +40,39 @@ export function isListed(left: number | null): boolean {
   return left === null || left > -EXPIRED_RETENTION_MS
 }
 
-export type AlertsView = 'live' | 'empty' | 'degraded' | 'unavailable'
+export type AlertsView = 'loading' | 'live' | 'empty' | 'degraded' | 'unavailable'
 
 /**
  * Which body the alerts panel renders. A failed feed is never "empty": with last-good data it is `degraded`
- * (banner + last-known rows), with none it is `unavailable` (banner only).
+ * (banner + last-known rows), with none it is `unavailable` (banner only). Before the first answer it is
+ * `loading`, never `empty`: an unanswered check is not a clear sky.
  */
 export function alertsView(state: { isError: boolean; hasData: boolean; rows: number }): AlertsView {
   if (state.isError) return state.hasData ? 'degraded' : 'unavailable'
+  if (!state.hasData) return 'loading'
   return state.rows > 0 ? 'live' : 'empty'
+}
+
+export interface AlertsEmptyCopy {
+  label: string
+  note: string
+}
+
+/** Text for the empty-list slot: the pending first load, or the healthy no-warnings state. Null for every other view. */
+export function alertsEmptyCopy(view: AlertsView, lastGood: number | null): AlertsEmptyCopy | null {
+  if (view === 'loading') {
+    return {
+      label: 'CHECKING NWS…',
+      note: 'Waiting for the first answer from the National Weather Service.',
+    }
+  }
+  if (view === 'empty') {
+    return {
+      label: 'NO WARNINGS IN THIS AREA',
+      note: `NWS checked ${formatZulu(lastGood)}. New warnings appear within a minute; tornado warnings also pop up on screen. Watches and outlooks stay on the map.`,
+    }
+  }
+  return null
 }
 
 /** Header age since the last successful fetch: `Ns` under a minute, else `Xm YYs`. `--` when there has been none. */

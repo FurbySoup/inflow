@@ -1,4 +1,4 @@
-import { cleanup, render } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useSource } from '../lib/useSource'
 import { useAoi } from '../state/aoi'
@@ -40,6 +40,37 @@ describe('AudioPanel acronym tips', () => {
     render(<AudioPanel />)
     expect(lineWith('NO OPENMHZ SYSTEMS IN AOI')).toBeTruthy()
     expect(lineWith('NO ONLINE 27 MHZ RECEIVERS IN RANGE')).toBeTruthy()
+  })
+})
+
+describe('AudioPanel default system', () => {
+  const INITIAL_STATES = useAoi.getState().states
+  const alabama = { shortName: 'afrn', name: 'Alabama Interoperable', state: 'AL', place: '', lastActive: '' }
+  const kansas = { shortName: 'ksfire', name: 'Kansas Fire', state: 'KS', place: 'Wichita', lastActive: '' }
+  const oklahoma = { shortName: 'okpd', name: 'Oklahoma Police', state: 'OK', place: 'Tulsa', lastActive: '' }
+
+  beforeEach(() => {
+    vi.mocked(useSource).mockImplementation(((adapter: { id: string }) =>
+      adapter.id === 'openmhz-systems'
+        ? { ...empty, data: [alabama, oklahoma, kansas] }
+        : empty) as unknown as typeof useSource)
+  })
+  afterEach(() => {
+    cleanup()
+    vi.mocked(useSource).mockReset()
+    useAoi.setState({ states: INITIAL_STATES })
+  })
+
+  it('opens on the nearest state\'s system, not the first alphabetically', () => {
+    useAoi.setState({ states: ['KS', 'OK', 'AL'] })
+    render(<AudioPanel />)
+    expect((screen.getByLabelText('Scanner system') as HTMLSelectElement).value).toBe('ksfire')
+  })
+
+  it('shows the recorded-calls hint under the system select', () => {
+    useAoi.setState({ states: ['KS'] })
+    render(<AudioPanel />)
+    expect(lineWith('Recorded calls from public-safety radio, newest first.')).toBeTruthy()
   })
 })
 

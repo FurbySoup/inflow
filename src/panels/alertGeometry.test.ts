@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   alertDurationMs,
+  alertsEmptyCopy,
   alertsView,
   formatAge,
   formatCountdown,
@@ -109,6 +110,33 @@ describe('alertsView (error / last-known chooser)', () => {
 
   it('never shows the empty state while in error', () => {
     expect(alertsView({ isError: true, hasData: false, rows: 0 })).toBe('unavailable')
+  })
+
+  it('is loading, not empty, until the first answer arrives', () => {
+    expect(alertsView({ isError: false, hasData: false, rows: 0 })).toBe('loading')
+    expect(alertsView({ isError: false, hasData: true, rows: 0 })).toBe('empty')
+  })
+})
+
+describe('alertsEmptyCopy', () => {
+  const checked = Date.parse('2026-10-17T18:05:09Z')
+
+  it('says CHECKING while pending and never claims no warnings', () => {
+    const copy = alertsEmptyCopy('loading', null)
+    expect(copy?.label).toBe('CHECKING NWS…')
+    expect(JSON.stringify(copy)).not.toMatch(/NO WARNINGS|all clear|safe|no threat/i)
+  })
+
+  it('states the healthy empty state with the check time', () => {
+    const copy = alertsEmptyCopy('empty', checked)
+    expect(copy?.label).toBe('NO WARNINGS IN THIS AREA')
+    expect(copy?.note.startsWith('NWS checked 18:05:09Z.')).toBe(true)
+  })
+
+  it('has no copy for live, degraded or unavailable views', () => {
+    for (const view of ['live', 'degraded', 'unavailable'] as const) {
+      expect(alertsEmptyCopy(view, checked)).toBeNull()
+    }
   })
 })
 

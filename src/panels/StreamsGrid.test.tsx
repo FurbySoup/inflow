@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { curatedStreams } from '../sources/streams/curated'
 import type { FeedResolution } from '../sources/streams/resolve'
 import { useLiveness } from '../sources/streams/useLiveness'
 import { useStreams } from '../state/streams'
@@ -21,6 +22,10 @@ vi.mock('../sources/streams/useSnapshots', () => ({
 const EMBED = 'https://www.youtube.com/embed/abcdefghijk?autoplay=1&mute=1'
 const watchButtons = () => screen.queryAllByRole('button', { name: /^▶ WATCH/ })
 const stillButtons = () => screen.queryAllByRole('button', { name: /^■ STILL/ })
+
+// A map of liveness results: `live` is always live (so the grid is not in its quiet state), plus any extra entries.
+const liveness = (...extra: Array<[string, FeedResolution]>) =>
+  new Map<string, FeedResolution>([['livestormsmedia', { status: 'live' }], ...extra])
 
 describe('StreamTile render (kit)', () => {
   afterEach(cleanup)
@@ -91,12 +96,12 @@ describe('StreamTile render (kit)', () => {
 
 describe('StreamsGrid playback', () => {
   beforeEach(() => {
-    vi.mocked(useLiveness).mockReturnValue(new Map())
+    vi.mocked(useLiveness).mockReturnValue(liveness())
     useStreams.setState({ primaryId: null, chosenThisSession: false })
   })
   afterEach(cleanup)
 
-  it('mounts one iframe on load: the primary', () => {
+  it('mounts one iframe on load: the live primary', () => {
     const { container } = render(<StreamsGrid />)
     expect(container.querySelectorAll('iframe')).toHaveLength(1)
     expect(watchButtons().length).toBeGreaterThan(0)
@@ -130,18 +135,14 @@ describe('StreamsGrid playback', () => {
   })
 
   it('an OFFLINE feed gets no WATCH button', () => {
-    vi.mocked(useLiveness).mockReturnValue(
-      new Map<string, FeedResolution>([['reedtimmerwx', { status: 'offline' }]]),
-    )
+    vi.mocked(useLiveness).mockReturnValue(liveness(['reedtimmerwx', { status: 'offline' }]))
     const { container } = render(<StreamsGrid />)
     expect(screen.queryByRole('button', { name: /WATCH Reed Timmer/ })).toBeNull()
     expect(container.querySelector('.stream-live[data-kind="offline"]')).not.toBeNull()
   })
 
   it('an ENDED feed is labelled REPLAY and can be watched', () => {
-    vi.mocked(useLiveness).mockReturnValue(
-      new Map<string, FeedResolution>([['maxvelocitywx', { status: 'ended' }]]),
-    )
+    vi.mocked(useLiveness).mockReturnValue(liveness(['maxvelocitywx', { status: 'ended' }]))
     render(<StreamsGrid />)
     expect(screen.getByText('↺ REPLAY')).toBeTruthy()
     expect(screen.getByRole('button', { name: '▶ WATCH Max Velocity' })).toBeTruthy()
@@ -153,6 +154,70 @@ describe('StreamsGrid playback', () => {
     const playingTitle = screen.getByRole('button', { name: /^■ STILL/ }).getAttribute('aria-label')?.replace('■ STILL ', '') ?? ''
     fireEvent.click(screen.getByRole('button', { name: `Make ${playingTitle} the main feed` }))
     expect(stillButtons()).toHaveLength(0)
+    expect(container.querySelectorAll('iframe')).toHaveLength(1)
+  })
+
+  it('hides ▲ MAIN on offline and ended thumbnails, but keeps it on unchecked ones', () => {
+    vi.mocked(useLiveness).mockReturnValue(
+      liveness(['reedtimmerwx', { status: 'offline' }], ['maxvelocitywx', { status: 'ended' }]),
+    )
+    render(<StreamsGrid />)
+    expect(screen.queryByRole('button', { name: 'Make Reed Timmer the main feed' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Make Max Velocity the main feed' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Make Brandon Copic the main feed' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Make Live Storms Media the main feed' })).toBeTruthy()
+  })
+})
+
+describe('StreamsGrid quiet day (WP-50)', () => {
+  beforeEach(() => {
+    vi.mocked(useLiveness).mockReturnValue(new Map())
+    useStreams.setState({ primaryId: null, chosenThisSession: false })
+  })
+  afterEach(cleanup)
+
+  it('with nobody live: no iframe, the slate text, and a ↗ link per curated feed', () => {
+    const { container } = render(<StreamsGrid />)
+    expect(container.querySelectorAll('iframe')).toHaveLength(0)
+    expect(screen.getByText('NO CHASERS LIVE RIGHT NOW')).toBeTruthy()
+    expect(screen.getByText(/checks 58 chasers/)).toBeTruthy()
+    const links = container.querySelectorAll<HTMLAnchorElement>('.feeds-quiet-list a')
+    const curated = curatedStreams.filter((s) => !s.context)
+    expect(links).toHaveLength(curated.length)
+    links.forEach((a) => {
+      expect(a.textContent?.endsWith('↗')).toBe(true)
+      expect(a.getAttribute('target')).toBe('_blank')
+      expect(a.getAttribute('rel')).toBe('noopener noreferrer')
+    })
+    expect(links[0]?.getAttribute('href')).toBe(curated[0]?.watchUrl)
+  })
+
+  it('with nobody live: no WATCH buttons and no thumbnail grid', () => {
+    const { container } = render(<StreamsGrid />)
+    expect(watchButtons()).toHaveLength(0)
+    expect(container.querySelector('.stream-grid')).toBeNull()
+  })
+
+  it('keeps liveness on for the curated feeds while quiet', () => {
+    render(<StreamsGrid />)
+    const predicate = vi.mocked(useLiveness).mock.calls.at(-1)?.[1]
+    expect(predicate?.('ryanhallyall')).toBe(true)
+    expect(predicate?.('reedtimmerwx')).toBe(true)
+  })
+
+  it('a live feed returns the primary tile with its iframe and the thumbnails', () => {
+    vi.mocked(useLiveness).mockReturnValue(liveness())
+    const { container } = render(<StreamsGrid />)
+    expect(screen.queryByText('NO CHASERS LIVE RIGHT NOW')).toBeNull()
+    expect(container.querySelectorAll('iframe')).toHaveLength(1)
+    expect(container.querySelector('.stream-grid')).not.toBeNull()
+  })
+
+  it('a feed the viewer picked this session keeps its tile even though it is offline', () => {
+    useStreams.setState({ primaryId: 'reedtimmerwx', chosenThisSession: true })
+    vi.mocked(useLiveness).mockReturnValue(new Map([['reedtimmerwx', { status: 'offline' }]]))
+    const { container } = render(<StreamsGrid />)
+    expect(screen.queryByText('NO CHASERS LIVE RIGHT NOW')).toBeNull()
     expect(container.querySelectorAll('iframe')).toHaveLength(1)
   })
 })

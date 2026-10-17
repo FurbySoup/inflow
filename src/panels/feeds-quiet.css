@@ -1,0 +1,24 @@
+/* Quiet-day slate in the main feed slot (WP-50). Read-only: no pointer or hover on the block; only the links react. */
+.feeds-quiet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-3);
+  padding: var(--sp-4);
+  border: 1px dashed var(--border-default);
+  background: var(--surface-inset);
+}
+.feeds-quiet-head { margin: 0; font: 600 var(--fs-ui-s) / 1.2 var(--font-ui); letter-spacing: var(--tr-label); color: var(--text-bright); }
+.feeds-quiet-body { margin: 0; font: var(--fs-ui-s) / 1.5 var(--font-ui); color: var(--text-secondary); }
+.feeds-quiet-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--fs-data-s) / 1.4 var(--font-data);
+}
+.feeds-quiet-list a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
+.feeds-quiet-list a:hover { color: var(--accent); }
+.feeds-quiet-list a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

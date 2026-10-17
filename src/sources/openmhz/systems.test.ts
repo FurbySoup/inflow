@@ -99,6 +99,16 @@ describe('systemsInAoi and coveredStates', () => {
     ])
   })
 
+  it('puts the nearest state first (AOI order), then by name, so the default is the nearest system', () => {
+    expect(systemsInAoi(systems, ['SC', 'GA']).map((s) => s.shortName)).toEqual([
+      'aikenfire',
+      'palm800',
+      'yorksc',
+      'atlps',
+      'camden',
+    ])
+  })
+
   it('returns nothing over an uncovered state, and lists the covered states', () => {
     expect(systemsInAoi(systems, ['FL'])).toEqual([])
     expect(coveredStates(systems)).toEqual(['GA', 'OH', 'SC'])

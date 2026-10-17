@@ -9,8 +9,8 @@ import { queryFeed } from '../lib/feedStatus'
 import { alertInAoi } from './aoiMatch'
 import {
   alertDurationMs,
+  alertsEmptyCopy,
   alertsView,
-  formatZulu,
   geometryBbox,
   isListed,
   remainingMs,
@@ -48,6 +48,7 @@ export function AlertsList() {
   const view = alertsView({ isError: query.isError, hasData: query.data !== undefined, rows: listed.length })
   const degraded = view === 'degraded'
   const lastGood = query.dataUpdatedAt > 0 ? query.dataUpdatedAt : null
+  const emptyCopy = alertsEmptyCopy(view, lastGood)
 
   const select = (a: Alert) => {
     const bbox = geometryBbox(a.geometry)
@@ -61,7 +62,7 @@ export function AlertsList() {
       title="NWS Alerts"
       // The header shows the data age (WP-20), so meta is the count only.
       status={queryFeed(query, nwsAlerts.refreshMs)}
-      meta={`${active} ACTIVE`}
+      meta={`${view === 'loading' ? '—' : active} ACTIVE`}
     >
       <HwoStrip />
       <AlertList
@@ -71,14 +72,7 @@ export function AlertsList() {
             ? { lastGood, retrying: query.isFetching, onRetry: () => void query.refetch() }
             : null
         }
-        empty={
-          view === 'empty'
-            ? {
-                label: 'NO ACTIVE ALERTS IN AOI',
-                note: `NWS checked ${formatZulu(lastGood)}. Watches and outlooks stay on the map.`,
-              }
-            : null
-        }
+        empty={emptyCopy}
       >
         {listed.map(({ alert: a, left }) => {
           const bbox = geometryBbox(a.geometry)
