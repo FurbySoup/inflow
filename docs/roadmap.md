@@ -17,6 +17,9 @@ Waves 4–9 (WP-11…40) are merged: coverage polish, SRV velocity, the INFLOW d
 - Streams: auto-prune ended broadcasts (pinned `videoId`s go dark when a chase ends) and prefer `channelId` live embeds for regular chasers; only autoplay visible/primary iframes to cut CPU with 10+ feeds.
 - Keyboard shortcuts for a wall display (cycle primary stream, toggle layers, fullscreen).
 
+## 1.0 — Self-run release
+See [launch-plan.md](launch-plan.md) and ADR-0020: 1.0 ships self-run (npm start / Docker); v2 hosting below is optional.
+
 ## v2 — Hosted (public, read-only)
 **Target: Cloudflare** — Pages for the static SPA, one Worker for `/api/*`.
 

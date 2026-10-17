@@ -23,6 +23,7 @@ Short, numbered, immutable. To change a decision, add a new ADR that supersedes 
 | [0017](0017-user-started-stream-tiles.md) | User-started stream tiles may play | Accepted |
 | [0018](0018-acronym-expansions.md) | Every acronym carries its expansion | Accepted |
 | [0019](0019-browser-notifications.md) | Browser notifications via one engine and a notify bus | Accepted |
+| [0020](0020-self-run-distribution.md) | Ship 1.0 as a self-run app, not a hosted service | Proposed |
 
 Template:
 
