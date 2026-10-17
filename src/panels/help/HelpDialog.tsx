@@ -1,18 +1,20 @@
 import { Fragment, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type RefObject } from 'react'
 import { ConsoleButton, GLOSSARY, Panel } from '../../ui'
 import { CHASER_TERMS } from './chaserTerms'
+import { AboutTab } from './AboutTab'
 import { buildGlossaryGroups, countEntries, filterGroups, type HelpEntry, type HelpGroup } from './helpSearch'
 import './help.css'
 
-// The `? HELP` overlay (WP-40): three searchable tabs. Opening, closing and the keys live in KeyboardShortcuts.tsx,
-// which renders this with the dialog ref it needs for the focus trap.
+// The `? HELP` overlay (WP-40, ABOUT in WP-47): three searchable tabs and an unsearched ABOUT tab. Opening, closing
+// and the keys live in KeyboardShortcuts.tsx, which renders this with the dialog ref it needs for the focus trap.
 
-type TabId = 'shortcuts' | 'screen' | 'chasers'
+type TabId = 'shortcuts' | 'screen' | 'chasers' | 'about'
 
 const TABS: readonly { id: TabId; label: string }[] = [
   { id: 'shortcuts', label: 'SHORTCUTS' },
   { id: 'screen', label: 'ON SCREEN' },
   { id: 'chasers', label: 'CHASER TERMS' },
+  { id: 'about', label: 'ABOUT' },
 ]
 
 const TAB_STORAGE_KEY = 'storm-chasers.help.tab'
@@ -44,12 +46,13 @@ const SHORTCUT_GROUPS: readonly HelpGroup<ShortcutItem>[] = [
 /** Display grouping for GLOSSARY. Terms not listed here fall into `Other`, so a new glossary entry is never lost. */
 const GLOSSARY_GROUPS: readonly { group: string; terms: readonly string[] }[] = [
   { group: 'Area & time', terms: ['AOI', 'IN AOI', 'UTC', 'Z', 'LOCAL', 'T-'] },
-  { group: 'Agencies & products', terms: ['NWS', 'SPC', 'MD', 'HWO', 'CWA'] },
+  { group: 'Agencies & products', terms: ['NWS', 'SPC', 'MD', 'HWO', 'CWA', 'NOAA', 'IEM'] },
   { group: 'NWS alerts', terms: ['TOR', 'SVR', 'FFW', 'TOA', 'SVA', 'SPS', 'OTHER', 'PDS', 'EMERGENCY', 'ZONE'] },
   { group: 'SPC risk', terms: ['TSTM', 'MRGL', 'SLGT', 'ENH', 'MDT', 'HIGH', 'PREDICTABILITY TOO LOW', 'POTENTIAL TOO LOW'] },
   { group: 'Radar & satellite', terms: ['NEXRAD', 'SRV', 'GOES', 'IR'] },
   { group: 'Streams & cameras', terms: ['CTX', 'THUMB', 'CAM', 'DOT', 'CCTV'] },
-  { group: 'Radio', terms: ['CB', '2M', 'RX', 'TG', 'SDR'] },
+  { group: 'Radio', terms: ['CB', '2M', 'RX', 'TG', 'SDR', 'HF'] },
+  { group: 'Licences & tech', terms: ['API', 'ODbL', 'MIT'] },
 ]
 
 const SCREEN_GROUPS = buildGlossaryGroups(GLOSSARY, GLOSSARY_GROUPS)
@@ -62,6 +65,8 @@ function countFor(id: TabId, query: string): number {
       return countEntries(filterGroups(SCREEN_GROUPS, query))
     case 'chasers':
       return countEntries(filterGroups(CHASER_TERMS, query))
+    case 'about':
+      return 0
   }
 }
 
@@ -116,7 +121,8 @@ export function HelpDialog({ dialogRef, onClose }: HelpDialogProps) {
   const chaserGroups = filterGroups(CHASER_TERMS, query)
   const trimmed = query.trim()
   const count = countFor(tab, query)
-  const emptyForTab = trimmed !== '' && count === 0
+  const searchable = tab !== 'about'
+  const emptyForTab = searchable && trimmed !== '' && count === 0
 
   function choose(id: TabId): void {
     setTab(id)
@@ -125,7 +131,7 @@ export function HelpDialog({ dialogRef, onClose }: HelpDialogProps) {
 
   function changeQuery(next: string): void {
     setQuery(next)
-    // Typing on SHORTCUTS with no shortcut match moves to the first tab that has matches.
+    // Typing on SHORTCUTS with no shortcut match moves to the first tab that has matches. ABOUT counts 0, so it is never chosen.
     if (tab !== 'shortcuts' || next.trim() === '' || countFor('shortcuts', next) > 0) return
     const hit = TABS.find((t) => countFor(t.id, next) > 0)
     if (hit) choose(hit.id)
@@ -162,7 +168,7 @@ export function HelpDialog({ dialogRef, onClose }: HelpDialogProps) {
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div ref={dialogRef} className="help-dialog" role="dialog" aria-modal="true" aria-label="Help: shortcuts, on-screen terms and chaser terms">
+      <div ref={dialogRef} className="help-dialog" role="dialog" aria-modal="true" aria-label="Help: shortcuts, on-screen terms, chaser terms and about">
         <Panel
           code="HLP-01"
           title="Help"
@@ -195,30 +201,32 @@ export function HelpDialog({ dialogRef, onClose }: HelpDialogProps) {
             ))}
           </div>
 
-          <div className="help-toolbar">
-            <input
-              type="search"
-              className="help-search"
-              placeholder="Search terms"
-              aria-label="Search help"
-              value={query}
-              onChange={(e) => changeQuery(e.target.value)}
-            />
-            {trimmed !== '' && (
-              <span className="help-count" role="status">
-                {count === 1 ? '1 MATCH' : `${count} MATCHES`}
-              </span>
-            )}
-            {termGroups.length > 0 && (
-              <div className="help-jump-bar" role="group" aria-label="Jump to group">
-                {termGroups.map((g, i) => (
-                  <button key={g.group} type="button" className="help-jump" onClick={() => jumpTo(i)}>
-                    {g.group}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          {searchable && (
+            <div className="help-toolbar">
+              <input
+                type="search"
+                className="help-search"
+                placeholder="Search terms"
+                aria-label="Search help"
+                value={query}
+                onChange={(e) => changeQuery(e.target.value)}
+              />
+              {trimmed !== '' && (
+                <span className="help-count" role="status">
+                  {count === 1 ? '1 MATCH' : `${count} MATCHES`}
+                </span>
+              )}
+              {termGroups.length > 0 && (
+                <div className="help-jump-bar" role="group" aria-label="Jump to group">
+                  {termGroups.map((g, i) => (
+                    <button key={g.group} type="button" className="help-jump" onClick={() => jumpTo(i)}>
+                      {g.group}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           <div ref={bodyRef} className="help-body" role="tabpanel" id={`${baseId}-panel`} aria-labelledby={`${baseId}-tab-${tab}`}>
             {tab === 'shortcuts' && (
@@ -250,7 +258,9 @@ export function HelpDialog({ dialogRef, onClose }: HelpDialogProps) {
               </>
             )}
 
-            {tab !== 'shortcuts' && (
+            {tab === 'about' && <AboutTab />}
+
+            {(tab === 'screen' || tab === 'chasers') && (
               <>
                 <div className="help-grid">
                   {termGroups.map((g, i) => (
