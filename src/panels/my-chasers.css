@@ -1,0 +1,61 @@
+/* "+ CHASER" form and YOUR CHASERS list (WP-48). ConsoleButton supplies the base (.btn-console). No fixed widths (ADR-0014). */
+.my-chasers { display: flex; flex-direction: column; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+.btn-console.my-chasers-toggle { align-self: flex-start; }
+.btn-console.my-chasers-toggle[aria-expanded='true'] { background: var(--accent); color: var(--bg); }
+
+.my-chasers-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-2);
+  background: var(--surface-inset);
+  border: 1px solid var(--border-control);
+}
+.my-chasers-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--sp-2); }
+.my-chasers-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  font: 600 var(--fs-ui-xs) / 1 var(--font-ui);
+  letter-spacing: var(--tr-label);
+  color: var(--text-muted);
+}
+.my-chasers-field-wide { flex: 1 1 16rem; min-width: 0; }
+.my-chasers-input,
+.my-chasers-select {
+  font: var(--fs-data-s) / 1.2 var(--font-data);
+  color: var(--text);
+  background: var(--surface-app);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
+  padding: 4px 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+.my-chasers-input { width: 100%; }
+.my-chasers-input:focus-visible,
+.my-chasers-select:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+.my-chasers-found { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+.my-chasers-name { color: var(--text-bright); }
+.my-chasers-handle { font-family: var(--font-data); color: var(--muted); }
+.my-chasers-message { margin: 0; font-family: var(--font-data); font-size: var(--fs-data-s); }
+
+.my-chasers-list { display: flex; flex-direction: column; gap: var(--sp-1); }
+.my-chasers-heading {
+  margin: 0;
+  font: 600 var(--fs-ui-xs) / 1 var(--font-ui);
+  letter-spacing: var(--tr-label);
+  color: var(--text-bright);
+}
+.my-chasers-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-1); }
+.my-chasers-item { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); min-width: 0; }
+
+@media (max-width: 900px) {
+  .my-chasers-form { flex-direction: column; align-items: stretch; }
+  .my-chasers-field-wide { flex-basis: auto; }
+}
+@media (pointer: coarse) {
+  .my-chasers-input,
+  .my-chasers-select { min-height: 32px; }
+}
