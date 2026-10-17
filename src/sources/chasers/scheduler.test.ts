@@ -61,10 +61,16 @@ describe('checkRosterChannel', () => {
 describe('createScheduler', () => {
   let visible = true
   const emit = vi.fn<(event: NotifyEvent) => void>()
+  let visibleListeners = new Set<() => void>()
+  const fireVisible = () => {
+    visible = true
+    for (const listener of [...visibleListeners]) listener()
+  }
 
   beforeEach(() => {
     vi.useFakeTimers()
     visible = true
+    visibleListeners = new Set()
     emit.mockReset()
     vi.mocked(fetchChannelState).mockReset()
     vi.mocked(fetchWatchState).mockReset()
@@ -82,6 +88,12 @@ describe('createScheduler', () => {
       visible: () => visible,
       now: () => Date.now(),
       emit,
+      onVisible: (listener) => {
+        visibleListeners.add(listener)
+        return () => {
+          visibleListeners.delete(listener)
+        }
+      },
     })
 
   it('checks one channel at start, then every 10 s while visible and every 60 s while hidden', async () => {
@@ -128,6 +140,62 @@ describe('createScheduler', () => {
     expect(s.getState().results.get(channelOf('a'))?.state).toBe('live')
     await vi.advanceTimersByTimeAsync(10_000)
     expect(s.getState().results.get(channelOf('a'))?.state).toBe('live')
+    s.stop()
+  })
+
+  it('a visible event while the hidden-pace timer is pending checks at once', async () => {
+    const s = make()
+    s.start()
+    await vi.advanceTimersByTimeAsync(0)
+    visible = false
+    await vi.advanceTimersByTimeAsync(10_000)
+    expect(fetchChannelState).toHaveBeenCalledTimes(2)
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(fetchChannelState).toHaveBeenCalledTimes(2)
+    fireVisible()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(fetchChannelState).toHaveBeenCalledTimes(3)
+    s.stop()
+  })
+
+  it('a visible event while a check is in flight starts no second check', async () => {
+    vi.mocked(fetchChannelState).mockReturnValue(new Promise(() => {}))
+    const s = make()
+    s.start()
+    await vi.advanceTimersByTimeAsync(0)
+    visible = false
+    fireVisible()
+    await vi.advanceTimersByTimeAsync(120_000)
+    expect(fetchChannelState).toHaveBeenCalledTimes(1)
+    s.stop()
+  })
+
+  it('a visible event after stop does nothing, and the listener is removed', async () => {
+    const s = make()
+    s.start()
+    await vi.advanceTimersByTimeAsync(0)
+    visible = false
+    await vi.advanceTimersByTimeAsync(10_000)
+    expect(fetchChannelState).toHaveBeenCalledTimes(2)
+    s.stop()
+    expect(visibleListeners.size).toBe(0)
+    fireVisible()
+    await vi.advanceTimersByTimeAsync(120_000)
+    expect(fetchChannelState).toHaveBeenCalledTimes(2)
+  })
+
+  it('a visible event while the timer is already at the visible pace adds no check', async () => {
+    const s = make()
+    s.start()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(fetchChannelState).toHaveBeenCalledTimes(1)
+    fireVisible()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(fetchChannelState).toHaveBeenCalledTimes(1)
+    await vi.advanceTimersByTimeAsync(9_999)
+    expect(fetchChannelState).toHaveBeenCalledTimes(1)
+    await vi.advanceTimersByTimeAsync(1)
+    expect(fetchChannelState).toHaveBeenCalledTimes(2)
     s.stop()
   })
 })

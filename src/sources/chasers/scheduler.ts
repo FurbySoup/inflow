@@ -83,6 +83,8 @@ export interface SchedulerDeps {
   visible: () => boolean
   now: () => number
   emit: (event: NotifyEvent) => void
+  /** Calls the listener when the tab becomes visible. Returns the remover. Absent: no re-arm. */
+  onVisible?: (listener: () => void) => () => void
 }
 
 export interface RosterScheduler {
@@ -106,7 +108,19 @@ export function createScheduler(deps: SchedulerDeps): RosterScheduler {
   let order: string[] = []
   let pos = 0
   let timer: ReturnType<typeof setTimeout> | undefined
+  // Pace the pending timer was armed with: true when hidden (60 s), so a visible event can pull it forward.
+  let timerHidden = false
   let controller: AbortController | undefined
+  let removeVisible: (() => void) | undefined
+
+  // Re-arm: a hidden-pace wait could hold the next check for up to 60 s after the tab returns.
+  // With a check in flight, its own completion arms the visible pace, so nothing happens here.
+  const onVisible = () => {
+    if (!running || timer === undefined || controller !== undefined || !timerHidden) return
+    clearTimeout(timer)
+    timer = undefined
+    void tick(session)
+  }
 
   const publish = (next: RosterState) => {
     state = next
@@ -144,7 +158,9 @@ export function createScheduler(deps: SchedulerDeps): RosterScheduler {
     publish({ results, passes })
     if (seeded) for (const event of wentLiveEvents(prevResults, results, deps.chasers, now)) deps.emit(event)
 
-    const wait = Math.max(0, stepMs(deps.visible()) - (now - started))
+    const visibleNow = deps.visible()
+    const wait = Math.max(0, stepMs(visibleNow) - (now - started))
+    timerHidden = !visibleNow
     timer = setTimeout(() => void tick(current), wait)
   }
 
@@ -153,11 +169,14 @@ export function createScheduler(deps: SchedulerDeps): RosterScheduler {
       if (running) return
       running = true
       session += 1
+      removeVisible = deps.onVisible?.(onVisible)
       void tick(session)
     },
     stop() {
       running = false
       session += 1
+      removeVisible?.()
+      removeVisible = undefined
       if (timer !== undefined) clearTimeout(timer)
       timer = undefined
       controller?.abort()
@@ -182,5 +201,12 @@ export function defaultDeps(chasers: readonly Chaser[], aoiStates: () => readonl
     visible: () => document.visibilityState === 'visible',
     now: () => Date.now(),
     emit: emitNotify,
+    onVisible: (listener) => {
+      const handler = () => {
+        if (document.visibilityState === 'visible') listener()
+      }
+      document.addEventListener('visibilitychange', handler)
+      return () => document.removeEventListener('visibilitychange', handler)
+    },
   }
 }
