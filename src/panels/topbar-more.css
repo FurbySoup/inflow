@@ -1,9 +1,12 @@
 /* Top-bar MORE menu (WP-44). Above 900 px the wrapper and group are display: contents, so the controls sit in the bar
-   exactly as before and the button is hidden. At ≤ 900 px the button shows and the group is a popover under it.
-   Tokens only. */
+   exactly as before and the button is hidden. At ≤ 900 px the button shows and the open group is a fixed popover;
+   TopbarMore sets its top/left inline from the button's rect (clamped to the viewport). Tokens only. */
 .topbar-more-root { display: contents; }
 .btn-console.topbar-more-btn { display: none; }
 .topbar-more { display: contents; }
+
+/* Disclosure look: the kit's pressed style (button.css), driven by aria-expanded, since MORE is not a toggle. */
+.btn-console.topbar-more-btn[aria-expanded='true'] { background: var(--accent); color: var(--bg); }
 
 @media (max-width: 900px) {
   .topbar-more-root { position: relative; display: inline-flex; align-items: center; }
@@ -14,11 +17,10 @@
     flex-direction: column;
     align-items: flex-start;
     gap: var(--sp-3);
-    position: absolute;
-    top: calc(100% + var(--sp-2));
-    right: 0;
+    position: fixed;
     z-index: 40;
     box-sizing: border-box;
+    width: max-content;
     max-width: calc(100vw - 24px);
     padding: var(--sp-3);
     background: var(--panel-head);

@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
-import { TopbarMore } from './TopbarMore'
+import { clampLeft, TopbarMore } from './TopbarMore'
 
 // jsdom cannot evaluate the ≤ 900 px media query, so these tests check behaviour and markup only.
+// Its rects are zero, so the placement test checks the inline position against the fallback values.
 
 afterEach(cleanup)
 
@@ -30,7 +31,7 @@ describe('TopbarMore', () => {
 
     fireEvent.click(button)
     expect(button.getAttribute('aria-expanded')).toBe('true')
-    expect(button.getAttribute('aria-pressed')).toBe('true')
+    expect(button.hasAttribute('aria-pressed')).toBe(false)
     expect(menu.getAttribute('data-open')).toBe('true')
 
     fireEvent.click(button)
@@ -77,11 +78,43 @@ describe('TopbarMore', () => {
     expect(menu.getAttribute('data-open')).toBe('false')
   })
 
+  it('places the open popover fixed under the button, inside the gutter', () => {
+    const { button, menu } = renderMore()
+    expect(menu.style.top).toBe('')
+    fireEvent.click(button)
+    // Zero rects and a zero-width popover: top is the 6 px gap, left is the 12 px gutter.
+    expect(menu.style.top).toBe('6px')
+    expect(menu.style.left).toBe('12px')
+  })
+
   it('renders each child once', () => {
     const { button } = renderMore(<button>Gamma</button>)
     expect(screen.getAllByRole('button', { name: 'Alpha' })).toHaveLength(1)
     expect(screen.getAllByRole('button', { name: 'Gamma' })).toHaveLength(1)
     expect(screen.getAllByRole('button', { name: '≡ MORE' })).toHaveLength(1)
     expect(button.getAttribute('aria-controls')).toBeTruthy()
+  })
+})
+
+describe('clampLeft', () => {
+  it('right-aligns the popover to the button when there is room', () => {
+    expect(clampLeft(300, 200, 390)).toBe(100)
+  })
+
+  it('keeps a popover from overflowing the left edge', () => {
+    // Button at the far left: right-aligning would start at -166.
+    expect(clampLeft(40, 206, 390)).toBe(12)
+  })
+
+  it('keeps a popover from overflowing the right edge', () => {
+    expect(clampLeft(390, 100, 390)).toBe(278)
+  })
+
+  it('pins to the left gutter when the popover is wider than the viewport', () => {
+    expect(clampLeft(300, 500, 390)).toBe(12)
+  })
+
+  it('honours a custom gutter', () => {
+    expect(clampLeft(40, 206, 390, 4)).toBe(4)
   })
 })
