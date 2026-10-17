@@ -91,7 +91,10 @@ export function proxyRoutes(env: RouteEnv = {}): ProxyRoute[] {
       target: 'https://www.youtube.com',
       upstreamPath: '',
       methods: GET,
-      headers: { 'User-Agent': DESKTOP_UA },
+      // SOCS=CAI is YouTube's "reject all" consent answer. Without it, UK/EU requests for channel pages 302 to
+      // consent.youtube.com (verified 2026-10-17), which breaks resolving a pasted channel link. It is a fixed
+      // route header, never the viewer's cookies.
+      headers: { 'User-Agent': DESKTOP_UA, Cookie: 'SOCS=CAI' },
       cacheSeconds: 60,
     },
   ]

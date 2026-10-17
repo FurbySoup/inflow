@@ -80,7 +80,20 @@ Expected conflicts:
 
 After merge: update the kit previews where builders didn't, then re-sync Claude Design.
 
-## Wave 11 (ship 1.0, launch-plan §2): in progress 2026-10-17
+## Wave 12 (1.0 usability): in progress 2026-10-17
+User asks (2026-10-17): anyone must be able to add a chaser after release without a rebuild, and the self-run path must work for non-technical users.
+Prep (done, on `main`):
+- `src/state/myChasers.ts` (per-browser user chasers, validated, capped at 100);
+- the `/api/youtube` route sends the `SOCS=CAI` consent-reject cookie (UK/EU channel pages 302 to a consent wall without it).
+
+| WP | Title | Wave | Owns (exclusive) | Registry edits allowed |
+|---|---|---|---|---|
+| [48](packages/WP-48-add-your-own-chasers.md) | Add your own chasers | 12 | `resolveChannel.ts`, `allChasers.ts`, `MyChasers.tsx`, `scheduler.ts`, `useRoster.ts` | `StreamsGrid.tsx`, `LiveNow.tsx` |
+| [49](packages/WP-49-easy-start.md) | Double-click start | 12 | `server/index.ts`, `listen.ts`, `openBrowser.ts`, `launchers/`, `release.yml` zip step, `scripts/start.mjs` | — |
+
+There's no file overlap.
+
+## Wave 11 (ship 1.0, launch-plan §2): merged 2026-10-17
 Prep (done, on `main`):
 - `proxy/routes.ts` is the one route table (methods + cache TTL per route); Vite reads it. `NWS_CONTACT` sets the NWS User-Agent contact.
 - `config/streams.json`: five national `channelId` entries, re-verified on their `/streams` pages 2026-10-17. Default AOI is the Plains.

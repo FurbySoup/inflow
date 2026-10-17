@@ -95,7 +95,7 @@ How it is distributed: [ADR-0020](adr/0020-self-run-distribution.md), self-run, 
 - [ ] The remote branch `claude/design-sync-wave-4-9pjgq8` holds 1 commit not on `main`. Merge it or delete it.
 - [ ] **Repo metadata:**
   - description: "Self-hosted storm-chasing situation room: radar, warnings, livestreams, scanners and DOT cameras on one screen";
-  - topics: `weather`, `storm-chasing`, `nexrad`, `nws`, `self-hosted`, `maplibre`, `react`, `dashboard`;
+  - topics: `weather`, `storm-chasing`, `nexrad`, `nws`, `self-hosted`, `maplibre`, `react`, `mission-control`;
   - a social preview image (1280×640 screenshot).
 - [x] **Issue templates** (labels `source-broken` and `post-1.0` must exist in the repo): "Source broken" (which panel/state, what the LED shows) and "Feature idea" (goes to `post-1.0`). Turn Discussions on, so questions don't become issues.
 - [x] `CONTRIBUTING.md`, 10 lines: run the gate; one source per PR; adapter + fixture + test; never guess stream IDs.

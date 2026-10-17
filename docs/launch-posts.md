@@ -30,7 +30,7 @@ Not for life-safety decisions. Follow official NWS warnings.
 ---
 
 ## r/selfhosted (New Project Friday, Fri 2026-10-30)
-**Title:** INFLOW: a self-hosted storm-chasing dashboard (radar, warnings, chaser streams, scanners, DOT cams). One Docker command, no API keys
+**Title:** INFLOW: a self-hosted mission control for storm chasing (radar, warnings, chaser streams, scanners, DOT cams). One Docker command, no API keys
 
 **Body:**
 <screenshot>
@@ -71,7 +71,7 @@ Not a replacement for RadarScope/GR2; it's a companion screen. Not for life-safe
 **Body:**
 <screenshot>
 
-It's a dashboard you run on your own computer. Pick an area and every panel follows it:
+It's a situation room you run on your own computer. Pick an area and every panel follows it:
 - NEXRAD radar and velocity;
 - live NWS warnings;
 - SPC outlooks and MDs;
@@ -86,7 +86,7 @@ I'm the author, posting in case it's useful to anyone here. It's a companion scr
 ---
 
 ## Stormtrack forum (software / technology section)
-**Title:** INFLOW: free self-hosted situation-room dashboard (radar, warnings, streams, scanners, DOT cams)
+**Title:** INFLOW: a free, self-hosted storm situation room (radar, warnings, streams, scanners, DOT cams)
 
 **Body:**
 Use the r/stormchasing text above. Add at the end: "If any of the SPC/NWS wording in the built-in glossary (`?` key) is off, I'd like to fix it."
@@ -99,7 +99,7 @@ Use the r/stormchasing text above. Add at the end: "If any of the SPC/NWS wordin
 **Body:**
 <screenshot>
 
-INFLOW is a storm-chasing dashboard (radar, warnings, streams, scanners, cameras). The interesting part for this sub is how it was built:
+INFLOW is a mission-control style situation room for storm chasing (radar, warnings, streams, scanners, cameras). The interesting part for this sub is how it was built:
 - every decision is an ADR, and every feature a self-contained work package with "owns / forbidden / verified facts / acceptance";
 - an orchestrating session does the shared-file prep, then launches one Haiku builder per package in its own git worktree, in parallel;
 - a verifier agent checks each branch against its acceptance list before merge;
@@ -112,4 +112,4 @@ I'm the author. Happy to answer process questions.
 ---
 
 ## r/SideProject (any day) / r/webdev Showoff Saturday (Saturdays only)
-Use the r/selfhosted text, with the title "INFLOW: a one-screen storm-chasing dashboard you run yourself".
+Use the r/selfhosted text, with the title "INFLOW: a one-screen storm situation room you run yourself".

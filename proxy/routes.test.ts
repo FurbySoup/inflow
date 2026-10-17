@@ -34,4 +34,11 @@ describe('proxy route table', () => {
     expect(nws({ NWS_CONTACT: 'me@example.com' })).toBe('INFLOW (me@example.com)')
     expect(nws({ NWS_CONTACT: '  ' })).toBe(nwsUserAgent())
   })
+
+  it('sends only the fixed consent-reject cookie to YouTube, and no cookie anywhere else', () => {
+    for (const r of routes) {
+      const cookie = r.headers?.Cookie
+      expect(cookie).toBe(r.prefix === '/api/youtube' ? 'SOCS=CAI' : undefined)
+    }
+  })
 })

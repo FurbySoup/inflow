@@ -15,6 +15,6 @@ Only the latest release is supported. Fixes land in a new release, not in older 
 In scope:
 
 - the proxy server (`server/`): open proxy behaviour, path traversal, host or method bypass;
-- cross-site scripting in the dashboard UI.
+- cross-site scripting in the app's UI.
 
 Out of scope: problems in upstream data sources (NWS, IEM, DOT feeds, YouTube, etc.) and data that is wrong or late. Use a regular issue for those.

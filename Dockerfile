@@ -25,7 +25,7 @@ HEALTHCHECK --interval=60s --timeout=5s --start-period=10s --retries=3 \
   CMD wget -qO- "http://127.0.0.1:${PORT}/healthz" || exit 1
 
 LABEL org.opencontainers.image.source="https://github.com/FurbySoup/storm-chasers" \
-      org.opencontainers.image.description="INFLOW: live US storm dashboard (radar, alerts, streams, cameras, scanners)" \
+      org.opencontainers.image.description="INFLOW: storm situation room (radar, warnings, chaser streams, scanners, DOT cameras)" \
       org.opencontainers.image.licenses="MIT"
 
 CMD ["node", "dist-server/index.js"]
