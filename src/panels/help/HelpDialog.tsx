@@ -2,15 +2,18 @@ import { Fragment, useEffect, useId, useRef, useState, type KeyboardEvent as Rea
 import { ConsoleButton, GLOSSARY, Panel } from '../../ui'
 import { CHASER_TERMS } from './chaserTerms'
 import { AboutTab } from './AboutTab'
+import { StartHereTab } from './StartHereTab'
 import { buildGlossaryGroups, countEntries, filterGroups, type HelpEntry, type HelpGroup } from './helpSearch'
 import './help.css'
 
-// The `? HELP` overlay (WP-40, ABOUT in WP-47): three searchable tabs and an unsearched ABOUT tab. Opening, closing
-// and the keys live in KeyboardShortcuts.tsx, which renders this with the dialog ref it needs for the focus trap.
+// The `? HELP` overlay (WP-40, ABOUT in WP-47, START HERE in WP-52): three searchable tabs, and START HERE and ABOUT
+// which are not searched. Opening, closing and the keys live in KeyboardShortcuts.tsx, which renders this with the
+// dialog ref it needs for the focus trap.
 
-type TabId = 'shortcuts' | 'screen' | 'chasers' | 'about'
+type TabId = 'start' | 'shortcuts' | 'screen' | 'chasers' | 'about'
 
 const TABS: readonly { id: TabId; label: string }[] = [
+  { id: 'start', label: 'START HERE' },
   { id: 'shortcuts', label: 'SHORTCUTS' },
   { id: 'screen', label: 'ON SCREEN' },
   { id: 'chasers', label: 'CHASER TERMS' },
@@ -45,14 +48,14 @@ const SHORTCUT_GROUPS: readonly HelpGroup<ShortcutItem>[] = [
 
 /** Display grouping for GLOSSARY. Terms not listed here fall into `Other`, so a new glossary entry is never lost. */
 const GLOSSARY_GROUPS: readonly { group: string; terms: readonly string[] }[] = [
-  { group: 'Area & time', terms: ['AOI', 'IN AOI', 'UTC', 'Z', 'LOCAL', 'T-'] },
-  { group: 'Agencies & products', terms: ['NWS', 'SPC', 'MD', 'HWO', 'CWA', 'NOAA', 'IEM'] },
+  { group: 'Area and time', terms: ['AOI', 'IN AOI', 'UTC', 'Z', 'LOCAL', 'T-'] },
+  { group: 'Agencies and products', terms: ['NWS', 'SPC', 'MD', 'HWO', 'CWA', 'NOAA', 'IEM'] },
   { group: 'NWS alerts', terms: ['TOR', 'SVR', 'FFW', 'TOA', 'SVA', 'SPS', 'OTHER', 'PDS', 'EMERGENCY', 'ZONE'] },
   { group: 'SPC risk', terms: ['TSTM', 'MRGL', 'SLGT', 'ENH', 'MDT', 'HIGH', 'PREDICTABILITY TOO LOW', 'POTENTIAL TOO LOW'] },
-  { group: 'Radar & satellite', terms: ['NEXRAD', 'SRV', 'GOES', 'IR'] },
-  { group: 'Streams & cameras', terms: ['CTX', 'THUMB', 'DOT', 'CCTV'] },
+  { group: 'Radar and satellite', terms: ['NEXRAD', 'SRV', 'GOES', 'IR'] },
+  { group: 'Streams and cameras', terms: ['CTX', 'THUMB', 'DOT', 'CCTV'] },
   { group: 'Radio', terms: ['CB', '2M', 'RX', 'TG', 'SDR', 'HF'] },
-  { group: 'Licences & tech', terms: ['API', 'ODbL', 'MIT'] },
+  { group: 'Licences and tech', terms: ['API', 'ODbL', 'MIT'] },
 ]
 
 const SCREEN_GROUPS = buildGlossaryGroups(GLOSSARY, GLOSSARY_GROUPS)
@@ -65,6 +68,7 @@ function countFor(id: TabId, query: string): number {
       return countEntries(filterGroups(SCREEN_GROUPS, query))
     case 'chasers':
       return countEntries(filterGroups(CHASER_TERMS, query))
+    case 'start':
     case 'about':
       return 0
   }
@@ -87,10 +91,9 @@ function storeTab(id: TabId): void {
   }
 }
 
-/** Opens on SHORTCUTS with a mouse or keyboard, and on ON SCREEN on a touch screen (no keyboard to read shortcuts with). */
+/** Opens on START HERE for everyone until a tab is chosen; the choice is then remembered (WP-52). */
 function initialTab(): TabId {
-  const coarse = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches
-  return readStoredTab() ?? (coarse ? 'screen' : 'shortcuts')
+  return readStoredTab() ?? 'start'
 }
 
 export interface HelpDialogProps {
@@ -100,10 +103,10 @@ export interface HelpDialogProps {
 }
 
 /**
- * The help overlay: SHORTCUTS, ON SCREEN (glossary) and CHASER TERMS tabs, with one search box that filters the
- * active tab. Signifier: the tabs are outlined accent buttons, the selected one solid (ADR-0012). The search box
- * and the group jump buttons have a focus ring and no hover-only meaning. Closing is the ESC button, the backdrop,
- * or Esc (handled in KeyboardShortcuts).
+ * The help overlay: START HERE, SHORTCUTS, ON SCREEN (glossary) and CHASER TERMS tabs, with one search box that
+ * filters the active tab; START HERE and ABOUT are not searched. Signifier: the tabs are outlined accent buttons,
+ * the selected one solid (ADR-0012). The search box and the group jump buttons have a focus ring and no hover-only
+ * meaning. Closing is the ESC button, the backdrop, or Esc (handled in KeyboardShortcuts).
  */
 export function HelpDialog({ dialogRef, onClose }: HelpDialogProps) {
   const [tab, setTab] = useState<TabId>(initialTab)
@@ -121,7 +124,7 @@ export function HelpDialog({ dialogRef, onClose }: HelpDialogProps) {
   const chaserGroups = filterGroups(CHASER_TERMS, query)
   const trimmed = query.trim()
   const count = countFor(tab, query)
-  const searchable = tab !== 'about'
+  const searchable = tab === 'shortcuts' || tab === 'screen' || tab === 'chasers'
   const emptyForTab = searchable && trimmed !== '' && count === 0
 
   function choose(id: TabId): void {
@@ -131,7 +134,7 @@ export function HelpDialog({ dialogRef, onClose }: HelpDialogProps) {
 
   function changeQuery(next: string): void {
     setQuery(next)
-    // Typing on SHORTCUTS with no shortcut match moves to the first tab that has matches. ABOUT counts 0, so it is never chosen.
+    // Typing on SHORTCUTS with no shortcut match moves to the first tab that has matches. START HERE and ABOUT count 0, so they are never chosen.
     if (tab !== 'shortcuts' || next.trim() === '' || countFor('shortcuts', next) > 0) return
     const hit = TABS.find((t) => countFor(t.id, next) > 0)
     if (hit) choose(hit.id)
@@ -257,6 +260,8 @@ export function HelpDialog({ dialogRef, onClose }: HelpDialogProps) {
                 </p>
               </>
             )}
+
+            {tab === 'start' && <StartHereTab />}
 
             {tab === 'about' && <AboutTab />}
 
