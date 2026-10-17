@@ -43,6 +43,8 @@ describe('parseChannelInput', () => {
     'youtube.com/watch',
     'youtube.com/channel/UCshort',
     'youtube.com/videos',
+    'youtube.com/c/..',
+    'youtube.com/user/.',
     'youtu.be/short',
     'UC-too-short',
   ])('rejects %j', (input) => {

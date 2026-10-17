@@ -63,7 +63,7 @@ export function parseChannelInput(text: string): ParsedInput | null {
   if (first === 'channel') {
     return second !== undefined && CHANNEL_ID.test(second) ? { kind: 'channel', channelId: second } : null
   }
-  if ((first === 'c' || first === 'user') && second !== undefined && CUSTOM_NAME.test(second)) {
+  if ((first === 'c' || first === 'user') && second !== undefined && CUSTOM_NAME.test(second) && !/^\.+$/.test(second)) {
     return { kind: 'path', path: `/${first}/${second}` }
   }
   return null
