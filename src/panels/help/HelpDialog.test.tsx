@@ -78,10 +78,12 @@ describe('HelpDialog', () => {
     expect(selectedTab()).toBe('ON SCREEN')
     expect(document.activeElement).toBe(tab('ON SCREEN'))
     fireEvent.keyDown(tab('ON SCREEN'), { key: 'End' })
-    expect(selectedTab()).toBe('CHASER TERMS')
-    fireEvent.keyDown(tab('CHASER TERMS'), { key: 'ArrowRight' })
+    expect(selectedTab()).toBe('ABOUT')
+    fireEvent.keyDown(tab('ABOUT'), { key: 'ArrowRight' })
     expect(selectedTab()).toBe('SHORTCUTS')
     fireEvent.keyDown(tab('SHORTCUTS'), { key: 'ArrowLeft' })
+    expect(selectedTab()).toBe('ABOUT')
+    fireEvent.keyDown(tab('ABOUT'), { key: 'ArrowLeft' })
     expect(selectedTab()).toBe('CHASER TERMS')
     fireEvent.keyDown(tab('CHASER TERMS'), { key: 'Home' })
     expect(selectedTab()).toBe('SHORTCUTS')
@@ -157,5 +159,57 @@ describe('HelpDialog', () => {
     window.matchMedia = vi.fn().mockReturnValue({ matches: true }) as unknown as typeof window.matchMedia
     openHelp()
     expect(selectedTab()).toBe('ON SCREEN')
+  })
+
+  it('reaches ABOUT by click, and by End from the first tab', () => {
+    openHelp()
+    fireEvent.click(tab('ABOUT'))
+    expect(selectedTab()).toBe('ABOUT')
+    expect(screen.getByRole('note')).toBeTruthy()
+    act(() => tab('SHORTCUTS').focus())
+    fireEvent.keyDown(tab('SHORTCUTS'), { key: 'End' })
+    expect(selectedTab()).toBe('ABOUT')
+    expect(document.activeElement).toBe(tab('ABOUT'))
+  })
+
+  it('hides the search on ABOUT and keeps the query for when the user comes back', () => {
+    openHelp()
+    fireEvent.click(tab('CHASER TERMS'))
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Search help' }), { target: { value: 'rfd' } })
+    fireEvent.click(tab('ABOUT'))
+    expect(screen.queryByRole('searchbox', { name: 'Search help' })).toBeNull()
+    fireEvent.click(tab('CHASER TERMS'))
+    expect((screen.getByRole('searchbox', { name: 'Search help' }) as HTMLInputElement).value).toBe('rfd')
+    expect(screen.getByText('2 MATCHES')).toBeTruthy()
+  })
+
+  it('reopens on ABOUT when ABOUT was the stored tab', () => {
+    window.localStorage.setItem('storm-chasers.help.tab', 'about')
+    openHelp()
+    expect(selectedTab()).toBe('ABOUT')
+  })
+
+  it('does not jump to ABOUT for a query that only the ABOUT text contains', () => {
+    openHelp()
+    // "Federal government" appears only in the ABOUT credits, which the search never covers.
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Search help' }), { target: { value: 'Federal government' } })
+    expect(selectedTab()).toBe('SHORTCUTS')
+    expect(screen.getByText('NO TERMS MATCH "Federal government"')).toBeTruthy()
+  })
+
+  it('lists the new agency, radio and licence terms outside the Other group on ON SCREEN', () => {
+    openHelp()
+    fireEvent.click(tab('ON SCREEN'))
+    const groupOf = (term: string): string | undefined => {
+      let sib = screen.getByText(term, { selector: '.help-term' }).closest('.help-entry')?.previousElementSibling
+      while (sib && sib.tagName !== 'H3') sib = sib.previousElementSibling
+      return sib?.textContent ?? undefined
+    }
+    expect(groupOf('NOAA')).toBe('Agencies & products')
+    expect(groupOf('IEM')).toBe('Agencies & products')
+    expect(groupOf('HF')).toBe('Radio')
+    expect(groupOf('API')).toBe('Licences & tech')
+    expect(groupOf('ODbL')).toBe('Licences & tech')
+    expect(groupOf('MIT')).toBe('Licences & tech')
   })
 })
