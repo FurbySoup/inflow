@@ -19,6 +19,7 @@ import {
 } from '../sources/streams/snapshot'
 import { useLiveness } from '../sources/streams/useLiveness'
 import { useSnapshotClock } from '../sources/streams/useSnapshots'
+import { useAllChasers } from '../sources/chasers/allChasers'
 import { mergeRoster, rosterFeedId, rosterLive, spotterMapUrl } from '../sources/chasers/feeds'
 import { ROSTER } from '../sources/chasers/roster'
 import { useRoster } from '../sources/chasers/useRoster'
@@ -27,6 +28,7 @@ import { useStreams } from '../state/streams'
 import { useLayout } from '../state/layout'
 import { Abbr, StreamTile, type FeedStatus as LedStatus } from '../ui'
 import { LiveNow, type LiveNowChip } from './LiveNow'
+import { MyChasers } from './MyChasers'
 import { Panel } from './Panel'
 
 // Browsers block autoplay-with-sound until the page has had a user gesture, so the main feed only
@@ -89,6 +91,8 @@ export function StreamsGrid() {
   const states = useAoi((s) => s.states)
   const bbox = useAoi((s) => s.bbox)
   const roster = useRoster()
+  // Roster plus the viewer's own chasers (WP-48). COVERAGE_IDS stays roster-only.
+  const allChasers = useAllChasers()
   const primaryId = useStreams((s) => s.primaryId)
   const chosenThisSession = useStreams((s) => s.chosenThisSession)
   const singleStream = useLayout((s) => s.preset) === 'CHASE'
@@ -117,7 +121,7 @@ export function StreamsGrid() {
   const resolutions = useLiveness(curatedStreams, (id) => onScreen.has(id) || id === checkedPrimary || playing.includes(id))
   const curatedFeeds: LiveFeed[] = curatedStreams.map((s) => applyResolution(s, resolutions.get(s.id)))
   // Verified roster channels that are live join the feeds (WP-36); a curated entry on the same channel is not duplicated.
-  const { feeds, videoIds: rosterVideoIds } = mergeRoster(curatedFeeds, rosterLive(ROSTER, roster.results))
+  const { feeds, videoIds: rosterVideoIds } = mergeRoster(curatedFeeds, rosterLive(allChasers, roster.results))
   // Streams in the AOI first; others still shown so a chaser is never hidden by map panning.
   const sorted = sortStreams(feeds, states)
   const chips: LiveNowChip[] = sorted
@@ -162,7 +166,8 @@ export function StreamsGrid() {
       }
       className="streams"
     >
-      <LiveNow chips={chips} shownId={primary?.id ?? null} checked={roster.results.size} total={ROSTER.length} />
+      <LiveNow chips={chips} shownId={primary?.id ?? null} checked={roster.results.size} total={allChasers.length} />
+      <MyChasers />
       {primary && (
         <FeedSlot id={primary.id} onVisible={setVisible}>
           <StreamTile

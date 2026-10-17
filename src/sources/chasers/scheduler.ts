@@ -76,7 +76,8 @@ export async function checkRosterChannel(channelId: string, signal?: AbortSignal
 }
 
 export interface SchedulerDeps {
-  chasers: readonly Chaser[]
+  /** Read at the start of each pass and whenever a result is recorded, so added and removed chasers take effect. */
+  chasers: () => readonly Chaser[]
   check: (channelId: string, signal: AbortSignal) => Promise<ChannelState>
   /** Read at the start of each pass. */
   aoiStates: () => readonly string[]
@@ -90,8 +91,17 @@ export interface SchedulerDeps {
 export interface RosterScheduler {
   start(): void
   stop(): void
+  /** One out-of-band check of a channel (WP-48). Does not move the round-robin. */
+  checkNow(channelId: string): Promise<void>
   getState(): RosterState
   subscribe(listener: () => void): () => void
+}
+
+/** Drops results for channels no longer in the list. Returns the same map. */
+function pruneResults(results: Map<string, RosterResult>, chasers: readonly Chaser[]): Map<string, RosterResult> {
+  const ids = new Set(chasers.map((c) => c.channelId))
+  for (const id of [...results.keys()]) if (!ids.has(id)) results.delete(id)
+  return results
 }
 
 /**
@@ -111,6 +121,8 @@ export function createScheduler(deps: SchedulerDeps): RosterScheduler {
   // Pace the pending timer was armed with: true when hidden (60 s), so a visible event can pull it forward.
   let timerHidden = false
   let controller: AbortController | undefined
+  // Out-of-band checks from checkNow, aborted by stop.
+  const extra = new Set<AbortController>()
   let removeVisible: (() => void) | undefined
 
   // Re-arm: a hidden-pace wait could hold the next check for up to 60 s after the tab returns.
@@ -129,7 +141,7 @@ export function createScheduler(deps: SchedulerDeps): RosterScheduler {
 
   async function tick(current: number): Promise<void> {
     if (!running || current !== session) return
-    if (pos === 0) order = passOrder(deps.chasers, deps.aoiStates())
+    if (pos === 0) order = passOrder(deps.chasers(), deps.aoiStates())
     const channelId = order[pos]
     if (channelId === undefined) return
 
@@ -147,7 +159,8 @@ export function createScheduler(deps: SchedulerDeps): RosterScheduler {
 
     const now = deps.now()
     const prevResults = state.results
-    const results = applyCheck(prevResults, channelId, result, now)
+    const chasers = deps.chasers()
+    const results = pruneResults(applyCheck(prevResults, channelId, result, now), chasers)
     const seeded = state.passes > 0
     pos += 1
     let passes = state.passes
@@ -156,7 +169,7 @@ export function createScheduler(deps: SchedulerDeps): RosterScheduler {
       passes += 1
     }
     publish({ results, passes })
-    if (seeded) for (const event of wentLiveEvents(prevResults, results, deps.chasers, now)) deps.emit(event)
+    if (seeded) for (const event of wentLiveEvents(prevResults, results, chasers, now)) deps.emit(event)
 
     const visibleNow = deps.visible()
     const wait = Math.max(0, stepMs(visibleNow) - (now - started))
@@ -181,6 +194,30 @@ export function createScheduler(deps: SchedulerDeps): RosterScheduler {
       timer = undefined
       controller?.abort()
       controller = undefined
+      for (const ctrl of extra) ctrl.abort()
+      extra.clear()
+    },
+    async checkNow(channelId) {
+      if (!deps.chasers().some((c) => c.channelId === channelId)) return
+      const ctrl = new AbortController()
+      extra.add(ctrl)
+      let result: ChannelState
+      try {
+        result = await deps.check(channelId, ctrl.signal)
+      } catch {
+        result = 'unknown'
+      } finally {
+        extra.delete(ctrl)
+      }
+      // Stopped while in flight: the result is dropped, as the round-robin drops its own.
+      if (ctrl.signal.aborted) return
+      const now = deps.now()
+      const prevResults = state.results
+      const chasers = deps.chasers()
+      const seeded = state.passes > 0
+      const results = pruneResults(applyCheck(prevResults, channelId, result, now), chasers)
+      publish({ results, passes: state.passes })
+      if (seeded) for (const event of wentLiveEvents(prevResults, results, chasers, now)) deps.emit(event)
     },
     getState: () => state,
     subscribe(listener) {
@@ -193,7 +230,7 @@ export function createScheduler(deps: SchedulerDeps): RosterScheduler {
 }
 
 /** The app's scheduler: the real roster, the real liveness fetches, the AOI from the map, and the notify bus. */
-export function defaultDeps(chasers: readonly Chaser[], aoiStates: () => readonly string[]): SchedulerDeps {
+export function defaultDeps(chasers: () => readonly Chaser[], aoiStates: () => readonly string[]): SchedulerDeps {
   return {
     chasers,
     check: checkRosterChannel,

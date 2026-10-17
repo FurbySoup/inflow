@@ -85,7 +85,7 @@ describe('went-live through the scheduler', () => {
       .mockResolvedValueOnce({ videoId: VIDEO_1 })
       .mockResolvedValueOnce({ videoId: VIDEO_2 })
     const s = createScheduler({
-      chasers: roster,
+      chasers: () => roster,
       check: checkRosterChannel,
       aoiStates: () => ['TN'],
       visible: () => true,

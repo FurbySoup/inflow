@@ -80,7 +80,9 @@ describe('createScheduler', () => {
     vi.useRealTimers()
   })
 
-  const make = (list: Chaser[] = chasers, aoi: string[] = ['GA']) =>
+  const make = (list: Chaser[] = chasers, aoi: string[] = ['GA']) => makeFrom(() => list, aoi)
+
+  const makeFrom = (list: () => Chaser[], aoi: string[] = ['GA']) =>
     createScheduler({
       chasers: list,
       check: checkRosterChannel,
@@ -213,6 +215,58 @@ describe('createScheduler', () => {
     expect(fetchChannelState).toHaveBeenCalledTimes(1)
     await vi.advanceTimersByTimeAsync(1)
     expect(fetchChannelState).toHaveBeenCalledTimes(2)
+    s.stop()
+  })
+
+  it('a channel added between passes is in the next pass', async () => {
+    let list = [chaser('a', []), chaser('b', [])]
+    const s = makeFrom(() => list)
+    s.start()
+    await vi.advanceTimersByTimeAsync(10_000)
+    expect(fetchChannelState).toHaveBeenCalledTimes(2)
+    list = [...list, chaser('c', [])]
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(vi.mocked(fetchChannelState).mock.calls.map((c) => c[0])).toEqual([
+      channelOf('a'),
+      channelOf('b'),
+      channelOf('a'),
+      channelOf('b'),
+      channelOf('c'),
+    ])
+    s.stop()
+  })
+
+  it('checkNow checks one channel at once and leaves the round-robin where it was', async () => {
+    const s = make([chaser('a', []), chaser('b', []), chaser('c', [])])
+    s.start()
+    await vi.advanceTimersByTimeAsync(0)
+    await s.checkNow(channelOf('c'))
+    expect(vi.mocked(fetchChannelState).mock.calls.map((c) => c[0])).toEqual([channelOf('a'), channelOf('c')])
+    expect(s.getState().results.get(channelOf('c'))?.state).toBe('offline')
+    await vi.advanceTimersByTimeAsync(10_000)
+    expect(vi.mocked(fetchChannelState).mock.calls[2]?.[0]).toBe(channelOf('b'))
+    s.stop()
+  })
+
+  it('checkNow ignores a channel that is not in the list', async () => {
+    const s = make([chaser('a', [])])
+    s.start()
+    await vi.advanceTimersByTimeAsync(0)
+    await s.checkNow(channelOf('zz'))
+    expect(fetchChannelState).toHaveBeenCalledTimes(1)
+    s.stop()
+  })
+
+  it('a removed channel disappears from results', async () => {
+    let list = [chaser('a', []), chaser('b', [])]
+    const s = makeFrom(() => list)
+    s.start()
+    await vi.advanceTimersByTimeAsync(10_000)
+    expect(s.getState().results.has(channelOf('b'))).toBe(true)
+    list = [chaser('a', [])]
+    await vi.advanceTimersByTimeAsync(10_000)
+    expect(s.getState().results.has(channelOf('b'))).toBe(false)
+    expect(s.getState().results.has(channelOf('a'))).toBe(true)
     s.stop()
   })
 })
