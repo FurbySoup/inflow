@@ -30,7 +30,7 @@ Not for life-safety decisions. Follow official NWS warnings.
 ---
 
 ## r/selfhosted (New Project Friday, Fri 2026-10-30)
-**Title:** INFLOW: a self-hosted mission control for storm chasing (radar, warnings, chaser streams, scanners, DOT cams). One Docker command, no API keys
+**Title:** INFLOW: a self-hosted storm situation room. Radar, warnings, chaser streams, scanners and DOT cams for one area; one Docker command, no API keys
 
 **Body:**
 <screenshot>
@@ -76,7 +76,7 @@ It's a situation room you run on your own computer. Pick an area and every panel
 - NEXRAD radar and velocity;
 - live NWS warnings;
 - SPC outlooks and MDs;
-- chaser livestreams (it notices when about 60 known chasers go live, and you can add any other YouTube streamer);
+- chaser livestreams (it notices when any of 58 known chasers go live, and you can add others);
 - OpenMHz scanners;
 - state DOT traffic cameras.
 
@@ -95,7 +95,7 @@ Use the r/stormchasing text above. Add at the end: "If any of the SPC/NWS wordin
 ---
 
 ## r/ClaudeAI (showcase / "built with Claude" flair)
-**Title:** Built a 47-work-package app with waves of Haiku builder agents + verifier agents. Here's the process
+**Title:** 54 work packages, Haiku builders in parallel worktrees, a verifier gate: how I built a storm situation room
 
 **Body:**
 <screenshot>

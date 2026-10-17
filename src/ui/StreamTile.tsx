@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 import { Badge } from './Badge'
 import { StatusLed, type FeedStatus } from './StatusLed'
-import { Abbr } from './Abbr'
 import { GLOSSARY } from './glossary'
 
 /** A thumbnail's still image and its age label. Only the primary feed plays by default; a thumbnail plays only after WATCH (ADR-0017). */
@@ -30,7 +29,7 @@ const LIVE_KIND_LABEL: Record<StreamLiveKind, string> = {
 export interface StreamTileProps {
   /** Feed title, e.g. "Brandon Copic: tropical tornado threat, E GA & SC". */
   title: string
-  /** 0-based position; shown as `CAM 01`, `CAM 02`, ... */
+  /** 0-based position; shown as `FEED 01`, `FEED 02`, ... */
   index: number
   /** Public watch page opened by the ↗ link. */
   watchUrl?: string
@@ -56,7 +55,7 @@ export interface StreamTileProps {
   onPlay?: () => void
   /** Thumbnail only: stops playback (STILL), returning to the still. */
   onStop?: () => void
-  /** Primary only: whether the main feed plays with sound. Shown as a 🔇/🔊 toggle on the video corner. */
+  /** Primary only: whether the main feed plays with sound. Shown as a SOUND ON / MUTED toggle on the video corner. */
   soundOn?: boolean
   /** Primary only: toggles main-feed sound. Omit to hide the toggle. */
   onToggleSound?: () => void
@@ -75,7 +74,7 @@ export interface StreamTileProps {
  * - WATCH / STILL: a persistent `btn-console` at the top-right, left of ▲ MAIN. `▶ WATCH` starts the embed with
  *   sound off; `■ STILL` returns to the still. Hidden for OFFLINE tiles. Feedback: a playing tile's button fills solid.
  * - ▲ MAIN: promotes a thumbnail to the main feed. The primary shows a read-only MAIN tag instead.
- * - 🔇/🔊 (primary only): main-feed sound toggle, top-left, after the live tag.
+ * - SOUND ON / MUTED (primary only): main-feed sound toggle, top-left, after the live tag.
  * - Still vs playing: a still shows its THUMB age label (bottom-left). A playing thumbnail shows
  *   `PLAYING · MUTED` in the same place, so a still is never mistaken for video, and vice versa.
  * The THUMB age and the live and PLAYING tags are read-only: no border-button look, no pointer.
@@ -128,7 +127,7 @@ export function StreamTile({
         aria-label={soundOn ? 'Mute main feed' : 'Unmute main feed'}
         title={soundOn ? 'Sound on: feeds promoted to main play with sound' : 'Sound off: main feed is muted'}
       >
-        {soundOn ? '🔊 SOUND' : '🔇 MUTED'}
+        {soundOn ? 'SOUND ON' : 'MUTED'}
       </button>
     ),
   ]
@@ -217,7 +216,7 @@ export function StreamTile({
           title="Show this feed large"
         >
           <span className="panel-code">
-            <Abbr term="CAM" /> {String(index + 1).padStart(2, '0')}
+            FEED {String(index + 1).padStart(2, '0')}
           </span>{' '}
           {title}
         </button>

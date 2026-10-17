@@ -2,9 +2,6 @@
 
 Radar, warnings, chaser livestreams, scanner audio and DOT traffic cameras for one area, on one screen. You run it yourself: no accounts, no API keys, nothing hosted.
 
-<!-- Screenshot: docs/screenshot.png (1280×640, a live severe day). Added before the 1.0 posts. -->
-![INFLOW during a severe-weather day: radar, warnings, chaser streams and cameras](docs/screenshot.png)
-
 ## Run it
 
 ### Easiest: no terminal needed (Windows, Mac, Linux)
@@ -40,7 +37,9 @@ The first `npm start` builds the app (about a minute), then opens your browser.
 - **Cameras:** traffic cameras from 19 state DOT sites.
 - **Top bar:** area presets (Plains, Dixie Alley, Southeast), the highest SPC risk in view, and local and UTC time.
 
-Pan or zoom the map and every panel follows. Press `?` for shortcuts and plain-English explanations of every acronym.
+Pan or zoom the map and every panel follows. Press `?` for a one-page START HERE guide, the shortcuts and plain-English explanations of every acronym.
+
+On a quiet day most streams are offline and the warning list may be empty. That's normal: pick a region and check the SPC outlook days (D1–D8) on the map to see what's coming.
 
 ## Add a chaser
 A new streamer not on the built-in list? In the Chaser Feeds panel, press **+ CHASER** and paste their YouTube channel link, a link to one of their videos, or their `@handle`. INFLOW looks the channel up on YouTube, shows you the name to confirm, and from then on shows them whenever they're live. The list is saved in your browser, so there's nothing to rebuild or restart. Each browser keeps its own list, so on a wall display, add them there too.

@@ -63,7 +63,7 @@ describe('NotifyControl', () => {
     render(<NotifyControl />)
     fireEvent.click(screen.getByRole('button', { name: 'NOTIFY ON' }))
     expect(document.querySelector('.notify-count')?.textContent).toBe('0 NEW')
-    expect(screen.getByText(/Closed tabs get nothing \(v2\)/)).toBeTruthy()
+    expect(screen.getByText(/Works only while this tab is open/)).toBeTruthy()
   })
 
   it('re-reads the browser permission when the popover opens', () => {

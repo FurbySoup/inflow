@@ -52,8 +52,7 @@ export const GLOSSARY: Readonly<Record<string, string>> = {
   ODbL: 'Open Database License: the open licence OpenStreetMap map data is published under',
   MIT: 'The MIT licence: free to use, copy and change, with no warranty',
   CTX: 'Context feed: background video, not a storm chaser',
-  THUMB: 'Thumbnail: a still image of the stream, up to 5 minutes old',
-  CAM: 'Camera or stream slot number',
+  THUMB: 'Thumbnail: a still image of the stream, up to 5 minutes old. ▶ WATCH plays it live.',
   DOT: 'Department of Transportation: state road agencies that run the traffic cameras',
   CCTV: 'Closed-circuit TV: road and traffic cameras',
   // Radio
@@ -69,13 +68,11 @@ export const GLOSSARY: Readonly<Record<string, string>> = {
   KM: 'Kilometres from the centre of your area of interest',
   EXP: 'Expires: time left until the soonest tornado warning ends',
   SN: 'Spotter Network: a service where chasers share live GPS positions. Opens their map.',
-  THUMBS: 'Thumbnails: still images refreshed about every 5 minutes. ▶ WATCH plays one.',
-  V2: 'Version 2: the planned hosted release with a server (push notifications when the tab is closed)',
   D1: 'SPC outlook Day 1: today and tonight',
   // AOI presets (src/panels/aoiPresetData.ts)
-  PLAINS: 'Plains preset: the Great Plains, from Texas to Nebraska',
+  PLAINS: 'Plains preset (the default area): the Great Plains, from Texas to Nebraska',
   DIXIE: 'Dixie Alley preset: the tornado-prone Deep South, Louisiana to Tennessee',
-  SE: 'Southeast preset: Georgia and South Carolina (the default area)',
+  SE: 'Southeast preset: Georgia and South Carolina',
 }
 
 /** Console panel designators (the code before a panel title, e.g. `WX-02`). */

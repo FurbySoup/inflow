@@ -205,7 +205,10 @@ export class LayerControl implements maplibregl.IControl {
     })
     const led = document.createElement('span')
     led.className = 'led'
-    btn.append(led, ...labelNodes(row.label))
+    // One span for the label: bare text nodes and <abbr>s would each become a flex item and pick up the gap.
+    const label = document.createElement('span')
+    label.append(...labelNodes(row.label))
+    btn.append(led, label)
     btn.addEventListener('click', () => this.toggle(row.id))
     this.leds.set(row.id, led)
     this.buttons.set(row.id, btn)

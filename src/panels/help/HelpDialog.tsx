@@ -50,7 +50,7 @@ const GLOSSARY_GROUPS: readonly { group: string; terms: readonly string[] }[] = 
   { group: 'NWS alerts', terms: ['TOR', 'SVR', 'FFW', 'TOA', 'SVA', 'SPS', 'OTHER', 'PDS', 'EMERGENCY', 'ZONE'] },
   { group: 'SPC risk', terms: ['TSTM', 'MRGL', 'SLGT', 'ENH', 'MDT', 'HIGH', 'PREDICTABILITY TOO LOW', 'POTENTIAL TOO LOW'] },
   { group: 'Radar & satellite', terms: ['NEXRAD', 'SRV', 'GOES', 'IR'] },
-  { group: 'Streams & cameras', terms: ['CTX', 'THUMB', 'CAM', 'DOT', 'CCTV'] },
+  { group: 'Streams & cameras', terms: ['CTX', 'THUMB', 'DOT', 'CCTV'] },
   { group: 'Radio', terms: ['CB', '2M', 'RX', 'TG', 'SDR', 'HF'] },
   { group: 'Licences & tech', terms: ['API', 'ODbL', 'MIT'] },
 ]

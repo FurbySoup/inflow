@@ -59,9 +59,9 @@ describe('formatCountdown', () => {
   })
 
   it('switches to T-h:mm:ss from one hour', () => {
-    expect(formatCountdown(60 * 60_000)).toBe('T-1:00:00')
-    expect(formatCountdown(75 * 60_000)).toBe('T-1:15:00')
-    expect(formatCountdown(3 * 3_600_000 + 4 * 60_000 + 5_000)).toBe('T-3:04:05')
+    expect(formatCountdown(60 * 60_000)).toBe('T-1h00')
+    expect(formatCountdown(75 * 60_000)).toBe('T-1h15')
+    expect(formatCountdown(3 * 3_600_000 + 4 * 60_000 + 5_000)).toBe('T-3h04')
   })
 
   it('clamps at zero', () => {

@@ -13,13 +13,13 @@ const GLYPH: Record<HazardCode, string> = { TOR: '▼', SVR: '◆', FFW: '≋', 
 
 const pad2 = (n: number) => String(n).padStart(2, '0')
 
-/** `T-mm:ss`, or `T-h:mm:ss` from one hour. Clamped at zero. */
+/** `T-mm:ss` under an hour; `T-2h18` from one hour (seconds there are false precision). Clamped at zero. */
 export function formatCountdown(ms: number): string {
   const total = Math.max(0, Math.floor(ms / 1000))
   const h = Math.floor(total / 3600)
   const mm = Math.floor((total % 3600) / 60)
   const ss = total % 60
-  return ms >= HOUR_MS ? `T-${h}:${pad2(mm)}:${pad2(ss)}` : `T-${pad2(mm)}:${pad2(ss)}`
+  return ms >= HOUR_MS ? `T-${h}h${pad2(mm)}` : `T-${pad2(mm)}:${pad2(ss)}`
 }
 
 /** Share of the alert's onset→expires window still remaining, clamped to 0..1. Null when the window is unknown. */

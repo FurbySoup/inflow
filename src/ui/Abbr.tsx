@@ -27,7 +27,7 @@ export function Abbr({ term, children, title }: AbbrProps) {
 }
 
 // Glossary keys that are also ordinary words: auto-tagging them inside running text would underline plain English.
-const NOT_AUTO_TAGGED = new Set(['LOCAL', 'OTHER', 'HIGH', 'ZONE', 'EMERGENCY', 'CAM', 'THUMB', 'Z', 'T-'])
+const NOT_AUTO_TAGGED = new Set(['LOCAL', 'OTHER', 'HIGH', 'ZONE', 'EMERGENCY', 'THUMB', 'Z', 'T-'])
 
 /**
  * Renders a label string with every glossary acronym in it wrapped in `Abbr` (e.g. "NWS Alerts", "DOT Cameras",

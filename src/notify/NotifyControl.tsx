@@ -202,7 +202,7 @@ export function NotifyControl() {
             <strong>{count}</strong> NEW
           </p>
           <p className="notify-note">
-            Only while this tab is open, including in the background. Closed tabs get nothing (v2).
+            Works only while this tab is open (in the background is fine).
           </p>
         </div>
       )}

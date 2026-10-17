@@ -7,7 +7,7 @@ export const DISCLAIMER =
 /** How the data is used, stated plainly (ADR-0020, launch-plan §3). */
 export const DATA_TERMS: readonly string[] = [
   'INFLOW is self-run for personal use: your own machine fetches every feed directly from its public source. Nothing is hosted or relayed by the author.',
-  'Feeds are best-effort and community-maintained. A source that changes or goes down shows on its panel light and does not break the rest of the screen.',
+  'Feeds are best-effort. A source that changes or goes down shows on its panel light; the rest of the screen keeps working.',
   'Stream "live" status is read from public YouTube pages, so it can lag or break when YouTube changes.',
   'No accounts, no API keys, and no tracking by INFLOW. Settings stay in your browser. Embedded YouTube players follow YouTube’s own privacy policy.',
 ]
