@@ -55,7 +55,13 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          zip -r "inflow-$TAG.zip" dist dist-server LICENSE README.md
+          # One top-level folder, so unzipping makes a single directory. Launchers sit beside dist/ and dist-server/.
+          STAGE="inflow-$TAG"
+          mkdir "$STAGE"
+          cp -r dist dist-server LICENSE README.md "$STAGE/"
+          cp -- launchers/* "$STAGE/"
+          chmod +x "$STAGE"/*.command "$STAGE"/*.sh
+          zip -r "inflow-$TAG.zip" "$STAGE" -x "$STAGE/.gitattributes"
           gh release create "$TAG" "inflow-$TAG.zip" --generate-notes --verify-tag
 
   image:

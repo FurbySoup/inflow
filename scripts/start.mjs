@@ -39,4 +39,10 @@ if (!existsSync(serverEntry)) {
   process.exit(1);
 }
 
+// Interactive runs open the browser too. OPEN_BROWSER=0 opts out. `npm start -- --open` also works, because
+// the server reads process.argv, which this process shares.
+if (process.stdout.isTTY && process.env.OPEN_BROWSER === undefined) {
+  process.env.OPEN_BROWSER = '1';
+}
+
 await import(pathToFileURL(serverEntry).href);

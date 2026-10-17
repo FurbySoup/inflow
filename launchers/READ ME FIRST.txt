@@ -1,0 +1,29 @@
+INFLOW - live storm data in one screen
+For personal use. You run it on your own computer, and it fetches the data for you.
+
+HOW TO START (three steps)
+1. Install Node.js (free) from https://nodejs.org. Choose the LTS version.
+2. Unzip this folder anywhere you like.
+3. Double-click the starter for your system:
+   - Windows: "Start INFLOW (Windows).cmd"
+   - Mac:     "Start INFLOW (Mac).command"
+   - Linux:   "start-inflow.sh"
+
+Your browser opens on INFLOW by itself. Leave the INFLOW window open while you use it.
+
+MAC: the first time, right-click the file, choose Open, then Open again.
+     (macOS blocks files from the internet until you do this.)
+
+WINDOWS: if SmartScreen says "Windows protected your PC", click More info,
+         then Run anyway.
+
+TO STOP
+Close the INFLOW window, or click inside it and press Ctrl+C.
+
+TO CHANGE THE PORT
+INFLOW uses port 8080, or the next free port if 8080 is busy. The window shows the
+address it is using. To choose a port yourself, open a terminal in this folder and run:
+   PORT=8090 node dist-server/index.js
+(Windows Command Prompt: set PORT=8090, then node dist-server\index.js)
+
+NOT FOR LIFE-SAFETY DECISIONS. Follow official NWS warnings and your local officials.
