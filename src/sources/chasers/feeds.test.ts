@@ -6,7 +6,8 @@ import { mergeRoster, rosterFeedId, rosterLive, spotterMapUrl } from './feeds'
 import { ROSTER, type Chaser } from './roster'
 import type { RosterResult } from './scheduler'
 
-const FREDDY_CHANNEL = 'UCZSDkxJS7PRw9V0_Sm6U7jg'
+// A curated channel that is also in the roster (Brandon Copic).
+const CURATED_CHANNEL = 'UCPqLI_AohMn1jnFg8ocMyHA'
 const VIDEO = 'LIVEVIDEO01'
 
 const curated = (): LiveFeed[] => curatedStreams.map((s) => ({ ...s }))
@@ -37,13 +38,13 @@ describe('rosterLive', () => {
 
 describe('mergeRoster', () => {
   it('a curated entry sharing a channelId with a live roster result yields one feed', () => {
-    const live = [{ chaser: chaserFor(FREDDY_CHANNEL), videoId: VIDEO }]
+    const live = [{ chaser: chaserFor(CURATED_CHANNEL), videoId: VIDEO }]
     const base = curated()
     const { feeds, videoIds } = mergeRoster(base, live)
-    const onChannel = feeds.filter((f) => f.youtube.channelId === FREDDY_CHANNEL)
-    expect(onChannel).toHaveLength(base.filter((f) => f.youtube.channelId === FREDDY_CHANNEL).length)
+    const onChannel = feeds.filter((f) => f.youtube.channelId === CURATED_CHANNEL)
+    expect(onChannel).toHaveLength(base.filter((f) => f.youtube.channelId === CURATED_CHANNEL).length)
     expect(feeds).toHaveLength(base.length)
-    expect(videoIds.get(base.find((f) => f.youtube.channelId === FREDDY_CHANNEL)?.id ?? '')).toBe(VIDEO)
+    expect(videoIds.get(base.find((f) => f.youtube.channelId === CURATED_CHANNEL)?.id ?? '')).toBe(VIDEO)
   })
 
   it('a live roster channel not in the curated list is appended as a live feed', () => {

@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { statesInBbox } from '../lib/states'
 import type { Bbox } from '../types'
 
 /** An item a panel asked the map to fly to and highlight (e.g. a clicked alert). */
@@ -27,12 +28,13 @@ interface AoiState {
   clearAoiRequest: () => void
 }
 
-// Default: GA/SC live-proofing area (2026-10-10 outbreak).
-export const DEFAULT_AOI: Bbox = { west: -85.6, south: 30.4, east: -78.5, north: 35.3 }
+// Default: the Plains (Texas to Nebraska), the core of chase country, so a first run is useful on any day.
+// Evergreen by design (launch-plan §1): never tie the default to a dated event. Same region as the PLAINS preset.
+export const DEFAULT_AOI: Bbox = { west: -104, south: 31, east: -94, north: 43 }
 
 export const useAoi = create<AoiState>((set) => ({
   bbox: DEFAULT_AOI,
-  states: ['GA', 'SC'],
+  states: statesInBbox(DEFAULT_AOI),
   focus: null,
   aoiRequest: null,
   setAoi: (bbox, states) => set({ bbox, states }),

@@ -44,7 +44,7 @@ const feed = (data: Alert[] | undefined) =>
 describe('ThreatButton', () => {
   beforeEach(() => {
     vi.useFakeTimers()
-    useAoi.setState({ focus: null })
+    useAoi.setState({ focus: null, bbox: { west: -85.6, south: 30.4, east: -78.5, north: 35.3 }, states: ['GA', 'SC'] })
   })
   afterEach(() => {
     cleanup()

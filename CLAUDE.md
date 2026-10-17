@@ -21,7 +21,7 @@ In the desktop app, `.claude/launch.json` defines the `dev` server for live chec
 
 ## Architecture (read the ADRs in `docs/adr/` before structural changes)
 - **Data flow:** upstream → `SourceAdapter` (`src/sources/<source>/`, `fetch` + pure `normalize`) → shared types (`src/types/index.ts`) → `useSource(adapter)` (TanStack Query polling at `adapter.refreshMs`) → panel. Panels never call `fetch`. Reference adapter: `src/sources/nws/alerts.ts`.
-- **One cross-panel state:** `useAoi` (`src/state/aoi.ts`) — map writes bbox + derived state codes on `moveend`; every panel filters by it. Panels never import each other. Default AOI is GA/SC (live-proofing storm 2026-10-10).
+- **One cross-panel state:** `useAoi` (`src/state/aoi.ts`) — map writes bbox + derived state codes on `moveend`; every panel filters by it. Panels never import each other. Default AOI is the Plains (TX–NE), evergreen by design.
 - **Map overlays** are `MapLayer` modules in `src/map/` registered in `src/map/layers.ts` (array order = draw order). Don't add layers inside `MapPanel.tsx`; NWS alerts are drawn there, always on top.
 - **Proxy:** sources without CORS or needing a User-Agent go through same-origin `/api/<source>` paths in `vite.config.ts` (later a Cloudflare Worker with identical routes). Adapters must use the `/api/…` path, not the upstream host. OpenMHz must be fetched directly from the browser (Cloudflare blocks server-side).
 - **UI kit (`src/ui/`):** presentational primitives with no data or app state: `Panel`, `StatusLed`, `Badge`, `ConsoleButton`, `AlertList`/`AlertRow`, `StreamTile`, `CameraTile`, `Toast`, `Abbr`/`TaggedText` (+ `glossary.ts`).

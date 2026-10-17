@@ -1,7 +1,7 @@
 import type { Alert, AlertSeverity } from '../../types'
 import type { SourceAdapter } from '../types'
 
-// NWS asks for an identifying User-Agent; browsers can't set it, so the dev proxy (/api/nws) adds it.
+// NWS asks for an identifying User-Agent; browsers can't set it, so the proxy (/api/nws, proxy/routes.ts) adds it.
 const BASE = '/api/nws'
 
 interface NwsFeature {

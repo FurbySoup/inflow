@@ -131,20 +131,20 @@ describe('StreamsGrid playback', () => {
 
   it('an OFFLINE feed gets no WATCH button', () => {
     vi.mocked(useLiveness).mockReturnValue(
-      new Map<string, FeedResolution>([['connor-croff-ga-sc-2026-10-10', { status: 'offline' }]]),
+      new Map<string, FeedResolution>([['reedtimmerwx', { status: 'offline' }]]),
     )
     const { container } = render(<StreamsGrid />)
-    expect(screen.queryByRole('button', { name: /WATCH Connor Croff/ })).toBeNull()
+    expect(screen.queryByRole('button', { name: /WATCH Reed Timmer/ })).toBeNull()
     expect(container.querySelector('.stream-live[data-kind="offline"]')).not.toBeNull()
   })
 
-  it('an ENDED pinned feed is labelled REPLAY and can be watched', () => {
+  it('an ENDED feed is labelled REPLAY and can be watched', () => {
     vi.mocked(useLiveness).mockReturnValue(
-      new Map<string, FeedResolution>([['tornado-paigeyy-ga-sc-2026-10-10', { status: 'ended' }]]),
+      new Map<string, FeedResolution>([['maxvelocitywx', { status: 'ended' }]]),
     )
     render(<StreamsGrid />)
     expect(screen.getByText('↺ REPLAY')).toBeTruthy()
-    expect(screen.getByRole('button', { name: '▶ WATCH Tornado Paigeyy: GA & SC tornado threat (2026-10-10)' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: '▶ WATCH Max Velocity' })).toBeTruthy()
   })
 
   it('▲ MAIN on a playing thumbnail promotes it and stops it', () => {

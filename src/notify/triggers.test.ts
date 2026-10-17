@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import type { Alert } from '../types'
 import type { WatchFeature } from '../sources/iemspc/watches'
 import type { MesoscaleFeature } from '../sources/iemspc/mesoscale'
-import { DEFAULT_AOI } from '../state/aoi'
 import {
   diffNwsAlerts,
   diffRiskUpgrade,
@@ -12,7 +11,8 @@ import {
   type Seen,
 } from './triggers'
 
-const aoi = { bbox: DEFAULT_AOI, states: ['GA', 'SC'] }
+// Fixture AOI: the GA/SC area the KCHS alert fixtures sit in (independent of the app default).
+const aoi = { bbox: { west: -85.6, south: 30.4, east: -78.5, north: 35.3 }, states: ['GA', 'SC'] }
 const NOW = Date.parse('2026-10-11T18:00:00Z')
 
 // Inside the default AOI (GA/SC).

@@ -14,8 +14,8 @@ export const AOI_PRESETS: readonly AoiPreset[] = [
   {
     id: 'plains',
     label: 'PLAINS',
-    title: 'Plains: Texas to Nebraska',
-    bbox: { west: -104, south: 31, east: -94, north: 43 },
+    title: 'Plains: Texas to Nebraska (default AOI)',
+    bbox: DEFAULT_AOI,
   },
   {
     id: 'dixie',
@@ -26,8 +26,8 @@ export const AOI_PRESETS: readonly AoiPreset[] = [
   {
     id: 'southeast',
     label: 'SE',
-    title: 'Southeast: GA and SC (default AOI)',
-    bbox: DEFAULT_AOI,
+    title: 'Southeast: GA and SC',
+    bbox: { west: -85.6, south: 30.4, east: -78.5, north: 35.3 },
   },
 ]
 

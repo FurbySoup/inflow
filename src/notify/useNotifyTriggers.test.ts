@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useSource } from '../lib/useSource'
+import { useAoi } from '../state/aoi'
 import { subscribeNotify, type NotifyEvent } from '../state/notify'
 import type { Alert } from '../types'
 import { useNotifyTriggers } from './useNotifyTriggers'
@@ -46,6 +47,8 @@ function feed(alerts: Alert[] | undefined) {
 }
 
 describe('useNotifyTriggers', () => {
+  // The KCHS fixtures sit in GA/SC; pin the AOI there rather than relying on the app default.
+  beforeEach(() => useAoi.setState({ bbox: { west: -85.6, south: 30.4, east: -78.5, north: 35.3 }, states: ['GA', 'SC'] }))
   afterEach(() => {
     vi.mocked(useSource).mockReset()
   })
