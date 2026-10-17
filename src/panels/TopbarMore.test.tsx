@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { clampLeft, TopbarMore } from './TopbarMore'
 
@@ -37,6 +37,23 @@ describe('TopbarMore', () => {
     fireEvent.click(button)
     expect(button.getAttribute('aria-expanded')).toBe('false')
     expect(menu.getAttribute('data-open')).toBe('false')
+  })
+
+  it('closes when the window grows past the narrow tier', () => {
+    const { button, menu } = renderMore()
+    fireEvent.click(button)
+    expect(menu.getAttribute('data-open')).toBe('true')
+    const original = window.matchMedia
+    window.matchMedia = ((query: string) => ({ matches: false, media: query })) as typeof window.matchMedia
+    try {
+      act(() => {
+        window.dispatchEvent(new Event('resize'))
+      })
+      expect(menu.getAttribute('data-open')).toBe('false')
+      expect(button.getAttribute('aria-expanded')).toBe('false')
+    } finally {
+      window.matchMedia = original
+    }
   })
 
   it('moves focus to the first control when opened', () => {

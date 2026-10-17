@@ -3,8 +3,8 @@
 Handoff from the 2026-10-11…13 session. Supersedes `docs/next-session-wave8.md`.
 
 **State at handoff:** `main` is pushed and clean; no agent worktrees are left.
-- **Merged:** Waves 1–9 (WP-01…40).
-- **Gate:** typecheck, lint, test and build:ui all pass, with 688 tests.
+- **Merged:** Waves 1–10 (WP-01…44).
+- **Gate:** typecheck, lint, test and build:ui all pass, with 720 tests.
 - **Claude Design:** "Storm Chasers UI" is re-synced with 11 components, including Abbr and TaggedText, and the conventions header covers acronym tips.
 
 ## Paste this to start the session
@@ -38,16 +38,10 @@ Handoff from the 2026-10-11…13 session. Supersedes `docs/next-session-wave8.md
 2. **Background-tab notification:** confirmed by the user in Chrome. Gotcha: Chrome showed "Blocked by an extension" until a blocking extension was switched off entirely (restricting its site access is not enough, since its content-settings rule persists).
 3. **HWO strip:** done for FFC. The default AOI centre is CHS, which has none.
 
-## Wave 10 backlog (polish; each item is small)
-- Roster scheduler: re-arm on `visibilitychange`. Up to 60 s of lag after the tab becomes visible again.
-- Panel LED for AUD-01 ignores OpenMHz list errors.
-- Two OpenMHz systems are both named "Alabama Interoperable Radio System". Show the shortName to tell them apart.
-- HWO fixtures still carry the county lists (trim them).
-- Tablet-portrait top bar is now 3 rows (95 px), with NOTIFY + HELP. Consider an overflow menu at ≤ 900 px.
-- NotifyControl: re-read the browser permission when the popover opens.
-- SPC day control: a cosmetic `aria-busy` lingers when switching to an already-loaded day.
-- CHASE preset label vs manual collapse: intentional, so leave it unless the user asks.
-- Glossary candidates for D4–8 empty labels ("Predictability Too Low" / "Potential Too Low"); confirm the wording against SPC first.
+## Wave 10 (merged 2026-10-17, WP-41…44 + prep)
+Done: roster re-arm on visible, AUD-01 LED covers both feeds, duplicate OpenMHz names show their shortName, NotifyControl re-reads permission, the ≡ MORE menu at ≤ 900 px, D4–8 empty-day glossary tips, the stale outlook `aria-busy` flag. Gate: 720 tests.
+Remaining polish (see work-plan Wave 10 follow-ups): the phone-width top bar is still 5 rows; the nested NOTIFY popover isn't anchored to MORE; Tab out of MORE doesn't close it; `?` opens help with MORE open. CHASE label: intentional.
+Claude Design: `src/ui/glossary.ts` gained two entries since the last sync. Re-run `/design-sync` if the glossary should show in previews.
 
 ## Bigger items (need the user)
 - **Chaser positions / pin a chaser on the map:** needs written permission from Spotter Network (their terms forbid redisplay). The design is in `docs/work-plan.md` (Wave 9 notes). The user would have to request it.

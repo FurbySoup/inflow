@@ -80,7 +80,24 @@ Expected conflicts:
 
 After merge: update the kit previews where builders didn't, then re-sync Claude Design.
 
-## Wave 10 (polish): launched 2026-10-17
+## Wave 10 (polish): merged 2026-10-17
+- **Orchestrator review caught (WP-44):**
+  - the MORE button set `aria-pressed` on a disclosure (now `aria-expanded` only);
+  - the popover anchored `right: 0` could clip at 390 px (now fixed-position and clamped).
+- **Verifiers caught:**
+  - no test exercised the WP-41 in-flight guard (added; mutation-checked);
+  - MORE stayed "open" after widening past 900 px (fixed: it closes on resize).
+- **Live check:**
+  - the matrix passes at all 7 sizes with no horizontal scroll;
+  - 768×1024 bar is 2 rows, 72 px (was 3 rows, 100 px);
+  - 390×844 is still 5 rows, 134 px (brand / AOI / threat+SPC / presets+MORE / UTC), so the package's 2-row target is not met at phone width;
+  - above 900 px it is unchanged.
+- **Follow-ups (minor):**
+  - the nested NOTIFY popover overlaps the MORE list at ≤ 900 px; it works, but it's not anchored to MORE;
+  - focus leaving MORE with Tab doesn't close it;
+  - the `?` key opens help while MORE stays open underneath;
+  - phone-width top bar rows (above), which needs a design call (e.g. hide the brand word, or move UTC into MORE).
+
 Prep (done, on `main`):
 - glossary tips for the D4–8 empty-day labels (SPC wording);
 - the stale outlook `aria-busy` flag cleared on switching back to the loaded day.

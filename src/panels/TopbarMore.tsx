@@ -75,8 +75,10 @@ export function TopbarMore({ children }: { children: ReactNode }) {
       return
     }
     place()
-    window.addEventListener('resize', place)
-    return () => window.removeEventListener('resize', place)
+    // Growing past the narrow tier puts the controls back in the bar, so the menu closes rather than stay "open" unseen.
+    const onResize = () => (isNarrow() ? place() : setOpen(false))
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
   }, [open, place])
 
   useEffect(() => {
