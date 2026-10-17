@@ -50,6 +50,8 @@ export function useWarningTitle(): void {
     return () => clearInterval(timer)
   }, [])
 
+  // On a feed error TanStack keeps the last good data: the title keeps those counts (like the threat button), so a
+  // glitch never drops an active tornado warning from the tab. Pending (no data yet) still reads plain INFLOW.
   const alerts = query.data
   const counts: WarningCounts =
     alerts === undefined
