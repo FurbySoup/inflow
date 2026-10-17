@@ -118,6 +118,9 @@ export function AudioPanel() {
                 </option>
               ))}
             </select>
+            <p className="muted" style={{ marginTop: 0 }}>
+              Recorded calls from public-safety radio, newest first.
+            </p>
             {/* Keyed so playback state never carries over to another system. */}
             <ScannerPlayer key={system.shortName} shortName={system.shortName} />
           </>

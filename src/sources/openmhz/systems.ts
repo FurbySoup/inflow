@@ -71,10 +71,15 @@ export function systemLabel(system: ScannerSystem, all: ScannerSystem[]): string
   return clash ? `${base} · ${system.shortName}` : base
 }
 
-/** Systems whose state is in the AOI, in list order. */
+/**
+ * Systems whose state is in the AOI, nearest state first (`states` is nearest-first, ADR-0016), then by name.
+ * The first entry is the default scanner, so the nearest state's system opens.
+ */
 export function systemsInAoi(systems: ScannerSystem[], states: string[]): ScannerSystem[] {
-  const inAoi = new Set(states)
-  return systems.filter((s) => inAoi.has(s.state))
+  const rank = new Map(states.map((st, i) => [st, i]))
+  return systems
+    .filter((s) => rank.has(s.state))
+    .sort((a, b) => (rank.get(a.state) ?? 0) - (rank.get(b.state) ?? 0) || a.name.localeCompare(b.name))
 }
 
 /** Distinct states that have at least one system, sorted. Used for the empty-AOI coverage text. */

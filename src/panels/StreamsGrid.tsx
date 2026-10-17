@@ -28,6 +28,7 @@ import { useStreams } from '../state/streams'
 import { useLayout } from '../state/layout'
 import { Abbr, StreamTile, type FeedStatus as LedStatus } from '../ui'
 import { LiveNow, type LiveNowChip } from './LiveNow'
+import { FeedsQuiet } from './FeedsQuiet'
 import { MyChasers } from './MyChasers'
 import { Panel } from './Panel'
 
@@ -102,6 +103,8 @@ export function StreamsGrid() {
   const activated = useUserActivated()
   const [onScreen, setOnScreen] = useState<ReadonlySet<string>>(() => new Set())
   const [checkedPrimary, setCheckedPrimary] = useState<string | null>(null)
+  // Last render's "nobody is live" answer. Liveness is polled for every curated feed while true (the slate lists them).
+  const [quietLast, setQuietLast] = useState(false)
   // User-started thumbnails (ADR-0017), oldest first. Session state only; never persisted.
   const [playing, setPlaying] = useState<string[]>(NONE)
   const setVisible = useCallback((id: string, visible: boolean) => {
@@ -118,7 +121,10 @@ export function StreamsGrid() {
 
   // Liveness runs for the primary and on-screen tiles only (ADR-0013). The primary is included so a
   // default primary that turns out to be ENDED is checked once it is shown. Playing tiles count as on screen.
-  const resolutions = useLiveness(curatedStreams, (id) => onScreen.has(id) || id === checkedPrimary || playing.includes(id))
+  const resolutions = useLiveness(
+    curatedStreams,
+    (id) => onScreen.has(id) || id === checkedPrimary || playing.includes(id) || quietLast,
+  )
   const curatedFeeds: LiveFeed[] = curatedStreams.map((s) => applyResolution(s, resolutions.get(s.id)))
   // Verified roster channels that are live join the feeds (WP-36); a curated entry on the same channel is not duplicated.
   const { feeds, videoIds: rosterVideoIds } = mergeRoster(curatedFeeds, rosterLive(allChasers, roster.results))
@@ -133,6 +139,14 @@ export function StreamsGrid() {
   const playingNow = singleStream ? NONE : prunePlaying(playing, sorted, primary?.id ?? null)
   if (playingNow !== playing) setPlaying(playingNow)
   const liveCount = sorted.filter((s) => s.status === 'live').length
+  // Quiet day (WP-50): nobody live, so no embed and no thumbnails; a quiet-list of link-outs replaces them.
+  // A feed the viewer picked this session still gets its tile.
+  const quietNow = liveCount === 0
+  if (quietNow !== quietLast) setQuietLast(quietNow)
+  const showSlate = quietNow && !chosenThisSession
+  const offlineCurated = curatedFeeds
+    .filter((s) => !s.context && s.status !== 'live')
+    .map((s) => ({ id: s.id, title: s.title, watchUrl: s.watchUrl }))
 
   // Publish the sorted order and the feed in the main slot so shortcuts can cycle it.
   const orderKey = sorted.map((s) => s.id).join('|')
@@ -168,7 +182,8 @@ export function StreamsGrid() {
     >
       <LiveNow chips={chips} shownId={primary?.id ?? null} checked={roster.results.size} total={allChasers.length} />
       <MyChasers />
-      {primary && (
+      {showSlate && <FeedsQuiet offline={offlineCurated} />}
+      {!showSlate && primary && (
         <FeedSlot id={primary.id} onVisible={setVisible}>
           <StreamTile
             title={primary.title}
@@ -187,7 +202,7 @@ export function StreamsGrid() {
           />
         </FeedSlot>
       )}
-      {singleStream ? (
+      {!showSlate && (singleStream ? (
         // CHASE preset (HANDOFF §5): one stream only; `[`/`]` still cycle the main feed.
         <p className="muted">CHASE · 1 STREAM · {thumbs.length} MORE ([ ] TO CYCLE)</p>
       ) : (
@@ -196,6 +211,8 @@ export function StreamsGrid() {
           const at = refreshedAt[s.id]
           const src = snapshotSource(resolutions.get(s.id)?.videoId ?? rosterVideoIds.get(s.id), s.status, at)
           const isPlaying = playingNow.includes(s.id)
+          // Nothing to promote on an offline or ended feed (WP-50).
+          const canPromote = s.status !== 'offline' && s.status !== 'ended'
           return (
             // Thumbnails mount an iframe only after the user's WATCH press (ADR-0017); otherwise stills only (ADR-0013).
             <FeedSlot key={s.id} id={s.id} onVisible={setVisible}>
@@ -212,10 +229,14 @@ export function StreamsGrid() {
                 embedUrl={isPlaying ? withAutoplay(withSound(s.embedUrl, false), true) : undefined}
                 onPlay={() => setPlaying((p) => startTile(p, s.id))}
                 onStop={() => setPlaying((p) => stopTile(p, s.id))}
-                onSelect={() => {
-                  choose(s.id)
-                  setPlaying((p) => stopTile(p, s.id))
-                }}
+                onSelect={
+                  canPromote
+                    ? () => {
+                        choose(s.id)
+                        setPlaying((p) => stopTile(p, s.id))
+                      }
+                    : undefined
+                }
                 snapshot={{
                   src,
                   placeholder: snapshotPlaceholder(s.status),
@@ -227,7 +248,7 @@ export function StreamsGrid() {
           )
         })}
       </div>
-      )}
+      ))}
       {/* Link-out only (WP-36): Spotter Network's positions may not be redisplayed, so nothing is fetched from it. */}
       <p className="streams-footer">
         <a className="btn-console" href={spotterMapUrl(bbox)} target="_blank" rel="noopener noreferrer">
