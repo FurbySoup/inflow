@@ -14,6 +14,8 @@ npm test             # vitest run (all)
 npx vitest run src/sources/nws/alerts.test.ts   # single file
 npx vitest run -t "derives states"              # single test by name
 npm run build        # typecheck + production build to dist/
+npm start            # production: build if needed, serve dist + /api on http://127.0.0.1:8080 (PORT, HOST, NWS_CONTACT)
+npm run build:server # bundle server/ to dist-server/
 npm run build:ui     # UI kit library (src/ui → dist/ui, ES + .d.ts), the input to the Claude Design sync
 ```
 Merge gate for any change: `npm run typecheck && npm run lint && npm test && npm run build:ui`. `build:ui` catches kit files importing app code (`src/ui` must stay self-contained).
@@ -23,7 +25,7 @@ In the desktop app, `.claude/launch.json` defines the `dev` server for live chec
 - **Data flow:** upstream → `SourceAdapter` (`src/sources/<source>/`, `fetch` + pure `normalize`) → shared types (`src/types/index.ts`) → `useSource(adapter)` (TanStack Query polling at `adapter.refreshMs`) → panel. Panels never call `fetch`. Reference adapter: `src/sources/nws/alerts.ts`.
 - **One cross-panel state:** `useAoi` (`src/state/aoi.ts`) — map writes bbox + derived state codes on `moveend`; every panel filters by it. Panels never import each other. Default AOI is the Plains (TX–NE), evergreen by design.
 - **Map overlays** are `MapLayer` modules in `src/map/` registered in `src/map/layers.ts` (array order = draw order). Don't add layers inside `MapPanel.tsx`; NWS alerts are drawn there, always on top.
-- **Proxy:** sources without CORS or needing a User-Agent go through same-origin `/api/<source>` paths in `vite.config.ts` (later a Cloudflare Worker with identical routes). Adapters must use the `/api/…` path, not the upstream host. OpenMHz must be fetched directly from the browser (Cloudflare blocks server-side).
+- **Proxy:** sources without CORS or needing a User-Agent go through same-origin `/api/<source>` paths. The one route table is `proxy/routes.ts`; both `vite dev` and the production server (`server/`, ADR-0020) read it. Adapters must use the `/api/…` path, not the upstream host. OpenMHz must be fetched directly from the browser (Cloudflare blocks server-side).
 - **UI kit (`src/ui/`):** presentational primitives with no data or app state: `Panel`, `StatusLed`, `Badge`, `ConsoleButton`, `AlertList`/`AlertRow`, `StreamTile`, `CameraTile`, `Toast`, `Abbr`/`TaggedText` (+ `glossary.ts`).
   - **Tokens and classes:** all tokens and component classes live in `src/ui/styles.css`. `src/index.css` imports it and holds only the app layout (grid, splitters, map).
   - **Styling rules:** no hardcoded colours except MapLibre paint values. Data values use `--font-data`.
@@ -56,7 +58,7 @@ In the desktop app, `.claude/launch.json` defines the `dev` server for live chec
 - The desktop browser pane runs `requestAnimationFrame` at 0/s when unfocused: a black MapLibre map there is the environment, not a bug (inspect via dev-only `window.__map`).
 
 ## Parallel work (ADR-0010)
-Features are specified as self-contained work packages in `docs/packages/`, scheduled in waves in `docs/work-plan.md`. Waves 1–10 (WP-01…44) are merged.
+Features are specified as self-contained work packages in `docs/packages/`, scheduled in waves in `docs/work-plan.md`. Waves 1–11 (WP-01…47) are merged.
 - **Agents:** packages are built by the `wp-builder` agent (Haiku, one per package, `isolation: "worktree"`) and checked by `wp-verifier`. Both are custom agent types in `.claude/agents/`.
 - **Shared files:** `src/types/index.ts`, `src/state/*`, `src/lib/*`, `src/ui/*`, `src/index.css`, `vite.config.ts` and `package.json` are changed only by the orchestrating session. Builders report needed changes instead.
 - **Wave hygiene:**

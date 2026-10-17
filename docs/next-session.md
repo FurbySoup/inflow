@@ -1,87 +1,49 @@
-# Next session: Wave 11, ship 1.0 (ADR-0020)
+# Next session: finish 1.0 (ship Friday 2026-10-30)
 
-Handoff from the 2026-10-17 session. Supersedes the post-Wave-9 handoff.
+Handoff from the 2026-10-17 Wave 11 session. Supersedes the post-Wave-10 handoff.
 
-**State at handoff:** `main` is pushed and clean. There are no agent worktrees, and no local branches besides `main`.
-- **Merged:** Waves 1–10 (WP-01…44). Gate: typecheck, lint, test (720) and build:ui all pass.
-- **Decided 2026-10-17:**
-  - MIT licence (added);
-  - name stays **INFLOW**, used unregistered with a descriptor (see `docs/launch-plan.md` §3);
-  - ship date **Friday 2026-10-30**;
-  - **ADR-0020 accepted:** 1.0 is self-run (`npm start` + a Docker image on GHCR), and nothing is hosted by the maintainer.
-- **The plan of record is [`docs/launch-plan.md`](launch-plan.md):** the "good enough" gates, the build work (§2), the pre-launch checklist (§3), the README outline (§4), launch day (§5), where to post (§6) and low-maintenance rules (§7).
+**State at handoff:** `main` is pushed. There are no agent worktrees and no local branches besides `main`.
+- **Merged:** Waves 1–11 (WP-01…47). Gate: typecheck, lint, test (787) and build:ui all pass. CI (`ci.yml`) runs on every push and PR.
+- **Plan of record:** [`docs/launch-plan.md`](launch-plan.md). Its ticked boxes are done.
+- **Launch posts and release notes:** [`docs/launch-posts.md`](launch-posts.md), ready to paste.
 
-## Paste this to start the session
+## Wave 11 (merged 2026-10-17)
+- **WP-45 `server/`:** allowlisted proxy from `proxy/routes.ts`, GET-only except the CARS POSTs, header allowlists both ways, redirects never followed, in-memory cache, 127.0.0.1 by default, security headers, `/healthz`.
+  - The verifier probed it live (traversal, `@`/backslash/absolute-form targets): nothing reached a non-allowlisted host.
+  - The origin assertion is now mutation-checked.
+- **WP-46:** `npm start` (builds on first run), multi-stage `Dockerfile` (non-root, healthcheck), `ci.yml`, `release.yml`, issue forms, `SECURITY.md`, `CONTRIBUTING.md`.
+  - `release.yml` runs on a `v*` tag: it checks the tag equals `package.json` version, runs the gate, attaches a no-build zip to the release, and pushes an amd64+arm64 image to GHCR.
+- **WP-47:** the `? HELP` → ABOUT tab (disclaimer, data terms, credits, version).
+- **Default view:** the Plains, with five national `channelId` streams.
+- **Found in the live check through the Docker image, and fixed:**
+  - NWS's CDN blocked one exact User-Agent string. The default UA now carries a random per-start id, and `NWS_CONTACT` overrides it.
+  - An NWS 500 carries `max-age=180`, so the browser served the cached error for 3 minutes. Proxy errors are now `no-store`.
+- **Live check passed, image on port 8097:** every feed returned 200 through the container (NWS, 6 DOT proxies, KiwiSDR, YouTube, plus direct IEM/SPC/OpenMHz/basemap); ABOUT renders with no horizontal scroll at 375 px.
 
-> Continue INFLOW (storm-chasers repo). Read `CLAUDE.md`, `docs/next-session.md`, `docs/launch-plan.md`, ADR-0020 and ADR-0005, plus ADR-0010 for the wave process.
-> Goal: Wave 11 = the launch-plan §2 build work (A server, B packaging/CI, C evergreen defaults + About), so 1.0 can ship on Friday 2026-10-30.
-> 1. **Orchestrator prep on `main`** (shared files):
->    - extract the proxy table from `vite.config.ts` into `proxy/routes.ts`, with Vite reading it (no behaviour change; gate green);
->    - make the NWS User-Agent configurable (`NWS_CONTACT`, defaulting to the repo URL);
->    - replace the dated 2026-10-10 entries in `config/streams.json` with verified `channelId` entries (confirm each on the channel's own `/streams` page; never guess IDs);
->    - choose an evergreen default AOI;
->    - push.
-> 2. **Write packages** WP-45 (production server: allowlist, GET + CARS POST only, cookies stripped, cache, 127.0.0.1 default, security headers, tests incl. a no-open-proxy test), WP-46 (`npm start`, Dockerfile non-root, `ci.yml` + `release.yml` to GHCR on a `v*` tag) and WP-47 (About/attributions tab in `? HELP`, disclaimer). Stop and show me the plan; launch builders and verifiers only after approval.
-> 3. After merging: run the server locally and live-check all panels through it, plus the ADR-0014 matrix. Then draft the README per launch-plan §4, with me.
+## Remaining before 2026-10-30
+Claude can do (ask first where marked):
+- **Labels** `source-broken` and `post-1.0` in the repo, so the issue forms apply them. (`gh label create`; repo change, ask first.)
+- **Secret scan:** run `gitleaks` over the history (pulls the `zricethezav/gitleaks` image; ask first).
+- **`actionlint`** on the workflows (pulls `rhysd/actionlint`; ask first). The first real test of `release.yml` is the tag itself, so consider a dry run: tag `v0.9.0-rc.1` after setting that version, watch it, then delete the release, tag and image.
+- **Screenshot** for the README and the social preview (1280×640): needs a day with active warnings. `docs/screenshot.png` is referenced but not added yet.
+- **Release day:**
+  - set `package.json` version to `1.0.0`, commit, tag `v1.0.0`, push the tag;
+  - check `docker pull ghcr.io/furbysoup/storm-chasers` and the release zip;
+  - make the GHCR package **public** (Packages → storm-chasers → settings; new GHCR packages start private). This is a user step.
 
-## What exists now (orientation, beyond `CLAUDE.md`)
-- **Any area (Wave 8):**
-  - 52-code AOI states from simplified Census shapes (ADR-0016, `src/lib/states.ts`, `geo.ts`, `stateAt`); states come back nearest-first;
-  - alerts match the AOI by polygon (`src/panels/aoiMatch.ts`);
-  - OpenMHz systems for any area;
-  - `CAMERA_SOURCES` registry with 24 DOT sources (CARS, IBI 511, WSDOT, Caltrans);
-  - SPC outlook D1–D8 + AOI risk in the top bar;
-  - GOES-West west of 105°W;
-  - the AOI local clock (`nwsPoint` → `timeZone`);
-  - press-to-WATCH stream sub-windows, muted and uncapped (ADR-0017).
-- **Wave 9:**
-  - acronym tips: the kit `Abbr` / `TaggedText` + `src/ui/glossary.ts`, and every new on-screen acronym needs an entry (ADR-0018);
-  - the notification engine in `src/notify/**`, fed by the `src/state/notify.ts` bus (ADR-0019);
-  - the chaser roster: `config/chasers.json` holds 58 verified channels and is orchestrator-owned (never guess IDs); round-robin liveness, LIVE NOW chips, "chaser went live", the SN MAP ↗ link-out;
-  - the HWO strip (`src/sources/nws/hwo.ts`; offices without an HWO return 500 = no strip);
-  - the SPC day selector draws D2–D8 above radar;
-  - `? HELP`: tabs, search, and 78 chaser terms in `src/panels/help/chaserTerms.ts` (orchestrator-written, never generated).
-- **Dev server:** another session sometimes holds port 5173. The `.claude/launch.json` config `dev-alt` runs on 5174.
+Only the user can do (launch-plan §3):
+- Git identity (noreply email) and GitHub email privacy settings.
+- GitHub settings: secret scanning + push protection, Dependabot security updates only, private vulnerability reporting, branch protection on `main` requiring CI.
+- Repo description, topics, social preview image.
+- The remote branch `claude/design-sync-wave-4-9pjgq8` is an old Wave 4 planning commit, superseded. Delete it.
+- Posting (launch-posts.md): r/selfhosted on **Friday 2026-10-30**.
 
-## Live checks (all closed 2026-10-17)
-1. **SPC D1–D8:** D2/D3 visibly differ above radar; D5 renders nothing with "POTENTIAL TOO LOW" (now glossary-tipped).
-2. **Background-tab notification:** confirmed by the user in Chrome. Gotcha: Chrome showed "Blocked by an extension" until a blocking extension was switched off entirely (restricting its site access is not enough, since its content-settings rule persists).
-3. **HWO strip:** done for FFC. The default AOI centre is CHS, which has none.
+## Post-1.0 (file as `post-1.0` issues, don't build)
+Phone-width top bar rows, NOTIFY/MORE overlap, Tab-out closing MORE, a full CSP, `npx inflow-wx`, Twitch/Kick, OK/AL cameras, a POST body-read timeout (minor), chaser positions (needs Spotter Network permission).
 
-## Wave 10 (merged 2026-10-17, WP-41…44 + prep)
-Done: roster re-arm on visible, AUD-01 LED covers both feeds, duplicate OpenMHz names show their shortName, NotifyControl re-reads permission, the ≡ MORE menu at ≤ 900 px, D4–8 empty-day glossary tips, the stale outlook `aria-busy` flag. Gate: 720 tests.
-Remaining polish (see work-plan Wave 10 follow-ups): the phone-width top bar is still 5 rows; the nested NOTIFY popover isn't anchored to MORE; Tab out of MORE doesn't close it; `?` opens help with MORE open. CHASE label: intentional.
-Claude Design: `src/ui/glossary.ts` gained two entries since the last sync. Re-run `/design-sync` if the glossary should show in previews.
-
-## Things only the user can do before 2026-10-30 (launch-plan §3)
-- **Git identity:** set the GitHub noreply email for future commits, and turn on "Keep my email private" + "Block command line pushes that expose my email".
-- **GitHub settings:**
-  - secret scanning + push protection;
-  - Dependabot security updates only;
-  - private vulnerability reporting;
-  - branch protection on `main` (after `ci.yml` exists).
-- **Repo metadata:** description, topics, and a social preview image (1280×640 screenshot of a live outbreak).
-- **Secret scan:** run `gitleaks` over the full history (command in launch-plan §3). Claude can run it if Docker is available.
-- **Remote branch:** `origin/claude/design-sync-wave-4-9pjgq8` has 1 commit not on `main`. Merge it or delete it.
-- **Posts** (§6): r/selfhosted on Fridays only (the project is under 3 months old); read the storm subreddits' sidebars first.
-
-## Bigger items (after 1.0)
-- **Chaser positions / pin a chaser on the map:** needs written permission from Spotter Network (their terms forbid redisplay). The design is in `docs/work-plan.md` (Wave 9 notes).
-- **Hosted v2 (`docs/roadmap.md`) is optional now (ADR-0020).** It would need a terms gate, a YouTube Data API key and Web Push. A Deploy-to-Cloudflare button is the cheaper middle ground, with the caveats in ADR-0020.
-- **Post-1.0 polish:** the phone-width top bar (5 rows), NOTIFY/MORE overlap, Tab-out closing MORE, a full CSP, `npx inflow-wx`.
-
-## Process rules that cost us when skipped (also in agent memory)
-- Push `main` before launching a wave.
-- **Commands:**
-  - verifiers `git worktree add --detach C:/wvNN <sha> && cd … && npm ci` in **one** command;
-  - never run npm in the main repo while a dev server holds esbuild;
-  - run checks with `set -o pipefail`.
-- **Package writing:**
-  - never give a directory both `Foo.tsx` and `foo.ts`. It happened 3 times, once in WP-31.
-  - content that must be correct (meteorology, verified IDs) is written by the orchestrator in prep and marked "never edit" in packages.
-- **Builders:** no dev servers or browser (ignore the PostToolUse hook that suggests one); Write/Edit, not heredocs.
-- **Reviewing reports:** read builder reports critically before verification. This wave caught the HWO spotter guess, the preset double descriptions and the GOES credit that way.
-- **Browser pane:**
-  - hidden → 0×0 and rAF 0, so the map never loads and the preset is picked as mobile. Use `resize_window` + reload for layout checks.
-  - never set `input.value` from JS on React inputs (it desyncs them); focus with JS and type with `computer`.
-- **Claude Design:** DesignSync only runs inside the user-started `/design-sync`. YouTube previews must not autoplay (the capture waits for network idle).
+## Process rules that cost us when skipped
+- Push `main` before launching a wave; verifiers use `git worktree add --detach C:/wvNN <sha> && cd … && npm ci` in one command; `set -o pipefail`.
+- Builders commit on `wp/NN-…` branches, not the worktree's own branch. Merge those.
+- Python heredocs on this machine mangle backslashes in TS strings. Use Edit for anything with `\`.
+- Ports 8080 and 8096 are taken on this machine by other apps. Use 8097 for local container checks.
+- Don't hammer NWS with attack-style probes under the shared UA; it got that UA blocked.

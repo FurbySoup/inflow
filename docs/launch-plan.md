@@ -11,7 +11,7 @@ How it is distributed: [ADR-0020](adr/0020-self-run-distribution.md), self-run, 
 
 **Must be true at 1.0:**
 - [ ] A stranger can run it in **one command** (Docker) or **three** (clone, `npm ci`, `npm start`) and see live data.
-- [ ] Nothing on screen depends on a dated event:
+- [x] Nothing on screen depends on a dated event (Wave 11 prep, 2026-10-17):
   - curated streams use `channelId` (live-when-live), not pinned 2026-10-10 `videoId`s;
   - the default view is evergreen.
 - [ ] A dead or changed upstream degrades to its panel LED. It never breaks the page. This is already true; re-check it at release.
@@ -52,15 +52,15 @@ How it is distributed: [ADR-0020](adr/0020-self-run-distribution.md), self-run, 
   - **So:** don't try to register it; never style it like inFlow Inventory (no "inFlow" casing, no inventory or business wording).
   - **Do not** use "Storm Chasers" as the product name: it's the Discovery Channel series (ADR-0015). The repo slug `storm-chasers` stays as a descriptive name.
   - **Package names:** npm `inflow` is taken (an InfluxDB helper); `inflow-wx` is free, if `npx` ever happens. The Docker image follows the repo: `ghcr.io/furbysoup/storm-chasers`.
-- [ ] **Disclaimer** in the README and the app: "Not for life-safety decisions. Follow official NWS warnings and local officials."
-- [ ] **Attributions:**
+- [x] **Disclaimer** in the README and the app (`? HELP` → ABOUT): "Not for life-safety decisions. Follow official NWS warnings and local officials."
+- [x] **Attributions** (`src/panels/help/about.ts`, shown in ABOUT and the README):
   - NWS/SPC (public domain);
   - IEM (credit requested);
   - OpenMHz, KiwiSDR;
   - each DOT 511 source;
   - MapLibre / OpenFreeMap / OpenStreetMap (ODbL attribution is already on the map);
   - YouTube embeds.
-- [ ] **Data terms** stated honestly:
+- [x] **Data terms** stated honestly (ABOUT + README):
   - "self-run for personal use; you fetch the data from your own machine";
   - stream liveness reads public YouTube pages (ADR-0013), so it can break and is best-effort.
 
@@ -73,32 +73,32 @@ How it is distributed: [ADR-0020](adr/0020-self-run-distribution.md), self-run, 
   - `git config user.email "<id>+FurbySoup@users.noreply.github.com"`;
   - turn on GitHub → Settings → Emails → "Keep my email private" + "Block command line pushes that expose my email".
 - [ ] **Dependencies.** `npm audit --omit=dev` is clean, and the lockfile is committed (it is).
-- [ ] **Proxy hardening** (package A):
+- [x] **Proxy hardening** (WP-45; verifier probed it live, origin assertion mutation-checked):
   - not an open proxy: the host is fixed per prefix, with no user-controlled URLs;
   - method allowlist;
   - no cookies forwarded;
   - localhost bind by default.
   - Test it: `curl localhost:PORT/api/nws/..%2f..` and an absolute-URL path must not reach another host.
-- [ ] **XSS.** No `innerHTML` / `dangerouslySetInnerHTML` in `src/` (checked 2026-10-17); upstream text renders as React text. Keep that a lint rule: `react/no-danger` or a grep in CI.
+- [x] **XSS.** (CI guard step in `ci.yml`) No `innerHTML` / `dangerouslySetInnerHTML` in `src/` (checked 2026-10-17); upstream text renders as React text. Keep that a lint rule: `react/no-danger` or a grep in CI.
 - [ ] **Iframes.** YouTube embeds keep the default referrer (Error 153 note); KiwiSDR stays link-out (HTTP).
-- [ ] **Production headers:** `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: SAMEORIGIN`. A full CSP is `post-1.0` (the camera image hosts make it fiddly).
+- [x] **Production headers:** `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: SAMEORIGIN`. A full CSP is `post-1.0` (the camera image hosts make it fiddly).
 - [ ] **GitHub repo settings:**
   - secret scanning + push protection;
   - Dependabot **security** updates only (version-update PRs are maintenance noise);
   - private vulnerability reporting;
   - branch protection on `main` requiring CI.
-- [ ] **`SECURITY.md`:** "report privately via GitHub; best-effort response".
+- [x] **`SECURITY.md`:** "report privately via GitHub; best-effort response".
 
 ### Repo hygiene
 - [ ] Keep `.claude/agents`, `docs/packages`, `docs/adr` and `.design-sync`. The build process is a story for the AI-community posts (section 6). Add one README line pointing to it.
-- [ ] Remove or archive the old `docs/next-session-wave*.md` handoffs (move them under `docs/history/`).
+- [x] Remove or archive the old `docs/next-session-wave*.md` handoffs (moved to `docs/history/`).
 - [ ] The remote branch `claude/design-sync-wave-4-9pjgq8` holds 1 commit not on `main`. Merge it or delete it.
 - [ ] **Repo metadata:**
   - description: "Self-hosted storm-chasing situation room: radar, warnings, livestreams, scanners and DOT cameras on one screen";
   - topics: `weather`, `storm-chasing`, `nexrad`, `nws`, `self-hosted`, `maplibre`, `react`, `dashboard`;
   - a social preview image (1280×640 screenshot).
-- [ ] **Issue templates:** "Source broken" (which panel/state, what the LED shows) and "Feature idea" (goes to `post-1.0`). Turn Discussions on, so questions don't become issues.
-- [ ] `CONTRIBUTING.md`, 10 lines: run the gate; one source per PR; adapter + fixture + test; never guess stream IDs.
+- [x] **Issue templates** (labels `source-broken` and `post-1.0` must exist in the repo): "Source broken" (which panel/state, what the LED shows) and "Feature idea" (goes to `post-1.0`). Turn Discussions on, so questions don't become issues.
+- [x] `CONTRIBUTING.md`, 10 lines: run the gate; one source per PR; adapter + fixture + test; never guess stream IDs.
 
 ## 4. README structure (the landing page)
 1. **Name + one line + screenshot or GIF** of a real outbreak with radar, warnings and streams. This is the single biggest factor in posts doing well.
