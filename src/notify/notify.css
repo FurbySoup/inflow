@@ -1,4 +1,4 @@
-/* Top-bar notification control and its popover (WP-35). Tokens only. */
+/* Top-bar notification control and its popover (WP-35, WP-55). Tokens only. */
 .notify {
   position: relative;
   display: inline-flex;
@@ -11,6 +11,8 @@
   right: var(--sp-4);
   z-index: 50;
   width: min(320px, calc(100vw - 2 * var(--sp-4)));
+  max-height: calc(100vh - var(--topbar-h) - 2 * var(--sp-4));
+  overflow-y: auto;
   box-sizing: border-box;
   padding: var(--sp-4);
   display: grid;
@@ -20,6 +22,19 @@
   border-radius: var(--radius-control);
   color: var(--text-primary);
   font: 400 var(--fs-ui-s) / 1.35 var(--font-ui);
+}
+
+.notify-heading {
+  margin: 0;
+  font: 600 var(--fs-ui-xs) / 1 var(--font-ui);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.notify-area {
+  margin: 0;
+  color: var(--text-muted);
 }
 
 .notify-row {
@@ -38,9 +53,21 @@
 
 .notify-row input:focus-visible,
 .notify-allow:focus-visible,
+.notify-test:focus-visible,
 .notify-btn:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
+}
+
+.notify-row > span {
+  display: grid;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.notify-hint {
+  font: 400 var(--fs-ui-xs) / 1.35 var(--font-ui);
+  color: var(--text-muted);
 }
 
 .notify-fieldset {
@@ -60,6 +87,16 @@
   color: var(--text-muted);
 }
 
+.notify-state {
+  margin: 0;
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.notify-state p {
+  margin: 0;
+}
+
 .notify-status {
   margin: 0;
   display: flex;
@@ -69,10 +106,16 @@
   color: var(--status-stale);
 }
 
-.notify-allow.btn-console {
+.notify-allow.btn-console,
+.notify-test.btn-console {
   height: var(--hit-min);
   min-height: 28px;
   padding: 0 var(--sp-4);
+}
+
+.notify-test-line {
+  margin: 0;
+  color: var(--text-primary);
 }
 
 .notify-count {
@@ -80,11 +123,6 @@
   font: 400 var(--fs-data-s) / 1 var(--font-data);
   letter-spacing: 0.04em;
   color: var(--text-muted);
-}
-
-.notify-count strong {
-  color: var(--text-bright);
-  font-weight: 600;
 }
 
 .notify-note {

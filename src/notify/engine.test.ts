@@ -117,8 +117,8 @@ describe('notify engine', () => {
     expect(fake.opened).toHaveLength(1)
     vi.advanceTimersByTime(20_000)
     expect(fake.opened).toHaveLength(2)
-    expect(fake.opened[1].title).toBe('2 MORE IN AOI')
-    expect(fake.opened[1].options.tag).toBe('notify-overflow')
+    expect(fake.opened[1].title).toBe('2 MORE UPDATES')
+    expect(fake.opened[1].options).toMatchObject({ body: 'Open INFLOW to see them.', tag: 'notify-overflow' })
   })
 
   it('allows at most 10 per hour and holds the eleventh until the hour rolls', () => {
@@ -177,5 +177,49 @@ describe('notify engine', () => {
     expect(getNotifyRuntime().count).toBe(1)
     vi.advanceTimersByTime(60_000)
     expect(fake.opened).toHaveLength(1)
+  })
+
+  describe('sendTest (ADR-0022)', () => {
+    it('shows one test notice while visible, inside the rate window, and outside the threshold', () => {
+      updatePrefs({ threshold: 'TOR' })
+      const engine = createEngine(fake.io)
+      // Use up the rate slot with a real TOR while hidden.
+      engine.handle(event('K.a'))
+      expect(fake.opened).toHaveLength(1)
+
+      fake.setHidden(false)
+      expect(engine.sendTest()).toBe('shown')
+      expect(fake.opened).toHaveLength(2)
+      expect(fake.opened[1].title).toBe('INFLOW TEST')
+      expect(fake.opened[1].options.tag).toBe('notify-test')
+      expect(getNotifyRuntime().count).toBe(0)
+    })
+
+    it('does not change the count, the seen keys or the rate slots', () => {
+      const engine = createEngine(fake.io)
+      const seenBefore = { ...getPrefs().seen }
+      expect(engine.sendTest()).toBe('shown')
+      expect(getNotifyRuntime().count).toBe(0)
+      expect(getPrefs().seen).toEqual(seenBefore)
+      // The rate slot is still free: a real event goes out straight away.
+      engine.handle(event('K.after'))
+      expect(fake.opened).toHaveLength(2)
+      expect(fake.opened[1].title).toBe('TORNADO WARNING · K.after')
+    })
+
+    it('a refused constructor gives refused and marks the browser unsupported', () => {
+      fake.setRefuse(true)
+      const engine = createEngine(fake.io)
+      expect(engine.sendTest()).toBe('refused')
+      expect(getNotifyRuntime()).toMatchObject({ count: 0, unsupported: true })
+    })
+
+    it('without permission it is refused and the browser is not marked unsupported', () => {
+      fake.setPermission('denied')
+      const engine = createEngine(fake.io)
+      expect(engine.sendTest()).toBe('refused')
+      expect(fake.opened).toHaveLength(0)
+      expect(getNotifyRuntime().unsupported).toBe(false)
+    })
   })
 })

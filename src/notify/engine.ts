@@ -1,12 +1,14 @@
 import { useSyncExternalStore } from 'react'
 import { useAoi } from '../state/aoi'
 import type { NotifyEvent } from '../state/notify'
+import { OVERFLOW, TEST_NOTIFICATION } from './notifyCopy'
 import { getPrefs, hasSeen, markSeen, passesThreshold } from './prefs'
 
 /**
  * Notification delivery (ADR-0019). The engine is the only place that calls the Notification API.
  * Order per event: drop seen keys → drop below the threshold → visible or no permission: count it in the app
  * (`n NEW` on the control) → otherwise a system notification, subject to the rate cap.
+ * SEND TEST (ADR-0022) is the one exception to the order: it always shows, and it is never counted or remembered.
  */
 
 /** At most one system notification per GAP_MS and HOUR_MAX per rolling hour. */
@@ -105,8 +107,32 @@ export function nextSlot(sent: readonly number[], now: number): number {
 }
 
 /**
+ * Shows the SEND TEST notice. Returns the handle, or null when the browser refused (or permission isn't granted).
+ * A refused constructor marks the runtime unsupported, so the control can say why.
+ */
+function openTest(io: EngineIo): NoticeHandle | null {
+  const permission = io.permission()
+  if (permission === 'unsupported') {
+    setRuntime({ unsupported: true })
+    return null
+  }
+  if (permission !== 'granted') return null
+  try {
+    return io.open(TEST_NOTIFICATION.title, { body: TEST_NOTIFICATION.body, tag: 'notify-test' })
+  } catch {
+    setRuntime({ unsupported: true })
+    return null
+  }
+}
+
+/** SEND TEST from the control: the browser's own system notice, through the same seam as the engine. */
+export function sendTestNotification(): 'shown' | 'refused' {
+  return openTest(systemIo) ? 'shown' : 'refused'
+}
+
+/**
  * One delivery engine per mounted app. `handle` receives bus events; `onVisible` closes what it opened and counts
- * whatever was waiting. Overflow past the rate cap waits for the next slot and goes out as one `<N> MORE IN AOI`.
+ * whatever was waiting. Overflow past the rate cap waits for the next slot and goes out as one `OVERFLOW` notice.
  */
 export function createEngine(io: EngineIo = systemIo) {
   const sent: number[] = []
@@ -154,7 +180,7 @@ export function createEngine(io: EngineIo = systemIo) {
     const ok =
       batch.length === 1
         ? send(batch[0].title, { body: batch[0].body, tag: batch[0].key, focus: batch[0].focus }, now)
-        : send(`${batch.length} MORE IN AOI`, { body: 'Open the console to see them.', tag: 'notify-overflow' }, now)
+        : send(OVERFLOW.title(batch.length), { body: OVERFLOW.body, tag: 'notify-overflow' }, now)
     if (!ok) bump(batch.length)
   }
 
@@ -176,6 +202,14 @@ export function createEngine(io: EngineIo = systemIo) {
         return
       }
       if (!send(event.title, { body: event.body, tag: event.key, focus: event.focus }, now)) bump(1)
+    },
+
+    /** SEND TEST: one notice now, whatever the visibility, rate cap or threshold. Not counted, not remembered. */
+    sendTest(): 'shown' | 'refused' {
+      const handle = openTest(io)
+      if (handle === null) return 'refused'
+      opened.add(handle)
+      return 'shown'
     },
 
     /** The tab is visible again: close the system notices and count anything still waiting. */
