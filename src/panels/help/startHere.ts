@@ -26,7 +26,7 @@ export const START_HERE: readonly StartStep[] = [
   },
   {
     title: 'Get told about warnings',
-    body: 'Tornado warnings in your area pop up on screen. Turn on NOTIFY to get browser notifications too, while this tab is open.',
+    body: 'Tornado warnings in the map view pop up on screen. For browser notifications: press NOTIFY, tick the box, choose Allow, then SEND TEST. They arrive while this tab is in the background, not when it is closed.',
   },
   {
     title: 'On a quiet day',
