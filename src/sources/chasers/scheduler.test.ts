@@ -170,6 +170,23 @@ describe('createScheduler', () => {
     s.stop()
   })
 
+  it('a visible event after a hidden-pace timer fired, with its check still in flight, starts no second check', async () => {
+    const s = make()
+    s.start()
+    await vi.advanceTimersByTimeAsync(0)
+    visible = false
+    await vi.advanceTimersByTimeAsync(10_000)
+    expect(fetchChannelState).toHaveBeenCalledTimes(2)
+    // The next check hangs: the fired hidden timer's handle is still set, so only the in-flight guard stops a re-arm.
+    vi.mocked(fetchChannelState).mockReturnValue(new Promise(() => {}))
+    await vi.advanceTimersByTimeAsync(60_000)
+    expect(fetchChannelState).toHaveBeenCalledTimes(3)
+    fireVisible()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(fetchChannelState).toHaveBeenCalledTimes(3)
+    s.stop()
+  })
+
   it('a visible event after stop does nothing, and the listener is removed', async () => {
     const s = make()
     s.start()
