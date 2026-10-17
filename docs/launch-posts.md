@@ -12,18 +12,18 @@ Posting order (launch-plan §6): r/selfhosted on **Fri 2026-10-30**, Show HN on 
 Radar, NWS warnings, chaser livestreams, scanner audio and DOT traffic cameras for one area, on one screen. You run it yourself: no accounts, no API keys.
 
 **Run it**
-- Docker: `docker run --rm -p 127.0.0.1:8080:8080 ghcr.io/furbysoup/storm-chasers`
-- Source: `git clone`, `npm ci`, `npm start`
-- No build: download the zip below and run `node dist-server/index.js`
+- **No terminal:** install Node.js LTS from nodejs.org, download `inflow-v1.0.0.zip` below, unzip it and double-click **Start INFLOW**. Your browser opens on it.
+- **Docker:** `docker run -d --restart unless-stopped -p 127.0.0.1:8080:8080 ghcr.io/furbysoup/storm-chasers`, then open http://localhost:8080
+- **Source:** `git clone`, `npm ci`, `npm start`
 
-Then open http://localhost:8080.
+Follow a streamer who isn't on the built-in list: **+ CHASER** in the Chaser Feeds panel, then paste their YouTube link.
 
 **Known limits:**
 - Stream live status depends on public YouTube pages and may break.
 - Cameras cover 19 state DOT sites; OK and AL aren't in yet.
 - The top bar at phone width is still busy.
 
-**Not planned for 1.0:** hosted version, accounts, Twitch/Kick. Ideas are welcome as issues labelled `post-1.0`.
+Ideas and broken sources are welcome as GitHub issues.
 
 Not for life-safety decisions. Follow official NWS warnings.
 
@@ -37,7 +37,8 @@ Not for life-safety decisions. Follow official NWS warnings.
 
 I made this for watching severe weather days on a spare monitor. It puts NEXRAD radar, NWS warnings, chaser YouTube livestreams, OpenMHz scanner audio and state DOT traffic cameras on one screen. Everything follows whatever area the map is showing.
 
-- `docker run --rm -p 127.0.0.1:8080:8080 ghcr.io/furbysoup/storm-chasers`
+- `docker run -d --restart unless-stopped -p 127.0.0.1:8080:8080 ghcr.io/furbysoup/storm-chasers`
+- Not a Docker person? There's a zip with a double-click start too.
 - No accounts, no API keys, no telemetry. Your server fetches the public feeds directly.
 - It has a WALL layout for a TV or wall display; set `HOST=0.0.0.0` or publish the port on your LAN.
 - amd64 and arm64 images (it runs on a Pi).
@@ -75,11 +76,11 @@ It's a situation room you run on your own computer. Pick an area and every panel
 - NEXRAD radar and velocity;
 - live NWS warnings;
 - SPC outlooks and MDs;
-- chaser livestreams (it notices when about 60 known chasers go live);
+- chaser livestreams (it notices when about 60 known chasers go live, and you can add any other YouTube streamer);
 - OpenMHz scanners;
 - state DOT traffic cameras.
 
-It's free, open source, with no account or keys: https://github.com/FurbySoup/storm-chasers
+It's free and open source, with no account or keys. Install Node.js, unzip, and double-click to start: https://github.com/FurbySoup/storm-chasers
 
 I'm the author, posting in case it's useful to anyone here. It's a companion screen, not a radar app replacement, and not for life-safety decisions. Corrections to the chaser list are welcome.
 

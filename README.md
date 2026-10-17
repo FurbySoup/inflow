@@ -7,38 +7,48 @@ Radar, warnings, chaser livestreams, scanner audio and DOT traffic cameras for o
 
 ## Run it
 
-**Docker:**
-```bash
-docker run --rm -p 127.0.0.1:8080:8080 ghcr.io/furbysoup/storm-chasers
-```
+### Easiest: no terminal needed (Windows, Mac, Linux)
+1. Install **Node.js** (free): download the **LTS** version from [nodejs.org](https://nodejs.org) and click through the installer.
+2. Download `inflow-….zip` from the [latest release](https://github.com/FurbySoup/storm-chasers/releases/latest) and unzip it.
+3. Open the unzipped folder and double-click **Start INFLOW** (the Windows or Mac file).
 
-**From source** (Node 20 or newer):
+Your browser opens on INFLOW. Leave the small window that appeared open while you use it, and close it to stop INFLOW.
+
+The first time only:
+- **Mac:** right-click the file → **Open** → **Open**, because it isn't from the App Store.
+- **Windows:** if you see "Windows protected your PC", click **More info** → **Run anyway**.
+
+### Docker (home servers, NAS, Raspberry Pi)
+```bash
+docker run -d --restart unless-stopped --name inflow -p 127.0.0.1:8080:8080 ghcr.io/furbysoup/storm-chasers
+```
+Then open **http://localhost:8080**. If port 8080 is taken, change the first number: `-p 127.0.0.1:8090:8080`.
+
+### From source (developers)
 ```bash
 git clone https://github.com/FurbySoup/storm-chasers.git && cd storm-chasers
 npm ci
 npm start
 ```
-
-Then open **http://localhost:8080**. The first `npm start` builds the app, which takes about a minute.
-
-Port 8080 already in use? Use `-p 127.0.0.1:8090:8080` with Docker, or `PORT=8090 npm start`.
-
-Prefer no build at all? Each [release](https://github.com/FurbySoup/storm-chasers/releases) has a zip. Unzip it and run `node dist-server/index.js`.
+The first `npm start` builds the app (about a minute), then opens your browser.
 
 ## What's on screen
 - **Map:** NEXRAD radar, single-site velocity, GOES satellite, SPC outlooks (days 1–8), watches, mesoscale discussions and storm reports.
 - **Warnings:** live NWS alerts for the area you're looking at. A new tornado warning gets a toast and, if you allow it, a browser notification.
-- **Chaser feeds:** curated national streams, plus a 58-channel chaser roster that pops in when a channel goes live.
+- **Chaser feeds:** curated national streams, plus a 58-channel chaser roster that pops in when a channel goes live. Add any other YouTube streamer yourself with **+ CHASER** (see below).
 - **Audio:** OpenMHz scanner systems for the area, and KiwiSDR receivers for HF, ham and CB.
 - **Cameras:** traffic cameras from 19 state DOT sites.
 - **Top bar:** area presets (Plains, Dixie Alley, Southeast), the highest SPC risk in view, and local and UTC time.
 
 Pan or zoom the map and every panel follows. Press `?` for shortcuts and plain-English explanations of every acronym.
 
+## Add a chaser
+A new streamer not on the built-in list? In the Chaser Feeds panel, press **+ CHASER** and paste their YouTube channel link, a link to one of their videos, or their `@handle`. INFLOW looks the channel up on YouTube, shows you the name to confirm, and from then on shows them whenever they're live. The list is saved in your browser, so there's nothing to rebuild or restart. Each browser keeps its own list, so on a wall display, add them there too.
+
 ## Wall display or another device on your network
 By default INFLOW only listens on this computer. To open it from a TV, tablet or a second machine:
-- `npm start`: run `HOST=0.0.0.0 npm start` (PowerShell: `$env:HOST='0.0.0.0'; npm start`), then open `http://<this-computer's-IP>:8080`.
-- Docker: use `-p 8080:8080` instead of `-p 127.0.0.1:8080:8080`.
+- From source: `HOST=0.0.0.0 npm start` (PowerShell: `$env:HOST='0.0.0.0'; npm start`), then open `http://<this-computer's-IP>:8080`.
+- Docker: use `-p 8080:8080` instead of `-p 127.0.0.1:8080:8080`, then open `http://<server-IP>:8080`.
 
 Pick the **WALL** layout (Shift+2) and press `F` for fullscreen.
 
