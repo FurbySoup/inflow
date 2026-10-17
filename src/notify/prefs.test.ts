@@ -56,8 +56,8 @@ describe('parsePrefs', () => {
     expect(parsePrefs(null, NOW)).toEqual(DEFAULT_PREFS)
   })
 
-  it('defaults to off with the WATCHES step', () => {
-    expect(DEFAULT_PREFS).toMatchObject({ enabled: false, threshold: 'WATCHES', permission: 'default' })
+  it('defaults to off with the WARNINGS step', () => {
+    expect(DEFAULT_PREFS).toMatchObject({ enabled: false, threshold: 'WARNINGS', permission: 'default' })
   })
 
   it('gives the defaults for unreadable JSON', () => {
@@ -66,7 +66,7 @@ describe('parsePrefs', () => {
 
   it('drops malformed fields and keeps good ones', () => {
     const raw = JSON.stringify({ enabled: 'yes', threshold: 'LOUD', permission: 'granted', seen: { a: NOW, b: 'x' } })
-    expect(parsePrefs(raw, NOW)).toEqual({ enabled: false, threshold: 'WATCHES', permission: 'granted', seen: { a: NOW } })
+    expect(parsePrefs(raw, NOW)).toEqual({ enabled: false, threshold: 'WARNINGS', permission: 'granted', seen: { a: NOW } })
   })
 
   it('prunes seen keys older than 48 h when read', () => {

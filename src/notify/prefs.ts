@@ -23,7 +23,8 @@ export interface NotifyPrefs {
 export const PREFS_KEY = 'storm-chasers.notify.v1'
 export const SEEN_TTL_MS = 48 * 60 * 60 * 1000
 
-export const DEFAULT_PREFS: NotifyPrefs = { enabled: false, threshold: 'WATCHES', permission: 'default', seen: {} }
+/** Warnings only by default (ADR-0022): watches, MDs, risk and chasers are opt-in. A stored valid threshold still wins. */
+export const DEFAULT_PREFS: NotifyPrefs = { enabled: false, threshold: 'WARNINGS', permission: 'default', seen: {} }
 
 const PERMISSIONS: PermissionState[] = ['granted', 'denied', 'default']
 
