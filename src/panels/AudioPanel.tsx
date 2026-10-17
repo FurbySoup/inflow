@@ -2,11 +2,11 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 
 import { kiwisdrDirectory, nearestCbReceivers, receiverFeeds } from '../sources/kiwisdr/receivers'
 import { openmhzCalls, type ScannerCall } from '../sources/openmhz/calls'
-import { coveredStates, openmhzSystems, systemsInAoi, type ScannerSystem } from '../sources/openmhz/systems'
+import { coveredStates, openmhzSystems, systemLabel, systemsInAoi, type ScannerSystem } from '../sources/openmhz/systems'
 import { useSource } from '../lib/useSource'
-import { queryFeed } from '../lib/feedStatus'
+import { queryFeed, queryStatus } from '../lib/feedStatus'
 import { useAoi } from '../state/aoi'
-import { Abbr, ConsoleButton } from '../ui'
+import { Abbr, ConsoleButton, type FeedStatus } from '../ui'
 import { Panel } from './Panel'
 
 // Tips for terms not yet in the kit glossary (ADR-0018); the glossary entries are added at merge.
@@ -47,6 +47,15 @@ function callAge(iso: string): string {
   return `${Math.round(mins / 1440)}d ago`
 }
 
+// Worst first. Offline and stale are not produced by the two feeds here; they are ranked so the function is total.
+const SEVERITY: FeedStatus[] = ['error', 'offline', 'loading', 'stale', 'live']
+
+/** The worse of two feed statuses. The panel body shows both feeds, so the LED must reflect both. */
+// eslint-disable-next-line react-refresh/only-export-components -- pure helper, exported for its test
+export function worstStatus(a: FeedStatus, b: FeedStatus): FeedStatus {
+  return SEVERITY.indexOf(a) <= SEVERITY.indexOf(b) ? a : b
+}
+
 export function AudioPanel() {
   const bbox = useAoi((s) => s.bbox)
   const states = useAoi((s) => s.states)
@@ -72,7 +81,10 @@ export function AudioPanel() {
       collapsible
       code="AUD-01"
       title="Radio / Scanner"
-      status={queryFeed(directory, kiwisdrDirectory.refreshMs)}
+      status={{
+        ...queryFeed(directory, kiwisdrDirectory.refreshMs),
+        status: worstStatus(queryStatus(scanner), queryStatus(directory)),
+      }}
       meta={
         directory.data ? (
           <>
@@ -102,7 +114,7 @@ export function AudioPanel() {
             >
               {systems.map((s) => (
                 <option key={s.shortName} value={s.shortName}>
-                  {s.place ? `${s.name} · ${s.place} (${s.state})` : `${s.name} (${s.state})`}
+                  {systemLabel(s, systems)}
                 </option>
               ))}
             </select>

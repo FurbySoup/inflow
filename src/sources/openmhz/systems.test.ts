@@ -4,6 +4,7 @@ import {
   coveredStates,
   normalizeSystems,
   openmhzSystemsAdapter,
+  systemLabel,
   systemsInAoi,
   type OpenMhzSystemsResponse,
 } from './systems'
@@ -48,6 +49,40 @@ describe('normalizeSystems', () => {
       listOf(edge('inside', 24 * 60 * 60_000 - 1000), edge('outside', 24 * 60 * 60_000 + 1000)),
     )
     expect(systems.map((s) => s.shortName)).toEqual(['inside'])
+  })
+})
+
+describe('normalizeSystems place', () => {
+  it('trims a county with a trailing space (fireems reads "Florence ")', () => {
+    const base = response.systems[0]
+    const [sys] = normalizeSystems(
+      listOf({ ...base, shortName: 'fireems', name: 'Florence Fire', state: 'SC', city: null, county: 'Florence ' }),
+    )
+    expect(sys.place).toBe('Florence')
+  })
+})
+
+describe('systemLabel', () => {
+  // Real pair from the live list (2026-10-13): both Alabama, neither has a city or county.
+  const afrn = { shortName: 'afrn', name: 'Alabama Interoperable Radio System', state: 'AL', place: '', lastActive: '' }
+  const airs = { ...afrn, shortName: 'airs' }
+  const palm800 = { shortName: 'palm800', name: 'Palmetto 800', state: 'SC', place: 'Sumter', lastActive: '' }
+  const fireems = { shortName: 'fireems', name: 'Palmetto 800', state: 'SC', place: 'Florence', lastActive: '' }
+
+  it('gives a unique name the plain label, with the place when there is one', () => {
+    const yorksc = { shortName: 'yorksc', name: 'York County, SC Public Safety', state: 'SC', place: 'York County', lastActive: '' }
+    expect(systemLabel(yorksc, [yorksc, palm800])).toBe('York County, SC Public Safety · York County (SC)')
+  })
+
+  it('gives a system with no place the label without the place', () => {
+    expect(systemLabel(afrn, [afrn])).toBe('Alabama Interoperable Radio System (AL)')
+  })
+
+  it('appends the shortName when another system shares the name', () => {
+    expect(systemLabel(afrn, [afrn, airs])).toBe('Alabama Interoperable Radio System (AL) · afrn')
+    expect(systemLabel(airs, [afrn, airs])).toBe('Alabama Interoperable Radio System (AL) · airs')
+    expect(systemLabel(palm800, [palm800, fireems])).toBe('Palmetto 800 · Sumter (SC) · palm800')
+    expect(systemLabel(fireems, [palm800, fireems])).toBe('Palmetto 800 · Florence (SC) · fireems')
   })
 })
 
