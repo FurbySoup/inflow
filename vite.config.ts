@@ -14,6 +14,14 @@ function devProxy(env: Record<string, string>): Record<string, ProxyOptions> {
       changeOrigin: true,
       rewrite: (p) => r.upstreamPath + p.slice(r.prefix.length),
       ...(r.headers ? { headers: { ...r.headers } } : {}),
+      // Same rule as the production server: never let the browser cache an upstream error (NWS 500s carry max-age=180).
+      configure: (proxy) => {
+        proxy.on('proxyRes', (res) => {
+          if ((res.statusCode ?? 200) < 400) return
+          for (const h of ['cache-control', 'expires', 'etag', 'last-modified']) delete res.headers[h]
+          res.headers['cache-control'] = 'no-store'
+        })
+      },
     }
   }
   return out

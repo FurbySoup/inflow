@@ -21,6 +21,6 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   font-family: var(--font-data);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   color: var(--muted);
 }

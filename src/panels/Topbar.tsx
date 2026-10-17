@@ -51,12 +51,12 @@ export function Topbar() {
       <span className="topbar-item">
         <Abbr term="AOI" /> <strong title={states.join(' · ')}>{states.length ? aoiLabel(states) : '—'}</strong>
         {aoiZone && (
-          <>
+          <span className="topbar-aoi-clock">
             {' · '}
             <strong className="clock" title={aoiTitle}>
               {zoneLabel(now, aoiZone)}
             </strong>
-          </>
+          </span>
         )}
       </span>
       <ThreatButton />

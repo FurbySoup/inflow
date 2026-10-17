@@ -10,6 +10,7 @@ import { KeyboardShortcuts } from './panels/KeyboardShortcuts'
 import { ToastRegion } from './panels/ToastRegion'
 import { NotifyEngine } from './notify/NotifyEngine'
 import { useLayout } from './state/layout'
+import { Abbr } from './ui'
 
 // Panel codes of the console row, left to right (must match each panel's `code`).
 const CONSOLE_CODES = ['WX-02', 'AUD-01', 'CCTV-01'] as const
@@ -81,6 +82,9 @@ export default function App() {
           <CamerasPanel />
         </div>
       </div>
+      <p className="layout-foot">
+        Not for life-safety decisions · follow <Abbr term="NWS" /> warnings and local officials
+      </p>
       <KeyboardShortcuts />
       <ToastRegion />
       <NotifyEngine />

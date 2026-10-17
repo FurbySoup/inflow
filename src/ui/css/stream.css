@@ -5,7 +5,7 @@
 /* Thumbnail still (HANDOFF §9.10): a 16:9 image refreshed by the app; no player, so no decode cost. */
 .stream-still { position: relative; aspect-ratio: 16 / 9; border: 1px solid var(--border-default); background: var(--surface-inset); display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .stream-still-img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.stream-still-empty { padding: 4px; font-family: var(--font-data); font-size: 0.7rem; line-height: 1.3; color: var(--text-muted); text-align: center; }
+.stream-still-empty { padding: 4px; font-family: var(--font-data); font-size: 0.75rem; line-height: 1.3; color: var(--text-muted); text-align: center; }
 /* Read-only THUMB age: muted scrim plate, no border, no pointer. Sand once not re-fetched for over 3 min. */
 .stream-age {
   position: absolute;
@@ -13,7 +13,7 @@
   bottom: 4px;
   padding: 2px 4px;
   font-family: var(--font-data);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
@@ -44,7 +44,7 @@
   bottom: 4px;
   padding: 2px 4px;
   font-family: var(--font-data);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   line-height: 1;
   letter-spacing: 0.04em;
   color: var(--accent);
@@ -54,7 +54,7 @@
 /* Promote affordance (ADR-0012): always visible, no hover dependency, outside the player's own controls. */
 .stream-promote {
   font-family: var(--font-data);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   line-height: 1.4;
   padding: 1px 6px;
@@ -66,13 +66,13 @@
 .stream-promote:hover { background: var(--accent); color: var(--surface-app); }
 .stream-promote:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 /* WATCH / STILL: a btn-console over the frame. Feedback: a playing tile's button fills solid accent. */
-.stream-play { background: var(--surface-scrim); font-size: 0.65rem; letter-spacing: 0.08em; line-height: 1.4; padding: 1px 6px; }
+.stream-play { background: var(--surface-scrim); font-size: 0.75rem; letter-spacing: 0.08em; line-height: 1.4; padding: 1px 6px; }
 .stream-play[data-playing='true'] { background: var(--accent); color: var(--surface-app); }
 .stream-play:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 /* Main-feed sound toggle: outlined when muted, solid accent when sound is on (feedback via aria-pressed). */
 .stream-sound {
   font-family: var(--font-data);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   line-height: 1.4;
   padding: 1px 6px;
@@ -86,7 +86,7 @@
 /* Read-only state tags: filled or outlined, no pointer, no hover. Live is solid phosphor (never hazard red: ADR-0012). */
 .stream-main-tag {
   font-family: var(--font-data);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   line-height: 1.4;
   padding: 1px 6px;
@@ -96,7 +96,7 @@
 }
 .stream-live {
   font-family: var(--font-data);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   line-height: 1.4;
   padding: 1px 6px;
@@ -114,6 +114,10 @@
 .stream-select[aria-current='true'] { color: var(--accent); }
 .stream-link { color: var(--accent); text-decoration: none; }
 .stream-link:hover, .stream-link:focus-visible { text-decoration: underline; }
+@media (pointer: coarse) {
+  .stream-link { position: relative; display: inline-block; padding: 0 4px; }
+  .stream-link::before { content: ''; position: absolute; inset: -14px -12px; }
+}
 .stream-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 
 /* Touch (ADR-0014): controls grow to a usable target; hover-only cues never carry meaning (ADR-0012). */

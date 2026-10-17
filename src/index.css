@@ -39,6 +39,9 @@
 /* Grid items default to min-width:auto, so a long chip row or stream caption could widen a track past
    the viewport (WALL at 1024 px overflowed by 45 px). Cells shrink; their panels scroll inside. */
 .workspace > * { min-width: 0; }
+/* Console cells are size containers, so kit rows (e.g. the alert ZONE badge) adapt to the panel's own width.
+   Grid cells have a definite width; a shrink-to-fit element as the container would collapse to 0. */
+.console-cell { container-type: inline-size; }
 
 /* WALL, CHASE and mobile use the preset tokens verbatim (ADR-0015): columns and areas come from
    --layout-cols / --layout-areas. Rows use the collapse-aware variables set by App.tsx, which equal
@@ -174,11 +177,28 @@ body.resizing iframe { pointer-events: none; }
 .maplibregl-ctrl-attrib { background: var(--surface-scrim) !important; color: var(--text-secondary); font-family: var(--font-data); }
 .maplibregl-ctrl-attrib a { color: var(--text-secondary) !important; }
 
+/* Life-safety line: always on screen, quiet, never a modal (WP-51). */
+.layout-foot {
+  flex: none;
+  margin: 0;
+  font: 400 var(--fs-ui-xs) / 1.3 var(--font-ui);
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  text-align: center;
+}
+
 /* Responsive tiers (ADR-0014). Check every change at the viewport matrix in docs/work-plan.md. */
 
 /* Mid-width desktop / tablet landscape: tighten the top bar, drop the secondary clock. */
 @media (max-width: 1280px) {
   .topbar { gap: 14px; }
+  /* The feeds column gives way below 1280 so the three console panels keep readable widths (at 1024 a fixed
+     400 px left each panel ~200 px and cut the alert names off). A user-dragged narrower width still wins. */
+  .layout[data-preset='default'] .workspace {
+    grid-template-columns:
+      var(--c1, minmax(0, 1fr)) var(--gutter) var(--c2, minmax(0, 1fr)) var(--gutter)
+      var(--c3, minmax(0, 1fr)) var(--gutter) min(var(--side-w, 400px), max(280px, 30vw));
+  }
   .topbar-local { display: none; }
   /* Deliberate deviation from token geometry: WALL's fixed 460 px / 540 px columns would leave no map
      at this width (1024 px leaves about 0), so the columns scale with the viewport here.
@@ -199,6 +219,15 @@ body.resizing iframe { pointer-events: none; }
 @media (max-width: 900px) {
   .layout { height: auto; }
   .topbar { flex-wrap: wrap; gap: 12px; padding: 8px 12px; }
+  /* The AOI line (states + clock) may wrap: as one unbreakable item it pushed the page 27 px wider than a 390 px phone. */
+  .topbar > .topbar-item { flex: 0 1 auto; min-width: 0; overflow-wrap: anywhere; }
+  /* Phones: the AOI's local clock gives way (the phone shows local time; UTC stays for matching warnings), so
+     the AOI line fits one row, and the threat line shares a row with the SPC risk. */
+  .topbar-aoi-clock { display: none; }
+  /* A taller map on tablets and tall phones (the token's fixed 320 px was 31% of a 768x1024 screen). */
+  .layout[data-preset='mobile'] .workspace { grid-template-rows: clamp(320px, 45dvh, 520px) auto auto auto auto; }
+  .threat-none { font-size: var(--fs-ui-s); }
+  .layout { overflow-x: clip; }
   .panel-body { max-height: 320px; }
 }
 

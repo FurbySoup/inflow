@@ -38,9 +38,18 @@ export function TaggedText({ text }: { text: string }) {
   const parts = text.split(/(\s+)/)
   return (
     <>
-      {parts.map((part, i) =>
-        GLOSSARY[part] && !NOT_AUTO_TAGGED.has(part) ? <Abbr key={i} term={part} /> : <Fragment key={i}>{part}</Fragment>,
-      )}
+      {parts.map((part, i) => {
+        // Punctuation around a word ("SE.", "(SPC", "D1–D8)") stays outside the tip, so the term still matches.
+        const [, lead = '', word = '', trail = ''] = /^([("'‘“]*)(.*?)([)"'’”.,;:!?]*)$/.exec(part) ?? []
+        if (!GLOSSARY[word] || NOT_AUTO_TAGGED.has(word)) return <Fragment key={i}>{part}</Fragment>
+        return (
+          <Fragment key={i}>
+            {lead}
+            <Abbr term={word} />
+            {trail}
+          </Fragment>
+        )
+      })}
     </>
   )
 }

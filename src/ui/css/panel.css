@@ -92,6 +92,11 @@
   cursor: pointer;
 }
 .panel-toggle:hover { border-color: var(--accent); color: var(--accent); }
+/* Touch: a 44 px hit area around the 22 px box, so the header keeps its size (ADR-0014). */
+@media (pointer: coarse) {
+  .panel-toggle { position: relative; }
+  .panel-toggle::before { content: ''; position: absolute; inset: -11px; }
+}
 .panel-toggle:active { box-shadow: inset 0 0 0 1px var(--ink-dark); }
 .panel-toggle:focus-visible { outline: var(--focus-w) solid var(--focus-ring); outline-offset: var(--focus-offset); }
 .panel-collapsed .panel-head h2,
