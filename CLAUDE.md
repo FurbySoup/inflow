@@ -18,7 +18,7 @@ npm start            # production: build if needed, serve dist + /api on http://
 npm run build:server # bundle server/ to dist-server/
 npm run build:ui     # UI kit library (src/ui → dist/ui, ES + .d.ts), the input to the Claude Design sync
 ```
-Merge gate for any change: `npm run typecheck && npm run lint && npm test && npm run build:ui`. `build:ui` catches kit files importing app code (`src/ui` must stay self-contained).
+Merge gate for any change: `npm run typecheck && npm run lint && npm test && npm run build:ui`, plus the CI XSS guard `! grep -rnE "dangerouslySetInnerHTML|.innerHTMLs*=" src` (it covers tests too). `build:ui` catches kit files importing app code (`src/ui` must stay self-contained).
 In the desktop app, `.claude/launch.json` defines the `dev` server for live checks in the browser pane.
 
 ## Architecture (read the ADRs in `docs/adr/` before structural changes)
