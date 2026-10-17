@@ -66,6 +66,42 @@ describe('NotifyControl', () => {
     expect(screen.getByText(/Closed tabs get nothing \(v2\)/)).toBeTruthy()
   })
 
+  it('re-reads the browser permission when the popover opens', () => {
+    FakeNotification.permission = 'denied'
+    updatePrefs({ enabled: true })
+    render(<NotifyControl />)
+    expect(screen.getByRole('button', { name: 'NOTIFY BLOCKED' })).toBeTruthy()
+
+    FakeNotification.permission = 'granted'
+    fireEvent.click(screen.getByRole('button', { name: 'NOTIFY BLOCKED' }))
+
+    expect(screen.getByRole('button', { name: 'NOTIFY ON' })).toBeTruthy()
+    expect(screen.queryByText(/BLOCKED IN BROWSER/)).toBeNull()
+    expect(requestPermission).not.toHaveBeenCalled()
+  })
+
+  it('re-reads the browser permission when the tab becomes visible', () => {
+    const visibility = Object.getOwnPropertyDescriptor(document, 'visibilityState')
+    try {
+      FakeNotification.permission = 'denied'
+      updatePrefs({ enabled: true })
+      render(<NotifyControl />)
+      expect(screen.getByRole('button', { name: 'NOTIFY BLOCKED' })).toBeTruthy()
+
+      FakeNotification.permission = 'granted'
+      Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' })
+      act(() => {
+        document.dispatchEvent(new Event('visibilitychange'))
+      })
+
+      expect(screen.getByRole('button', { name: 'NOTIFY ON' })).toBeTruthy()
+      expect(requestPermission).not.toHaveBeenCalled()
+    } finally {
+      if (visibility) Object.defineProperty(document, 'visibilityState', visibility)
+      else delete (document as { visibilityState?: unknown }).visibilityState
+    }
+  })
+
   it('closes on Escape and returns focus to the button', () => {
     render(<NotifyControl />)
     const button = screen.getByRole('button', { name: 'NOTIFY OFF' })
