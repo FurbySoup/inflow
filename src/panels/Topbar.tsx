@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAoi } from '../state/aoi'
 import { LayoutMenu } from './LayoutMenu'
+import { TopbarMore } from './TopbarMore'
 import { AoiPresets } from './AoiPresets'
 import { KeysButton } from './KeyboardShortcuts'
 import { NotifyControl } from '../notify/NotifyControl'
@@ -63,9 +64,11 @@ export function Topbar() {
       <OutlookRisk />
       <AoiPresets />
       <span className="spacer" />
-      <NotifyControl />
-      <KeysButton />
-      <LayoutMenu />
+      <TopbarMore>
+        <NotifyControl />
+        <KeysButton />
+        <LayoutMenu />
+      </TopbarMore>
       <span className="topbar-item">
         <Abbr term="UTC" /> <strong className="clock">{fmtUtc(now)}Z</strong>
       </span>
