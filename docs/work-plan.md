@@ -80,7 +80,7 @@ Expected conflicts:
 
 After merge: update the kit previews where builders didn't, then re-sync Claude Design.
 
-## Wave 12 (1.0 usability): in progress 2026-10-17
+## Wave 12 (1.0 usability): merged 2026-10-17
 User asks (2026-10-17): anyone must be able to add a chaser after release without a rebuild, and the self-run path must work for non-technical users.
 Prep (done, on `main`):
 - `src/state/myChasers.ts` (per-browser user chasers, validated, capped at 100);

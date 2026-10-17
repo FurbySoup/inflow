@@ -3,9 +3,21 @@
 Handoff from the 2026-10-17 Wave 11 session. Supersedes the post-Wave-10 handoff.
 
 **State at handoff:** `main` is pushed. There are no agent worktrees and no local branches besides `main`.
-- **Merged:** Waves 1–11 (WP-01…47). Gate: typecheck, lint, test (787) and build:ui all pass. CI (`ci.yml`) runs on every push and PR.
+- **Merged:** Waves 1–12 (WP-01…49). Gate: typecheck, lint, test (872) and build:ui all pass. CI (`ci.yml`) runs on every push and PR.
 - **Plan of record:** [`docs/launch-plan.md`](launch-plan.md). Its ticked boxes are done.
 - **Launch posts and release notes:** [`docs/launch-posts.md`](launch-posts.md), ready to paste.
+
+## Wave 12 (merged 2026-10-17, from the user's review)
+- **WP-48 + CHASER:** paste a YouTube channel link, video link or @handle; the app resolves it through YouTube, so it never trusts an ID from the input alone. The channel then joins roster liveness and went-live notifications.
+  - Per browser, in localStorage, capped at 100.
+  - The `/api/youtube` route now sends `SOCS=CAI` (YouTube's "reject all" consent answer); without it, UK/EU channel pages 302 to a consent wall.
+  - Live-checked through Docker: add `@NASA`, total 58→59, immediate check, REMOVE back to 58, 375 px stacks.
+- **WP-49 double-click start:**
+  - the release zip unpacks to one folder with `Start INFLOW (Windows).cmd`, `(Mac).command`, `start-inflow.sh` and `READ ME FIRST.txt`;
+  - the server opens the browser (`--open`/`OPEN_BROWSER=1`; `npm start` on a TTY) and moves to the next free port when 8080 is busy and `PORT` isn't set.
+  - The Windows launcher was run from a mock unzipped folder: it fell back to 8081 and served the app.
+- **Wording:** "situation room" / "mission control", never "dashboard". The release notes no longer list ruled-out ideas.
+- **README:** order is no-terminal route, then Docker, then source; it has a "+ CHASER" section.
 
 ## Wave 11 (merged 2026-10-17)
 - **WP-45 `server/`:** allowlisted proxy from `proxy/routes.ts`, GET-only except the CARS POSTs, header allowlists both ways, redirects never followed, in-memory cache, 127.0.0.1 by default, security headers, `/healthz`.
@@ -39,7 +51,7 @@ Only the user can do (launch-plan §3):
 - Posting (launch-posts.md): r/selfhosted on **Friday 2026-10-30**.
 
 ## Post-1.0 (file as `post-1.0` issues, don't build)
-Phone-width top bar rows, NOTIFY/MORE overlap, Tab-out closing MORE, a full CSP, `npx inflow-wx`, Twitch/Kick, OK/AL cameras, a POST body-read timeout (minor), chaser positions (needs Spotter Network permission).
+Sharing a + CHASER list between devices (export/import), a test that a user-added channel fires a went-live event, phone-width top bar rows, NOTIFY/MORE overlap, Tab-out closing MORE, a full CSP, `npx inflow-wx`, Twitch/Kick, OK/AL cameras, a POST body-read timeout (minor), chaser positions (needs Spotter Network permission).
 
 ## Process rules that cost us when skipped
 - Push `main` before launching a wave; verifiers use `git worktree add --detach C:/wvNN <sha> && cd … && npm ci` in one command; `set -o pipefail`.
