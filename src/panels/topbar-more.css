@@ -1,0 +1,27 @@
+/* Top-bar MORE menu (WP-44). Above 900 px the wrapper and group are display: contents, so the controls sit in the bar
+   exactly as before and the button is hidden. At ≤ 900 px the button shows and the group is a popover under it.
+   Tokens only. */
+.topbar-more-root { display: contents; }
+.btn-console.topbar-more-btn { display: none; }
+.topbar-more { display: contents; }
+
+@media (max-width: 900px) {
+  .topbar-more-root { position: relative; display: inline-flex; align-items: center; }
+  .btn-console.topbar-more-btn { display: inline-flex; }
+  .topbar-more { display: none; }
+  .topbar-more[data-open='true'] {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    position: absolute;
+    top: calc(100% + var(--sp-2));
+    right: 0;
+    z-index: 40;
+    box-sizing: border-box;
+    max-width: calc(100vw - 24px);
+    padding: var(--sp-3);
+    background: var(--panel-head);
+    border: 1px solid var(--border);
+  }
+}
