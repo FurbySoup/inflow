@@ -64,7 +64,7 @@ Features are specified as self-contained work packages in `docs/packages/`, sche
   - Builders must not start dev servers or use the browser pane.
   - Merge only after a verifier PASS.
   - Run checks with `set -o pipefail`.
-- **Next steps:** start from `docs/next-session.md` (handoff, open live checks, Wave 10 backlog and a paste-in prompt). The schedule is in `docs/work-plan.md`; the post-v1 hosting plan is in `docs/roadmap.md`.
+- **Next steps:** start from `docs/next-session.md` (handoff and a paste-in prompt for Wave 11). The 1.0 release plan is `docs/launch-plan.md` (ship 2026-10-30, self-run per ADR-0020). The schedule is in `docs/work-plan.md`; optional hosting later is in `docs/roadmap.md`.
 
 ## Adding things
 - New source: folder in `src/sources/`, adapter + trimmed real-response fixture + `normalize` test. Add a proxy route only if CORS/headers require it. Verify CORS for the *actual* request (JSON POSTs preflight; CARS failed that).

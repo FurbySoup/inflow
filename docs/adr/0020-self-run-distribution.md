@@ -1,5 +1,5 @@
 # 0020. Ship 1.0 as a self-run app, not a hosted service
-Status: Proposed
+Status: Accepted
 Date: 2026-10-17
 
 ## Context

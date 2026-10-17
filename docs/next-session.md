@@ -1,18 +1,28 @@
-# Next session: after Waves 8–9
+# Next session: Wave 11, ship 1.0 (ADR-0020)
 
-Handoff from the 2026-10-11…13 session. Supersedes `docs/next-session-wave8.md`.
+Handoff from the 2026-10-17 session. Supersedes the post-Wave-9 handoff.
 
-**State at handoff:** `main` is pushed and clean; no agent worktrees are left.
-- **Merged:** Waves 1–10 (WP-01…44).
-- **Gate:** typecheck, lint, test and build:ui all pass, with 720 tests.
-- **Claude Design:** "Storm Chasers UI" is re-synced with 11 components, including Abbr and TaggedText, and the conventions header covers acronym tips.
+**State at handoff:** `main` is pushed and clean. There are no agent worktrees, and no local branches besides `main`.
+- **Merged:** Waves 1–10 (WP-01…44). Gate: typecheck, lint, test (720) and build:ui all pass.
+- **Decided 2026-10-17:**
+  - MIT licence (added);
+  - name stays **INFLOW**, used unregistered with a descriptor (see `docs/launch-plan.md` §3);
+  - ship date **Friday 2026-10-30**;
+  - **ADR-0020 accepted:** 1.0 is self-run (`npm start` + a Docker image on GHCR), and nothing is hosted by the maintainer.
+- **The plan of record is [`docs/launch-plan.md`](launch-plan.md):** the "good enough" gates, the build work (§2), the pre-launch checklist (§3), the README outline (§4), launch day (§5), where to post (§6) and low-maintenance rules (§7).
 
 ## Paste this to start the session
 
-> Continue INFLOW (Storm Chasers repo). Read `CLAUDE.md`, `docs/next-session.md`, `docs/work-plan.md` (Waves 8–9 sections and their follow-ups) and `docs/roadmap.md`, plus ADRs 0010, 0014, 0016–0019.
-> 1. **Close the open live checks first** (below). They need the browser pane visible, or me.
-> 2. **Ask me which track comes next:** (a) Wave 10, the polish backlog below; (b) v2 hosting (Cloudflare Pages + Worker, roadmap §v2); or (c) something new. Then follow the usual flow: re-verify any research, do the orchestrator prep on `main` and push, write the packages, stop and show me the plan, and launch builders and verifiers only after approval.
-> 3. After merging: live-check the ADR-0014 matrix, and re-sync Claude Design (`/design-sync`) if `src/ui` changed.
+> Continue INFLOW (storm-chasers repo). Read `CLAUDE.md`, `docs/next-session.md`, `docs/launch-plan.md`, ADR-0020 and ADR-0005, plus ADR-0010 for the wave process.
+> Goal: Wave 11 = the launch-plan §2 build work (A server, B packaging/CI, C evergreen defaults + About), so 1.0 can ship on Friday 2026-10-30.
+> 1. **Orchestrator prep on `main`** (shared files):
+>    - extract the proxy table from `vite.config.ts` into `proxy/routes.ts`, with Vite reading it (no behaviour change; gate green);
+>    - make the NWS User-Agent configurable (`NWS_CONTACT`, defaulting to the repo URL);
+>    - replace the dated 2026-10-10 entries in `config/streams.json` with verified `channelId` entries (confirm each on the channel's own `/streams` page; never guess IDs);
+>    - choose an evergreen default AOI;
+>    - push.
+> 2. **Write packages** WP-45 (production server: allowlist, GET + CARS POST only, cookies stripped, cache, 127.0.0.1 default, security headers, tests incl. a no-open-proxy test), WP-46 (`npm start`, Dockerfile non-root, `ci.yml` + `release.yml` to GHCR on a `v*` tag) and WP-47 (About/attributions tab in `? HELP`, disclaimer). Stop and show me the plan; launch builders and verifiers only after approval.
+> 3. After merging: run the server locally and live-check all panels through it, plus the ADR-0014 matrix. Then draft the README per launch-plan §4, with me.
 
 ## What exists now (orientation, beyond `CLAUDE.md`)
 - **Any area (Wave 8):**
@@ -38,21 +48,27 @@ Handoff from the 2026-10-11…13 session. Supersedes `docs/next-session-wave8.md
 2. **Background-tab notification:** confirmed by the user in Chrome. Gotcha: Chrome showed "Blocked by an extension" until a blocking extension was switched off entirely (restricting its site access is not enough, since its content-settings rule persists).
 3. **HWO strip:** done for FFC. The default AOI centre is CHS, which has none.
 
-## Next: ship 1.0 → [launch-plan.md](launch-plan.md) (gates, ship date 2026-10-30, ADR-0020 self-run)
-
 ## Wave 10 (merged 2026-10-17, WP-41…44 + prep)
 Done: roster re-arm on visible, AUD-01 LED covers both feeds, duplicate OpenMHz names show their shortName, NotifyControl re-reads permission, the ≡ MORE menu at ≤ 900 px, D4–8 empty-day glossary tips, the stale outlook `aria-busy` flag. Gate: 720 tests.
 Remaining polish (see work-plan Wave 10 follow-ups): the phone-width top bar is still 5 rows; the nested NOTIFY popover isn't anchored to MORE; Tab out of MORE doesn't close it; `?` opens help with MORE open. CHASE label: intentional.
 Claude Design: `src/ui/glossary.ts` gained two entries since the last sync. Re-run `/design-sync` if the glossary should show in previews.
 
-## Bigger items (need the user)
-- **Chaser positions / pin a chaser on the map:** needs written permission from Spotter Network (their terms forbid redisplay). The design is in `docs/work-plan.md` (Wave 9 notes). The user would have to request it.
-- **v2 (`docs/roadmap.md`):**
-  - Cloudflare Pages + one Worker mirroring `vite.config.ts` proxies;
-  - terms gate for IEM, OpenMHz, DOT feeds and YouTube;
-  - YouTube Data API key as a Worker secret;
-  - Web Push for closed-tab notifications;
-  - trademark clearance for "INFLOW" is still pending.
+## Things only the user can do before 2026-10-30 (launch-plan §3)
+- **Git identity:** set the GitHub noreply email for future commits, and turn on "Keep my email private" + "Block command line pushes that expose my email".
+- **GitHub settings:**
+  - secret scanning + push protection;
+  - Dependabot security updates only;
+  - private vulnerability reporting;
+  - branch protection on `main` (after `ci.yml` exists).
+- **Repo metadata:** description, topics, and a social preview image (1280×640 screenshot of a live outbreak).
+- **Secret scan:** run `gitleaks` over the full history (command in launch-plan §3). Claude can run it if Docker is available.
+- **Remote branch:** `origin/claude/design-sync-wave-4-9pjgq8` has 1 commit not on `main`. Merge it or delete it.
+- **Posts** (§6): r/selfhosted on Fridays only (the project is under 3 months old); read the storm subreddits' sidebars first.
+
+## Bigger items (after 1.0)
+- **Chaser positions / pin a chaser on the map:** needs written permission from Spotter Network (their terms forbid redisplay). The design is in `docs/work-plan.md` (Wave 9 notes).
+- **Hosted v2 (`docs/roadmap.md`) is optional now (ADR-0020).** It would need a terms gate, a YouTube Data API key and Web Push. A Deploy-to-Cloudflare button is the cheaper middle ground, with the caveats in ADR-0020.
+- **Post-1.0 polish:** the phone-width top bar (5 rows), NOTIFY/MORE overlap, Tab-out closing MORE, a full CSP, `npx inflow-wx`.
 
 ## Process rules that cost us when skipped (also in agent memory)
 - Push `main` before launching a wave.

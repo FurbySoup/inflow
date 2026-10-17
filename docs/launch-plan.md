@@ -5,7 +5,7 @@ How it is distributed: [ADR-0020](adr/0020-self-run-distribution.md), self-run, 
 
 ## 1. "Good enough" = these gates, nothing more
 
-**Ship date: Friday 2026-10-30.** It's a Friday because r/selfhosted only takes projects under three months old on Fridays. If a gate isn't met by then, cut the gate's scope, not the date.
+**Ship date: Friday 2026-10-30** (confirmed 2026-10-17; ADR-0020 accepted). It's a Friday because r/selfhosted only takes projects under three months old on Fridays. If a gate isn't met by then, cut the gate's scope, not the date.
 
 1.0 ships when **every** box below is ticked. Anything else that comes up becomes a GitHub issue labelled `post-1.0`, and it does not block the release.
 
@@ -42,9 +42,16 @@ How it is distributed: [ADR-0020](adr/0020-self-run-distribution.md), self-run, 
 ## 3. Pre-launch checklist
 
 ### Legal and naming
-- [ ] **Licence.** Add `LICENSE`. MIT is recommended (simplest; maximum reuse). The repo is public today with no licence, which legally means nobody may reuse it.
-- [ ] **Name.** "INFLOW" trademark clearance is still pending (roadmap). Either clear it, or launch as **Storm Chasers** (the repo name) and keep INFLOW as the design name.
-  - Do this before any post, because names in posts are hard to change.
+- [x] **Licence.** MIT (`LICENSE`, `package.json`), decided 2026-10-17. The holder is "FurbySoup"; change it if you prefer your own name.
+- [x] **Name.** Decided 2026-10-17: keep **INFLOW**, used unregistered and always with a descriptor ("INFLOW: storm situation room"). This was a web search, not legal advice.
+  - **Findings:**
+    - "inFlow" is claimed by Archon Systems for **inventory** software (inflowinventory.com), a different market;
+    - other USPTO INFLOW filings cover tech support (Inflow Communications, reg. 6533238), therapy software (pending), parking software (filed 2025-12) and payments (intent to use);
+    - no weather, radar or storm product named INFLOW turned up;
+    - "inflow" is also an everyday meteorology term (storm inflow), so it fits but is weak as a registrable mark.
+  - **So:** don't try to register it; never style it like inFlow Inventory (no "inFlow" casing, no inventory or business wording).
+  - **Do not** use "Storm Chasers" as the product name: it's the Discovery Channel series (ADR-0015). The repo slug `storm-chasers` stays as a descriptive name.
+  - **Package names:** npm `inflow` is taken (an InfluxDB helper); `inflow-wx` is free, if `npx` ever happens. The Docker image follows the repo: `ghcr.io/furbysoup/storm-chasers`.
 - [ ] **Disclaimer** in the README and the app: "Not for life-safety decisions. Follow official NWS warnings and local officials."
 - [ ] **Attributions:**
   - NWS/SPC (public domain);

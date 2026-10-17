@@ -18,3 +18,6 @@ Open http://localhost:5173. The default view is the Georgia/South Carolina outbr
 
 ## Data
 Public-domain and freely accessible sources: National Weather Service, Storm Prediction Center, Iowa Environmental Mesonet (NEXRAD, GOES), OpenMHz, KiwiSDR, state DOT traveler information systems, YouTube embeds. See [ADR-0004](docs/adr/0004-v1-data-sources.md) for endpoints and terms status. Not for life-safety decisions — follow official NWS warnings.
+
+## Licence
+[MIT](LICENSE). Not for life-safety decisions: follow official NWS warnings.
