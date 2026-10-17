@@ -80,6 +80,19 @@ Expected conflicts:
 
 After merge: update the kit previews where builders didn't, then re-sync Claude Design.
 
+## Wave 13 (pre-launch polish): in progress 2026-10-17
+From the four-reviewer UX pass (`docs/polish-plan.md`). The repo was renamed to `inflow` first (ADR-0021).
+
+| WP | Title | Wave | Owns (exclusive) | Registry edits allowed |
+|---|---|---|---|---|
+| [50](packages/WP-50-quiet-day-trust.md) | Quiet-day trust and empty states | 13 | `AlertsList.tsx`, `alertGeometry.ts`, `StreamsGrid.tsx`, `FeedsQuiet.tsx`, `AudioPanel.tsx`, `openmhz/systems.ts` | — |
+| 51 | Narrow and tablet layout | 13 | orchestrator: `src/index.css`, `src/ui/css/*` except `led.css`, `MapPanel.tsx`, `App.tsx` | — |
+| [52](packages/WP-52-first-run.md) | START HERE, layout hints, PLAINS pressed | 13 | `HelpDialog.tsx`, `StartHereTab.tsx`, `help.css`, `LayoutMenu.tsx`, `TopbarMore.tsx`, `aoiPresetData.ts` | — |
+| [53](packages/WP-53-copy-pass.md) | Copy and consistency pass | 13 | orchestrator (done in prep) | — |
+| [54](packages/WP-54-delight.md) | Warning-aware title/favicon; LED power-on | 13 | `useWarningTitle.ts`, `warningTitle.ts`, `led.css` | `Topbar.tsx` one line |
+
+There's no file overlap.
+
 ## Wave 12 (1.0 usability): merged 2026-10-17
 User asks (2026-10-17): anyone must be able to add a chaser after release without a rebuild, and the self-run path must work for non-technical users.
 Prep (done, on `main`):
