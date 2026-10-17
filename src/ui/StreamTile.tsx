@@ -208,18 +208,29 @@ export function StreamTile({
       </div>
       <figcaption>
         <StatusLed status={ledStatus} />
-        <button
-          type="button"
-          className="stream-select"
-          onClick={onSelect}
-          aria-current={primary ? 'true' : undefined}
-          title="Show this feed large"
-        >
-          <span className="panel-code">
-            FEED {String(index + 1).padStart(2, '0')}
-          </span>{' '}
-          {title}
-        </button>
+        {/* Without onSelect (e.g. an offline thumbnail) the caption is plain text: a button that does nothing would
+            look clickable (ADR-0012). */}
+        {onSelect ? (
+          <button
+            type="button"
+            className="stream-select"
+            onClick={onSelect}
+            aria-current={primary ? 'true' : undefined}
+            title="Show this feed large"
+          >
+            <span className="panel-code">
+              FEED {String(index + 1).padStart(2, '0')}
+            </span>{' '}
+            {title}
+          </button>
+        ) : (
+          <span className="stream-caption">
+            <span className="panel-code">
+              FEED {String(index + 1).padStart(2, '0')}
+            </span>{' '}
+            {title}
+          </span>
+        )}
         {statusLabel && !liveKind && <Badge variant="ctx">{statusLabel}</Badge>}
         {inAoi && <Badge variant="aoi" />}
         {context && <Badge variant="ctx" />}

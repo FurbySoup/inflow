@@ -144,6 +144,8 @@ export function StreamsGrid() {
   const quietNow = liveCount === 0
   if (quietNow !== quietLast) setQuietLast(quietNow)
   const showSlate = quietNow && !chosenThisSession
+  // Any answer at all (curated resolution or roster check) makes "no chasers live" a checked statement.
+  const anyChecked = curatedFeeds.some((s) => s.status !== undefined) || roster.results.size > 0
   const offlineCurated = curatedFeeds
     .filter((s) => !s.context && s.status !== 'live')
     .map((s) => ({ id: s.id, title: s.title, watchUrl: s.watchUrl }))
@@ -182,7 +184,7 @@ export function StreamsGrid() {
     >
       <LiveNow chips={chips} shownId={primary?.id ?? null} checked={roster.results.size} total={allChasers.length} />
       <MyChasers />
-      {showSlate && <FeedsQuiet offline={offlineCurated} />}
+      {showSlate && <FeedsQuiet offline={offlineCurated} checked={anyChecked} />}
       {!showSlate && primary && (
         <FeedSlot id={primary.id} onVisible={setVisible}>
           <StreamTile

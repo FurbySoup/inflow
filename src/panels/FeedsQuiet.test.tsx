@@ -12,7 +12,7 @@ describe('FeedsQuiet', () => {
   afterEach(cleanup)
 
   it('shows the heading and the body with an SPC tip, and no embed', () => {
-    const { container } = render(<FeedsQuiet offline={offline} />)
+    const { container } = render(<FeedsQuiet offline={offline} checked />)
     expect(screen.getByText('NO CHASERS LIVE RIGHT NOW')).toBeTruthy()
     expect(screen.getByText(/checks 58 chasers and storm-coverage channels/)).toBeTruthy()
     const tips = [...container.querySelectorAll('abbr')].map((a) => a.textContent)
@@ -21,7 +21,7 @@ describe('FeedsQuiet', () => {
   })
 
   it('lists each offline feed as an external link with the ↗ signifier', () => {
-    render(<FeedsQuiet offline={offline} />)
+    render(<FeedsQuiet offline={offline} checked />)
     const a = screen.getByRole('link', { name: 'Feed A ↗' })
     expect(a.getAttribute('href')).toBe(offline[0]!.watchUrl)
     expect(a.getAttribute('target')).toBe('_blank')
@@ -30,8 +30,16 @@ describe('FeedsQuiet', () => {
   })
 
   it('renders no list when there is nothing offline to show', () => {
-    const { container } = render(<FeedsQuiet offline={[]} />)
+    const { container } = render(<FeedsQuiet offline={[]} checked />)
     expect(container.querySelector('.feeds-quiet-list')).toBeNull()
     expect(screen.queryAllByRole('link')).toHaveLength(0)
+  })
+
+  it('says CHECKING CHASERS until any liveness check has answered, never an unchecked "no chasers live"', () => {
+    const { rerender } = render(<FeedsQuiet offline={[]} checked={false} />)
+    expect(screen.getByText('CHECKING CHASERS…')).toBeTruthy()
+    expect(screen.queryByText('NO CHASERS LIVE RIGHT NOW')).toBeNull()
+    rerender(<FeedsQuiet offline={[]} checked />)
+    expect(screen.getByText('NO CHASERS LIVE RIGHT NOW')).toBeTruthy()
   })
 })

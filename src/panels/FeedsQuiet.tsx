@@ -12,6 +12,8 @@ export interface QuietFeed {
 export interface FeedsQuietProps {
   /** Curated feeds that are not live, shown as a one-line list of link-outs. */
   offline: QuietFeed[]
+  /** False until any liveness check has answered: before that, "no chasers live" would be an unchecked claim. */
+  checked: boolean
 }
 
 const BODY = `INFLOW checks ${ROSTER.length} chasers and storm-coverage channels and shows them here when they go live. On a quiet day, the SPC outlook days (D1–D8) on the map show where storms are expected.`
@@ -20,10 +22,10 @@ const BODY = `INFLOW checks ${ROSTER.length} chasers and storm-coverage channels
  * Primary-slot slate shown while no feed is live (WP-50). Read-only: the names are links with the underline and ↗
  * signifier (ADR-0012), and nothing here plays. Replaces the YouTube embed that would show "unavailable".
  */
-export function FeedsQuiet({ offline }: FeedsQuietProps) {
+export function FeedsQuiet({ offline, checked }: FeedsQuietProps) {
   return (
-    <section className="feeds-quiet" aria-label="No chasers live right now">
-      <p className="feeds-quiet-head">NO CHASERS LIVE RIGHT NOW</p>
+    <section className="feeds-quiet" aria-label={checked ? 'No chasers live right now' : 'Checking chasers'}>
+      <p className="feeds-quiet-head">{checked ? 'NO CHASERS LIVE RIGHT NOW' : 'CHECKING CHASERS…'}</p>
       <p className="feeds-quiet-body">
         <TaggedText text={BODY} />
       </p>

@@ -27,6 +27,21 @@ const stillButtons = () => screen.queryAllByRole('button', { name: /^■ STILL/ 
 const liveness = (...extra: Array<[string, FeedResolution]>) =>
   new Map<string, FeedResolution>([['livestormsmedia', { status: 'live' }], ...extra])
 
+describe('StreamTile caption (kit)', () => {
+  afterEach(cleanup)
+
+  it('is plain text, not a dead button, when the tile cannot be selected', () => {
+    const { container } = render(<StreamTile title="Offline feed" index={2} />)
+    expect(container.querySelector('button.stream-select')).toBeNull()
+    expect(container.querySelector('.stream-caption')?.textContent).toContain('Offline feed')
+  })
+
+  it('is a button when it can be selected', () => {
+    const { container } = render(<StreamTile title="Live feed" index={0} onSelect={() => {}} />)
+    expect(container.querySelector('button.stream-select')).not.toBeNull()
+  })
+})
+
 describe('StreamTile render (kit)', () => {
   afterEach(cleanup)
 
@@ -176,7 +191,16 @@ describe('StreamsGrid quiet day (WP-50)', () => {
   })
   afterEach(cleanup)
 
+  it('before any liveness answer: CHECKING CHASERS, not an unchecked "no chasers live"', () => {
+    render(<StreamsGrid />)
+    expect(screen.getByText('CHECKING CHASERS…')).toBeTruthy()
+    expect(screen.queryByText('NO CHASERS LIVE RIGHT NOW')).toBeNull()
+  })
+
   it('with nobody live: no iframe, the slate text, and a ↗ link per curated feed', () => {
+    vi.mocked(useLiveness).mockReturnValue(
+      new Map<string, FeedResolution>(curatedStreams.map((s) => [s.id, { status: 'offline' }])),
+    )
     const { container } = render(<StreamsGrid />)
     expect(container.querySelectorAll('iframe')).toHaveLength(0)
     expect(screen.getByText('NO CHASERS LIVE RIGHT NOW')).toBeTruthy()
