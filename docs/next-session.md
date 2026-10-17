@@ -3,9 +3,22 @@
 Handoff from the 2026-10-17 Wave 11 session. Supersedes the post-Wave-10 handoff.
 
 **State at handoff:** `main` is pushed. There are no agent worktrees and no local branches besides `main`.
-- **Merged:** Waves 1–13 (WP-01…54). Gate: typecheck, lint, test (931) and build:ui all pass. CI (`ci.yml`) runs on every push and PR.
+- **Merged:** Waves 1–14 (WP-01…55). Gate: typecheck, lint, test (966), build:ui and the XSS grep all pass. CI (`ci.yml`) runs on every push and PR.
 - **Plan of record:** [`docs/launch-plan.md`](launch-plan.md). Its ticked boxes are done.
 - **Launch posts and release notes:** [`docs/launch-posts.md`](launch-posts.md), ready to paste.
+
+## Wave 14 (merged 2026-10-17): notification setup journey
+A three-reviewer audit of the first-time setup found the maintainer's own trouble. Notifications only appear while the tab is hidden, and there was no way to test. ADR-0022 records the decisions.
+- **WP-55:**
+  - SEND TEST;
+  - honest states (OFF / ALLOW? / ON / BLOCKED / N/A), with the fix named for each: insecure LAN http, iOS, Android, an extension or browser-wide block, the quiet-prompt bell;
+  - an area line ("the map view");
+  - a plain limits line;
+  - warnings by default, not watches.
+  - All copy lives in `src/notify/notifyCopy.ts` (orchestrator-owned).
+- **README:** a new "Get notified about warnings" section (3 steps, when they arrive, troubleshooting).
+- **Live check:** in the browser pane (which denies notifications by itself) BLOCKED shows the extension guidance, and a phone UA shows N/A with the Android reason.
+- **Still needs a person:** the granted path in a real browser. Press SEND TEST with the tab in front and in the background.
 
 ## Wave 13 (merged 2026-10-17): pre-launch polish
 This wave came from a four-reviewer UX pass. The plan and findings are in `docs/polish-plan.md`.

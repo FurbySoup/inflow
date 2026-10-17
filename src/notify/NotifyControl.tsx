@@ -121,8 +121,8 @@ function SetupBlock({ state, reason, ua, quiet, testResult, onAllow, onTest }: S
   if (state === 'pending') {
     return (
       <div className="notify-state">
-        <div className="notify-status" role="status">
-          <span>{STATE_LINE.pending}</span>
+        <div className="notify-status">
+          <span role="status">{STATE_LINE.pending}</span>
           <ConsoleButton className="notify-allow" onClick={onAllow}>
             ALLOW NOTIFICATIONS
           </ConsoleButton>
@@ -318,7 +318,10 @@ export function NotifyControl() {
                   onChange={() => updatePrefs({ threshold: t })}
                 />
                 <span>
-                  <TaggedText text={THRESHOLD_COPY[t].label} />
+                  {/* One span per line: in the grid, bare text and <abbr> pieces would each take a row. */}
+                  <span>
+                    <TaggedText text={THRESHOLD_COPY[t].label} />
+                  </span>
                   <span className="notify-hint">
                     <TaggedText text={THRESHOLD_COPY[t].hint} />
                   </span>

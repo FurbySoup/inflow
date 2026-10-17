@@ -31,7 +31,7 @@ The first `npm start` builds the app (about a minute), then opens your browser.
 
 ## What's on screen
 - **Map:** NEXRAD radar, single-site velocity, GOES satellite, SPC outlooks (days 1–8), watches, mesoscale discussions and storm reports.
-- **Warnings:** live NWS alerts for the area you're looking at. A new tornado warning gets a toast and, if you allow it, a browser notification.
+- **Warnings:** live NWS alerts for the area you're looking at. A new tornado warning pops up on screen, and you can get browser notifications too (see below).
 - **Chaser feeds:** curated national streams, plus a 58-channel chaser roster that pops in when a channel goes live. Add any other YouTube streamer yourself with **+ CHASER** (see below).
 - **Audio:** OpenMHz scanner systems for the area, and KiwiSDR receivers for HF, ham and CB.
 - **Cameras:** traffic cameras from 19 state DOT sites.
@@ -43,6 +43,31 @@ On a quiet day most streams are offline and the warning list may be empty. That'
 
 ## Add a chaser
 A new streamer not on the built-in list? In the Chaser Feeds panel, press **+ CHASER** and paste their YouTube channel link, a link to one of their videos, or their `@handle`. INFLOW looks the channel up on YouTube, shows you the name to confirm, and from then on shows them whenever they're live. The list is saved in your browser, so there's nothing to rebuild or restart. Each browser keeps its own list, so on a wall display, add them there too.
+
+## Get notified about warnings
+INFLOW can send a browser notification when a new warning is issued in the map view.
+
+1. Press **NOTIFY** (on a phone it's under **≡ MORE**), then tick **Send browser notifications**.
+2. Choose **Allow** when your browser asks. No prompt? Look for a bell icon with a line through it at the right of the address bar.
+3. Press **SEND TEST**. You should see a notification within a second.
+
+By default you get tornado, severe thunderstorm and flash flood warnings. You can add watches, SPC risk upgrades or chasers going live.
+
+**When they arrive:**
+- Notifications appear only while the INFLOW tab is in the background or minimised. While you're looking at it, warnings show on screen instead.
+- Nothing arrives once the tab or browser is closed, or the computer is asleep.
+- They cover the map view, so moving the map changes what you're told about.
+
+**If SEND TEST shows nothing:**
+- **Windows:** Settings › System › Notifications. Your browser must be on, and Do Not Disturb off.
+- **macOS:** System Settings › Notifications › your browser, and Focus off.
+- **"Blocked", or "Blocked by an extension":** allow notifications in the site settings (the icon left of the address). If the setting is greyed out, turn off the extension that blocks it.
+- **Opened over your network** (`http://<address>:8080`): browsers only allow notifications on secure pages, so use `http://localhost:8080` on the computer running INFLOW. On-screen alerts still work everywhere.
+- **Phones and tablets:** iPhone, iPad and Android only allow web notifications from installed apps, so use a desktop browser.
+
+Settings are saved per address: `localhost`, `127.0.0.1` and a different port each count as a separate site.
+
+These are a convenience, not a warning system. Keep official alerts on your phone.
 
 ## Wall display or another device on your network
 By default INFLOW only listens on this computer. To open it from a TV, tablet or a second machine:

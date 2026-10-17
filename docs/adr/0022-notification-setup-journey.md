@@ -14,7 +14,7 @@ A three-reviewer audit of the first-time notification journey (2026-10-17) found
 - The default threshold included watches and mesoscale discussions, which is more than "tell me about warnings".
 
 ## Decision
-- **SEND TEST.** It sends one system notification immediately, whatever the tab's visibility. It goes through the engine (`engine.sendTest()`), which stays the only caller of the Notification API.
+- **SEND TEST.** It sends one system notification immediately, whatever the tab's visibility. It goes through `engine.ts` (`sendTestNotification()`), which stays the only caller of the Notification API. The test notice is not closed when the tab comes back into view, so the user can still see it.
   - If the constructor throws, the browser is marked unavailable straight away.
   - The result text says what the browser did, and always points at the OS settings, because the page can't know whether the OS showed it.
 - **Setup states:** `off`, `pending` (ticked, waiting for permission), `on`, `blocked` (denied), and `unavailable` with a reason:
