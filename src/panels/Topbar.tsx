@@ -11,6 +11,7 @@ import { nwsPoint } from '../sources/nws/points'
 import { DEVICE_ZONE, sameOffset, zoneLabel } from './clock'
 import { OutlookRisk } from './OutlookRisk'
 import { Abbr } from '../ui'
+import { useWarningTitle } from './useWarningTitle'
 
 // With 52 codes a wide AOI can touch 20+ states; the top bar shows the first few and a count.
 const MAX_AOI_CODES = 6
@@ -23,6 +24,7 @@ const fmtUtc = (d: Date) => d.toLocaleTimeString('en-US', { hourCycle: 'h23', ti
 
 export function Topbar() {
   const [now, setNow] = useState(() => new Date())
+  useWarningTitle()
   const states = useAoi((s) => s.states)
   const point = useSource(nwsPoint).data?.[0]
   const aoiZone = point?.timeZone

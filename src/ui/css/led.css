@@ -12,9 +12,25 @@
   background: var(--status-offline);
 }
 .led-live { background: var(--status-live); }
+/* Power-on (WP-54): a live feed flares once as it arrives, then pulses. Dropped while a tornado warning is active
+   (:root[data-tor]) and under reduced motion, so the moment never plays over a warning. */
+@keyframes inflow-poweron {
+  from { filter: brightness(2.2); }
+  to { filter: brightness(1); }
+}
 .led[data-status="live"] {
   background: var(--status-live);
+  animation:
+    inflow-poweron var(--dur-arrive) var(--ease-out) 1,
+    inflow-pulse var(--dur-led-pulse) var(--ease-in-out) var(--dur-arrive) infinite;
+}
+:root[data-tor="active"] .led[data-status="live"] {
   animation: inflow-pulse var(--dur-led-pulse) var(--ease-in-out) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .led[data-status="live"] {
+    animation: inflow-pulse var(--dur-led-pulse) var(--ease-in-out) infinite;
+  }
 }
 .led[data-status="loading"] {
   background: transparent;
