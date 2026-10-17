@@ -1,0 +1,22 @@
+name: Feature idea
+description: Suggest something for a later release
+labels: ['post-1.0']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas are collected for later releases. INFLOW 1.0 is feature-frozen, so this will be reviewed after 1.0 ships.
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: What would you like INFLOW to do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it would help
+      description: What storm-chasing or monitoring task does it support?

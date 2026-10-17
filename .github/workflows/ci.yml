@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck, lint, test, UI kit build
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run typecheck && npm run lint && npm test && npm run build:ui
+
+      - name: Production builds
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run build && npm run build:server
+
+      - name: XSS guard (no raw HTML injection in src/)
+        shell: bash
+        run: |
+          set -o pipefail
+          ! grep -rnE "dangerouslySetInnerHTML|\.innerHTML\s*=" src

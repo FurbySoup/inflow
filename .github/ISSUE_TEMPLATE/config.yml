@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions
+    url: https://github.com/FurbySoup/storm-chasers/discussions
+    about: Ask how to run or use INFLOW. Please don't open an issue for questions.
