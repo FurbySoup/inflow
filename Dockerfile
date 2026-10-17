@@ -13,6 +13,8 @@ FROM node:22-alpine AS runtime
 WORKDIR /app
 COPY --from=build /src/dist ./dist
 COPY --from=build /src/dist-server ./dist-server
+# package.json carries "type": "module", so the ESM server bundle doesn't rely on Node's syntax detection.
+COPY --from=build /src/package.json ./
 
 # Inside the container the server must listen on all interfaces; publish the port on 127.0.0.1 on the host.
 ENV HOST=0.0.0.0 PORT=8080 NODE_ENV=production
@@ -20,7 +22,7 @@ EXPOSE 8080
 USER node
 
 HEALTHCHECK --interval=60s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:8080/healthz || exit 1
+  CMD wget -qO- "http://127.0.0.1:${PORT}/healthz" || exit 1
 
 LABEL org.opencontainers.image.source="https://github.com/FurbySoup/storm-chasers" \
       org.opencontainers.image.description="INFLOW: live US storm dashboard (radar, alerts, streams, cameras, scanners)" \

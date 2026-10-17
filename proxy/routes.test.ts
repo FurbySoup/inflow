@@ -25,11 +25,13 @@ describe('proxy route table', () => {
     expect(matchRoute(routes, '/api/unknown/x')).toBeNull()
   })
 
-  it('sends the NWS User-Agent with the repo URL unless NWS_CONTACT is set', () => {
+  it('sends the NWS User-Agent: repo + a per-start id by default, or NWS_CONTACT', () => {
     const nws = (env = {}) => matchRoute(proxyRoutes(env), '/api/nws')?.headers?.['User-Agent']
     expect(nws()).toBe(nwsUserAgent())
-    expect(nwsUserAgent()).toContain(REPO_URL)
-    expect(nws({ NWS_CONTACT: 'me@example.com' })).toBe('INFLOW storm-chasers (me@example.com)')
-    expect(nws({ NWS_CONTACT: '  ' })).toContain(REPO_URL)
+    expect(nwsUserAgent(undefined, 'abc12345')).toBe('INFLOW (github.com/FurbySoup/storm-chasers; abc12345)')
+    expect(nwsUserAgent()).toMatch(/^INFLOW \(github\.com\/FurbySoup\/storm-chasers; [0-9a-f]{8}\)$/)
+    expect(REPO_URL).toBe('https://github.com/FurbySoup/storm-chasers')
+    expect(nws({ NWS_CONTACT: 'me@example.com' })).toBe('INFLOW (me@example.com)')
+    expect(nws({ NWS_CONTACT: '  ' })).toBe(nwsUserAgent())
   })
 })

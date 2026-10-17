@@ -83,7 +83,7 @@ describe('handleProxy', () => {
     const { deps } = harness(fetchImpl)
     await handleProxy(input('/api/nws/alerts'), deps)
     await handleProxy(input('/api/txdot/x'), deps)
-    expect(seen[0].init.headers).toMatchObject({ 'user-agent': 'INFLOW storm-chasers (ops@example.test)' })
+    expect(seen[0].init.headers).toMatchObject({ 'user-agent': 'INFLOW (ops@example.test)' })
     expect(seen[1].init.headers).toMatchObject({ 'user-agent': `INFLOW storm-chasers (${REPO_URL})` })
   })
 
@@ -213,6 +213,17 @@ describe('handleProxy', () => {
     expect(res.headers).not.toHaveProperty('x-custom')
     expect(res.headers.etag).toBe('"e"')
     expect(res.headers['cache-control']).toBe('max-age=5')
+  })
+
+  it('marks upstream errors no-store, dropping the upstream cache headers (NWS 500s carry max-age=180)', async () => {
+    const { fetchImpl } = fakeUpstream(
+      () => new Response('oops', { status: 500, headers: { 'content-type': 'text/html', 'cache-control': 'max-age=180', etag: '"e"' } }),
+    )
+    const { deps } = harness(fetchImpl)
+    const res = await handleProxy(input('/api/nws/alerts/active'), deps)
+    expect(res.status).toBe(500)
+    expect(res.headers['cache-control']).toBe('no-store')
+    expect(res.headers.etag).toBeUndefined()
   })
 
   it('answers 502 when the upstream throws', async () => {

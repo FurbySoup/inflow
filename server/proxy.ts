@@ -72,13 +72,23 @@ function passedResponseHeaders(upstream: Response): Record<string, string> {
     const location = upstream.headers.get('location')
     if (location !== null) out.location = location
   }
+  // Never let the browser cache an upstream error: NWS sends its 500 page with max-age=180, which kept the alerts
+  // panel failing for 3 minutes after NWS had recovered (seen 2026-10-17).
+  if (upstream.status >= 400) return noStore(out)
   return out
+}
+
+const VALIDATORS = new Set(['cache-control', 'expires', 'etag', 'last-modified'])
+
+function noStore(headers: Record<string, string>): Record<string, string> {
+  const out = Object.fromEntries(Object.entries(headers).filter(([name]) => !VALIDATORS.has(name)))
+  return { ...out, 'cache-control': 'no-store' }
 }
 
 function textResponse(status: number, message: string, extra: Record<string, string> = {}): CachedResponse {
   return {
     status,
-    headers: { 'content-type': 'text/plain; charset=utf-8', ...extra },
+    headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', ...extra },
     body: new TextEncoder().encode(message),
   }
 }

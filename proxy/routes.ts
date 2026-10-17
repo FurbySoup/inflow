@@ -25,10 +25,15 @@ export interface ProxyRoute {
 
 export const REPO_URL = 'https://github.com/FurbySoup/storm-chasers'
 
-/** NWS asks for an identifying User-Agent with a contact (URL or email). `NWS_CONTACT` overrides the repo URL. */
-export function nwsUserAgent(contact?: string): string {
-  const c = contact?.trim() || REPO_URL
-  return `INFLOW storm-chasers (${c})`
+// NWS's CDN blocks by exact User-Agent (seen 2026-10-17: one UA string got 403s while others passed). If every
+// install sent the same default, one misbehaving copy could get NWS blocked for all of them. So the default carries
+// a random id per server start; `NWS_CONTACT` replaces the whole contact part.
+const INSTALL_ID = globalThis.crypto.randomUUID().slice(0, 8)
+
+/** NWS asks for an identifying User-Agent with a contact (URL or email). `NWS_CONTACT` overrides the default. */
+export function nwsUserAgent(contact?: string, installId: string = INSTALL_ID): string {
+  const c = contact?.trim()
+  return c ? `INFLOW (${c})` : `INFLOW (${REPO_URL.replace(/^https:\/\//, '')}; ${installId})`
 }
 
 // A phone User-Agent makes YouTube 302 /watch to m.youtube.com, which the browser then fetches cross-origin

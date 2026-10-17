@@ -21,6 +21,8 @@ npm start
 
 Then open **http://localhost:8080**. The first `npm start` builds the app, which takes about a minute.
 
+Port 8080 already in use? Use `-p 127.0.0.1:8090:8080` with Docker, or `PORT=8090 npm start`.
+
 Prefer no build at all? Each [release](https://github.com/FurbySoup/storm-chasers/releases) has a zip. Unzip it and run `node dist-server/index.js`.
 
 ## What's on screen
@@ -45,7 +47,7 @@ Pick the **WALL** layout (Shift+2) and press `F` for fullscreen.
 |---|---|---|
 | `PORT` | `8080` | Port to serve on |
 | `HOST` | `127.0.0.1` | Interface to listen on. `0.0.0.0` makes it reachable on your network. |
-| `NWS_CONTACT` | the repo URL | Contact (email or URL) sent in the User-Agent to the National Weather Service, as they ask |
+| `NWS_CONTACT` | the repo URL + a random id | Contact (email or URL) sent in the User-Agent to the National Weather Service, as they ask. Setting it is polite and keeps your install separate from everyone else's. |
 
 To change the curated streams, edit [`config/streams.json`](config/streams.json) and use a channel's `channelId` from its own YouTube page. Then run `npm start -- --rebuild`.
 

@@ -251,7 +251,7 @@ describe('proxy routing', () => {
 
   it('sends the NWS User-Agent from the route', async () => {
     await raw({ path: '/api/nws/alerts/active' })
-    expect((seen[0].init.headers as Record<string, string>)['user-agent']).toBe('INFLOW storm-chasers (ops@example.test)')
+    expect((seen[0].init.headers as Record<string, string>)['user-agent']).toBe('INFLOW (ops@example.test)')
   })
 
   it('passes a 3xx back without following it', async () => {
