@@ -80,6 +80,20 @@ Expected conflicts:
 
 After merge: update the kit previews where builders didn't, then re-sync Claude Design.
 
+## Wave 11 (ship 1.0, launch-plan §2): in progress 2026-10-17
+Prep (done, on `main`):
+- `proxy/routes.ts` is the one route table (methods + cache TTL per route); Vite reads it. `NWS_CONTACT` sets the NWS User-Agent contact.
+- `config/streams.json`: five national `channelId` entries, re-verified on their `/streams` pages 2026-10-17. Default AOI is the Plains.
+- `src/panels/help/about.ts` (disclaimer, data terms, credits; never edit in packages); glossary `NOAA`, `IEM`, `HF`, `API`, `ODbL`, `MIT`; `__APP_VERSION__`; `build:server` / `start` / `serve` scripts; `engines.node >= 20`.
+
+| WP | Title | Wave | Owns (exclusive) | Registry edits allowed |
+|---|---|---|---|---|
+| [45](packages/WP-45-production-server.md) | Production server | 11 | `server/**` | — |
+| [46](packages/WP-46-packaging-ci.md) | `npm start`, Docker, CI, release | 11 | `scripts/start.mjs`, `Dockerfile`, `.dockerignore`, `.github/**`, `SECURITY.md`, `CONTRIBUTING.md` | — |
+| [47](packages/WP-47-about-tab.md) | ABOUT tab in `? HELP` | 11 | `src/panels/help/AboutTab.tsx`, `HelpDialog.tsx`, `help.css` (+ tests) | — |
+
+There's no file overlap. Merge 45 first, then 46 (its Docker build needs `server/`), then 47.
+
 ## Wave 10 (polish): merged 2026-10-17
 - **Orchestrator review caught (WP-44):**
   - the MORE button set `aria-pressed` on a disclosure (now `aria-expanded` only);

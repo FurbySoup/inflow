@@ -18,6 +18,8 @@ export const GLOSSARY: Readonly<Record<string, string>> = {
   MD: 'Mesoscale discussion: an SPC note that a watch may be coming for a small area',
   HWO: 'Hazardous Weather Outlook: the local NWS office’s plain-language look at the next 7 days',
   CWA: 'County warning area: the region one NWS office covers',
+  NOAA: 'National Oceanic and Atmospheric Administration: the US agency over the NWS, SPC and the GOES satellites',
+  IEM: 'Iowa Environmental Mesonet (Iowa State University): serves the radar and satellite images used here',
   // NWS hazard codes (src/ui/hazard.ts)
   TOR: 'Tornado Warning: a tornado is happening or imminent. Take shelter.',
   SVR: 'Severe Thunderstorm Warning: damaging wind or large hail is happening or imminent',
@@ -46,12 +48,16 @@ export const GLOSSARY: Readonly<Record<string, string>> = {
   GOES: 'The NOAA weather satellites (East and West)',
   IR: 'Infrared: cloud-top temperature; colder (higher) tops show brighter',
   // Streams and cameras
+  API: 'Application programming interface: how an app asks a service for data. INFLOW needs no API keys.',
+  ODbL: 'Open Database License: the open licence OpenStreetMap map data is published under',
+  MIT: 'The MIT licence: free to use, copy and change, with no warranty',
   CTX: 'Context feed: background video, not a storm chaser',
   THUMB: 'Thumbnail: a still image of the stream, up to 5 minutes old',
   CAM: 'Camera or stream slot number',
   DOT: 'Department of Transportation: state road agencies that run the traffic cameras',
   CCTV: 'Closed-circuit TV: road and traffic cameras',
   // Radio
+  HF: 'High frequency (3–30 MHz): long-range shortwave radio, including CB and some ham bands',
   CB: 'Citizens Band radio. Channel 19 is the truckers’ and chasers’ channel.',
   '2M': 'The 2-metre amateur (ham) radio band, used by storm spotters',
   RX: 'Receiver: an online radio you can listen through',

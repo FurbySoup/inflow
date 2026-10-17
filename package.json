@@ -7,6 +7,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:server": "vite build --ssr server/index.ts --outDir dist-server --emptyOutDir",
+    "start": "node scripts/start.mjs",
+    "serve": "node dist-server/index.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
@@ -42,5 +45,8 @@
     "vitest": "^3.2.7"
   },
   "module": "./dist/ui/index.js",
-  "types": "./dist/ui/index.d.ts"
+  "types": "./dist/ui/index.d.ts",
+  "engines": {
+    "node": ">=20"
+  }
 }
