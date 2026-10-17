@@ -80,6 +80,21 @@ Expected conflicts:
 
 After merge: update the kit previews where builders didn't, then re-sync Claude Design.
 
+## Wave 10 (polish): launched 2026-10-17
+Prep (done, on `main`):
+- glossary tips for the D4–8 empty-day labels (SPC wording);
+- the stale outlook `aria-busy` flag cleared on switching back to the loaded day.
+- Dropped: the HWO fixture trim (already ~2 KB with a realistic header) and the CHASE label (intentional).
+
+| WP | Title | Wave | Owns (exclusive) | Registry edits allowed |
+|---|---|---|---|---|
+| [41](packages/WP-41-roster-visible-rearm.md) | Roster scheduler re-arms on visible | 10 | `src/sources/chasers/scheduler.ts`, `useRoster.ts` | — |
+| [42](packages/WP-42-audio-panel-polish.md) | Audio LED + duplicate system names | 10 | `AudioPanel.tsx`, `src/sources/openmhz/systems.ts` | — |
+| [43](packages/WP-43-notify-permission-reread.md) | NotifyControl re-reads permission | 10 | `src/notify/NotifyControl.tsx` | — |
+| [44](packages/WP-44-topbar-more-menu.md) | Top bar ≡ MORE menu at ≤ 900 px | 10 | `TopbarMore.tsx`, `topbar-more.css` | `Topbar.tsx` one wrap |
+
+There's no file overlap. Merge in any order; 44 goes last because of the live matrix check.
+
 ## Wave 9 (notifications, chasers, help): merged 2026-10-11
 - **Verifiers caught:**
   - the narrow-tier `.panel-body` 320 px cap boxing the new help dialog on phones (WP-40);
